@@ -1,0 +1,231 @@
+<div class="wrapper fix">
+    <div class="main_top">
+        <div class="row">
+            <div class="top_header col-sm-12 col-md-4">
+                <h1>Kitchen Panel</h1>
+            </div>
+            <div class="top_menu col-sm-12 col-md-8 d-flex align-items-center justify-content-end">
+                <form id="language" method="post" accept-charset="utf-8">
+                    <select tabindex="-1" class="form-control select2 ir_w_100 select2-hidden-accessible" name="language" onchange="this.form.submit()" aria-hidden="true">
+          <option value="english" selected="">English</option>
+          <option value="spanish">Spanish</option>
+          <option value="french">French</option>
+          <option value="arabic">Arabic</option>
+        </select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 189.062px;"><span class="selection"><span class="select2-selection select2-selection--single"
+              role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="2"
+              aria-labelledby="select2-language-j3-container"><span class="select2-selection__rendered"
+                id="select2-language-j3-container" title="English">English</span>
+                    <span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span>
+                    </span>
+                    </span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+                </form>
+                <a class="btn bg-blue-btn me-2" id="logout_button"><i
+          class="fas fas-caret-square-left"></i>Back</a>
+
+                <div class="top_menu_right" id="group_by_order_item_holder ir_h_float_m"></div>
+
+                <div class="top_menu_right me-2 btn bg-blue-btn">
+                    <p class="m-0">
+                        <i class="fas fa-sync-alt ir_mouse_pointer" id="refresh_orders_button"></i>
+                    </p>
+                </div>
+
+                <button id="notification_button" data-bs-toggle="modal" data-bs-target="#notification_list_modal" class="btn bg-blue-btn me-2">
+        <i class="fas fa-bell me-2"></i> Notification (<span id="notification_counter">0</span>)</button>
+
+                <button id="help_button" data-bs-toggle="modal" data-bs-target="#help_modal" class="me-2 btn bg-blue-btn"><i
+          class="fas me-2 fa-question-circle"></i> Help</button>
+
+                <a class="btn bg-blue-btn me-2 d-flex align-items-center" id="logout_button" routerLink="/login"><i
+          class="fas me-2 fa-sign-out-alt"></i> Logout</a>
+
+
+            </div>
+        </div>
+    </div>
+    <div class="fix main_bottom">
+        <div class="fix order_holder mt-2" id="order_holder">
+
+            <div class="fix floatleft single_order" data-order-type="Take Away" data-selected="unselected" id="single_order_100">
+                <div class="header_portion light-blue-background fix">
+                    <div class="fix floatleft half">
+                        <p class="order_number">Invoice: B 000100</p>
+                        <p class="order_number">Table: Room 221</p>
+                    </div>
+                    <div class="fix floatleft half">
+                        <p class="order_duration dark-blue-background"><span id="bar_time_minute_100">38</span>:<span id="bar_time_second_100">41</span></p>
+                    </div>
+                </div>
+                <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 199px; background: rgb(255, 255, 255); border: 0px solid rgb(24, 64, 85);">
+                    <div class="fix items_holder" style="overflow: hidden; width: auto; height: 199px;">
+                        <div data-selected="unselected" class="fix single_item " data-order-id="100" data-item-id="245" id="detail_item_id_245" data-cooking-status="null">
+                            <div class="single_item_left_side fix">
+                                <div class="fix floatleft item_quantity">
+                                    <p class="item_quanity_text" style="">1</p>
+                                </div>
+                                <div class="fix floatleft item_detail">
+                                    <p class="item_name" style="">Pepsi 250ml</p>
+                                    <p class="item_qty" style="font-weight:bold; ">Qty: 1</p>
+                                </div>
+                            </div>
+                            <div class="single_item_right_side fix">
+                                <p class="single_item_cooking_status" style=""></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slimScrollBar" style="background: rgb(0, 0, 0); width: 7px; position: absolute; top: 0px; opacity: 0.4; display: none; border-radius: 7px; z-index: 99; right: 1px; height: 199px;">
+                    </div>
+                    <div class="slimScrollRail" style="width: 7px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51); opacity: 0.2; z-index: 90; right: 1px;">
+                    </div>
+                </div>
+                <div class="single_order_button_holder" id="single_order_button_holder_100"><button class="select_all_of_an_order" id="select_all_of_an_order_100">Select All</button><button class="unselect_all_of_an_order" id="unselect_all_of_an_order_100">Unselect All</button><button class="start_cooking_button" id="start_cooking_button_100">Prepare</button>
+                    <button class="done_cooking" id="done_cooking_100">Done</button>
+                </div>
+            </div>
+            <div class="fix floatleft single_order" data-order-type="Take Away" data-selected="unselected" id="single_order_101">
+                <div class="header_portion light-blue-background fix">
+                    <div class="fix floatleft half">
+                        <p class="order_number">Invoice: B 000101</p>
+                        <p class="order_number">Table: Room 221</p>
+                    </div>
+                    <div class="fix floatleft half">
+                        <p class="order_duration dark-blue-background"><span id="bar_time_minute_101">38</span>:<span id="bar_time_second_101">40</span></p>
+                    </div>
+                </div>
+                <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 199px; background: rgb(255, 255, 255); border: 0px solid rgb(24, 64, 85);">
+                    <div class="fix items_holder" style="overflow: hidden; width: auto; height: 199px;">
+                        <div data-selected="unselected" class="fix single_item " data-order-id="101" data-item-id="252" id="detail_item_id_252" data-cooking-status="null">
+                            <div class="single_item_left_side fix">
+                                <div class="fix floatleft item_quantity">
+                                    <p class="item_quanity_text" style="">1</p>
+                                </div>
+                                <div class="fix floatleft item_detail">
+                                    <p class="item_name" style="">Pepsi 250ml</p>
+                                    <p class="item_qty" style="font-weight:bold; ">Qty: 1</p>
+                                </div>
+                            </div>
+                            <div class="single_item_right_side fix">
+                                <p class="single_item_cooking_status" style=""></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slimScrollBar" style="background: rgb(0, 0, 0); width: 7px; position: absolute; top: 0px; opacity: 0.4; display: none; border-radius: 7px; z-index: 99; right: 1px; height: 199px;">
+                    </div>
+                    <div class="slimScrollRail" style="width: 7px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51); opacity: 0.2; z-index: 90; right: 1px;">
+                    </div>
+                </div>
+                <div class="single_order_button_holder" id="single_order_button_holder_101"><button class="select_all_of_an_order" id="select_all_of_an_order_101">Select All</button><button class="unselect_all_of_an_order" id="unselect_all_of_an_order_101">Unselect All</button><button class="start_cooking_button" id="start_cooking_button_101">Prepare</button>
+                    <button class="done_cooking" id="done_cooking_101">Done</button>
+                </div>
+            </div>
+            <div class="fix floatleft single_order" data-order-type="Dine In" data-selected="unselected" id="single_order_102">
+                <div class="header_portion light-blue-background fix">
+                    <div class="fix floatleft half">
+                        <p class="order_number">Invoice: A 000102</p>
+                        <p class="order_number">Table: Room 221</p>
+                    </div>
+                    <div class="fix floatleft half">
+                        <p class="order_duration dark-blue-background"><span id="bar_time_minute_102">38</span>:<span id="bar_time_second_102">18</span></p>
+                    </div>
+                </div>
+                <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 199px; background: rgb(255, 255, 255); border: 0px solid rgb(24, 64, 85);">
+                    <div class="fix items_holder" style="overflow: hidden; width: auto; height: 199px;">
+                        <div data-selected="unselected" class="fix single_item " data-order-id="102" data-item-id="259" id="detail_item_id_259" data-cooking-status="null">
+                            <div class="single_item_left_side fix">
+                                <div class="fix floatleft item_quantity">
+                                    <p class="item_quanity_text" style="">1</p>
+                                </div>
+                                <div class="fix floatleft item_detail">
+                                    <p class="item_name" style="">Pepsi 250ml</p>
+                                    <p class="item_qty" style="font-weight:bold; ">Qty: 1</p>
+                                </div>
+                            </div>
+                            <div class="single_item_right_side fix">
+                                <p class="single_item_cooking_status" style=""></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slimScrollBar" style="background: rgb(0, 0, 0); width: 7px; position: absolute; top: 0px; opacity: 0.4; display: none; border-radius: 7px; z-index: 99; right: 1px; height: 199px;">
+                    </div>
+                    <div class="slimScrollRail" style="width: 7px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51); opacity: 0.2; z-index: 90; right: 1px;">
+                    </div>
+                </div>
+                <div class="single_order_button_holder" id="single_order_button_holder_102"><button class="select_all_of_an_order" id="select_all_of_an_order_102">Select All</button><button class="unselect_all_of_an_order" id="unselect_all_of_an_order_102">Unselect All</button><button class="start_cooking_button" id="start_cooking_button_102">Prepare</button>
+                    <button class="done_cooking" id="done_cooking_102">Done</button>
+                </div>
+            </div>
+            <div class="fix floatleft single_order" data-order-type="Dine In" data-selected="unselected" id="single_order_103">
+                <div class="header_portion light-blue-background fix">
+                    <div class="fix floatleft half">
+                        <p class="order_number">Invoice: A 000103</p>
+                        <p class="order_number">Table: Table 01</p>
+                    </div>
+                    <div class="fix floatleft half">
+                        <p class="order_duration dark-blue-background"><span id="bar_time_minute_103">36</span>:<span id="bar_time_second_103">46</span></p>
+                    </div>
+                </div>
+                <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 199px; background: rgb(255, 255, 255); border: 0px solid rgb(24, 64, 85);">
+                    <div class="fix items_holder" style="overflow: hidden; width: auto; height: 199px;">
+                        <div data-selected="unselected" class="fix single_item " data-order-id="103" data-item-id="267" id="detail_item_id_267" data-cooking-status="null">
+                            <div class="single_item_left_side fix">
+                                <div class="fix floatleft item_quantity">
+                                    <p class="item_quanity_text" style="">1</p>
+                                </div>
+                                <div class="fix floatleft item_detail">
+                                    <p class="item_name" style="">PIZZA OP</p>
+                                    <p class="item_qty" style="font-weight:bold; ">Qty: 1</p>
+                                </div>
+                            </div>
+                            <div class="single_item_right_side fix">
+                                <p class="single_item_cooking_status" style=""></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slimScrollBar" style="background: rgb(0, 0, 0); width: 7px; position: absolute; top: 0px; opacity: 0.4; display: none; border-radius: 7px; z-index: 99; right: 1px; height: 199px;">
+                    </div>
+                    <div class="slimScrollRail" style="width: 7px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51); opacity: 0.2; z-index: 90; right: 1px;">
+                    </div>
+                </div>
+                <div class="single_order_button_holder" id="single_order_button_holder_103"><button class="select_all_of_an_order" id="select_all_of_an_order_103">Select All</button><button class="unselect_all_of_an_order" id="unselect_all_of_an_order_103">Unselect All</button><button class="start_cooking_button" id="start_cooking_button_103">Prepare</button>
+                    <button class="done_cooking" id="done_cooking_103">Done</button>
+                </div>
+            </div>
+            <div class="fix floatleft single_order" data-order-type="Dine In" data-selected="unselected" id="single_order_104">
+                <div class="header_portion light-blue-background fix">
+                    <div class="fix floatleft half">
+                        <p class="order_number">Invoice: A 000104</p>
+                        <p class="order_number">Table: Table 01</p>
+                    </div>
+                    <div class="fix floatleft half">
+                        <p class="order_duration dark-blue-background"><span id="bar_time_minute_104">36</span>:<span id="bar_time_second_104">43</span></p>
+                    </div>
+                </div>
+                <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 199px; background: rgb(255, 255, 255); border: 0px solid rgb(24, 64, 85);">
+                    <div class="fix items_holder" style="overflow: hidden; width: auto; height: 199px;">
+                        <div data-selected="unselected" class="fix single_item " data-order-id="104" data-item-id="274" id="detail_item_id_274" data-cooking-status="null">
+                            <div class="single_item_left_side fix">
+                                <div class="fix floatleft item_quantity">
+                                    <p class="item_quanity_text" style="">1</p>
+                                </div>
+                                <div class="fix floatleft item_detail">
+                                    <p class="item_name" style="">PIZZA OP</p>
+                                    <p class="item_qty" style="font-weight:bold; ">Qty: 1</p>
+                                </div>
+                            </div>
+                            <div class="single_item_right_side fix">
+                                <p class="single_item_cooking_status" style=""></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slimScrollBar" style="background: rgb(0, 0, 0); width: 7px; position: absolute; top: 0px; opacity: 0.4; display: none; border-radius: 7px; z-index: 99; right: 1px; height: 199px;">
+                    </div>
+                    <div class="slimScrollRail" style="width: 7px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51); opacity: 0.2; z-index: 90; right: 1px;">
+                    </div>
+                </div>
+                <div class="single_order_button_holder" id="single_order_button_holder_104"><button class="select_all_of_an_order" id="select_all_of_an_order_104">Select All</button><button class="unselect_all_of_an_order" id="unselect_all_of_an_order_104">Unselect All</button><button class="start_cooking_button" id="start_cooking_button_104">Prepare</button>
+                    <button class="done_cooking" id="done_cooking_104">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

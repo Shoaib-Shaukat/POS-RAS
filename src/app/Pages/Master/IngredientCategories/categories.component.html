@@ -1,0 +1,109 @@
+<section class="main-content-wrapper">
+  <section class="content-header">
+    <div class="row">
+      <div class="col-md-6" [hidden]="isShow==true">
+        <h2 class="top-left-header">Ingredient Categories </h2>
+        <input type="hidden" class="datatable_name" data-title="Ingredient Categories" data-id_name="datatable">
+      </div>
+      <div class="col-md-6" [hidden]="isShow==true">
+        <a class="btn_list btn bg-blue-btn m-right" (click)=addNewCategories()>
+          <i data-feather="plus"></i> Add Ingredient Category</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="box-wrapper" [hidden]="isShow==true">
+    <!-- general form elements -->
+    <div class="table-box">
+      <!-- /.box-header -->
+      <div class="table-responsive">
+        <table id="datatable" class="table table-striped">
+          <thead>
+            <tr>
+              <th class="ir_w_23">Category Name</th>
+              <th class="ir_w_23">Description</th>
+              <th class="ir_w_23">Added By</th>
+              <th class="ir_w_1 ir_txt_center not-export-col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let Ingredient of IngredientCategoryResponse">
+              <td>{{ Ingredient.name }}</td>
+              <td>{{ Ingredient.description }}</td>
+              <td>Admin User</td>
+              <td class="ir_txt_center">
+                <div class="btn-group  actionDropDownBtn">
+                  <button type="button" class="btn bg-blue-color dropdown-toggle" id="dropdownMenuButton1"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    <i data-feather="more-vertical"></i>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton1" role="menu">
+                    <li><a (click)="EditIngredientCategory(Ingredient)"><i class="fa fa-pencil tiny-icon"></i>Edit</a>
+                    </li>
+                    <!-- <li><a class="delete" href=""><i class="fa fa-trash tiny-icon"></i>Delete</a>
+                    </li> -->
+                  </ul>
+                </div>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+      <!-- /.box-body -->
+    </div>
+  </div>
+
+</section>
+
+  <!-- Main content -->
+
+  <section class="main-content-wrapper" [hidden]="isShow==false">
+    <section class="content-header">
+      <h3 class="top-left-header">
+        Add Ingredient Category </h3>
+    </section>
+
+
+    <div class="box-wrapper">
+      <div class="table-box">
+        <!-- form start -->
+        <form [formGroup]="ingredientCategoryForm" (ngSubmit)="onIngredientCategory()">
+          <div>
+            <div class="row">
+              <div class="col-sm-12 my-2 col-md-6">
+
+                <div class="form-group">
+                  <label>Category Name <span class="required_star">*</span></label>
+                  <input tabindex="1" type="text" class="form-control" formControlName="categoryname" placeholder="Category Name"
+                    value="">
+                </div>
+              </div>
+              <div class="col-sm-12 my-2 col-md-6">
+
+                <div class="form-group">
+                  <label>Description</label>
+                  <input tabindex="2" type="text"  formControlName="description" class="form-control" placeholder="Description"
+                    value="">
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <!-- /.box-body -->
+
+          <div class="row my-2">
+            <div class="col-sm-12 col-md-2 mb-2">
+              <button type="submit" name="submit" value="submit" [hidden]="addMode" (click)="SaveIngredientCategory('New')" class="btn bg-blue-btn w-100">Submit</button>
+              <button type="submit" name="submit" value="submit" [hidden]="!addMode" (click)="SaveIngredientCategory('Update')" class="btn bg-blue-btn w-100">Update</button>
+            </div>
+            <div class="col-sm-12 col-md-2 mb-2">
+              <a class="btn bg-blue-btn w-100" (click)="addNewCategories()">
+                Back </a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </section>

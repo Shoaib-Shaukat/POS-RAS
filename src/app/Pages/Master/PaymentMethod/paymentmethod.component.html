@@ -1,0 +1,117 @@
+<section class="main-content-wrapper" [hidden]="isShow==true">
+    <section class="content-header">
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="top-left-header">Payments</h2>
+                <input type="hidden" class="datatable_name" data-title="Tables" data-id_name="datatable">
+            </div>
+            <div class="col-md-6">
+                <a class="btn_list m-right bg-blue-btn btn" (click)=addNewPayment()>
+                    <i data-feather="plus"></i> Add Payment</a>
+            </div>
+        </div>
+    </section>
+    <div class="box-wrapper" [hidden]="responsePaymentModel.length == 0">
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+            <thead>
+                <tr>
+                    <th>SN</th>
+                    <th>Payment Name</th>
+                    <th>Tax %</th>
+                    <th>Service Charges %</th>
+                    <th>Is Active</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let p of responsePaymentModel let ndx=index;">
+                    <td>{{ndx+1}}</td>
+                    <td>{{p.paymentName}}</td>
+                    <td>{{p.taxPercentage}}</td>
+                    <td>{{p.serviceChargePercentage}}</td>
+                    <td><input readonly type="checkbox" name="isActive" [checked]="p.isActive" value="{{p.isActive}}"
+                            onClick="return false"></td>
+                    <td>
+                        <button class="btn btn-success color text-white btn-sm m-1" title="Edit"
+                            (click)="editPaymentInfo(p)">
+                            <i class="fa fa-pencil" aria-hidden="true"></i></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="main-content-wrapper" [hidden]="isShow==false">
+    <section class="content-header">
+        <h3 *ngIf="addMode == false" class="top-left-header">
+            Add Payment </h3>
+        <h3 *ngIf="addMode == true" class="top-left-header">
+            Edit Payment </h3>
+    </section>
+
+    <form [formGroup]="PaymentForm" (ngSubmit)="savePaymentInfo()">
+        <div class="row">
+            <div class="col-sm-12 mb-2 col-md-6">
+                <div class="form-group">
+                    <label>Payment Name<span class="required_star">*</span></label>
+                    <input tabindex="1" minlength="2" autocomplete="off" type="text" formControlName="paymentName"
+                        class="form-control" placeholder="Payment Name" value=""
+                        [ngClass]="{ 'is-invalid': submitted && f.paymentName.errors }" />
+                    <div *ngIf="submitted && f.paymentName.errors" class="invalid-feedback">
+                        <div *ngIf="f.paymentName.errors.required">Payment Name is required</div>
+                        <small
+                            *ngIf="PaymentForm.controls['paymentName'].errors?.minlength && !f.paymentName.errors.whitespace"
+                            class="text-danger">Payment
+                            Name must be at
+                            least 2 characters long.</small>
+                        <small *ngIf="f.paymentName.errors.whitespace && !f.paymentName.errors.required">Please enter
+                            valid
+                            data</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 mb-2 col-md-3">
+                <div class="form-group">
+                    <label>Tax %</label>
+                    <input type="number" formControlName="taxPercentage" class="form-control" step="1"
+                        onkeypress="return event.charCode >= 48 && event.charCode <= 57 " />
+                </div>
+            </div>
+            <div class="col-sm-6 mb-2 col-md-3">
+                <div class="form-group">
+                    <label>Service Charges %</label>
+                    <input type="number" formControlName="serviceChargePercentage" class="form-control" step="1"
+                        onkeypress="return event.charCode >= 48 && event.charCode <= 57 " />
+                </div>
+            </div>
+            <div class="col-sm-12 mb-2 col-md-6">
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea formControlName="description" maxlength="250" class="form-control"
+                        autocomplete="off"></textarea>
+                </div>
+            </div>
+            <div class="col-sm-12 mb-2 col-md-6">
+                <div class="form-group float-start">
+                    <label class="col-sm-12">Is Active?</label>
+                    <div class="col-sm-6">
+                        <input type="checkbox" class="form-control " formControlName="isActive"
+                            (click)="isActiveCheck(IsActive.checked)" #IsActive />
+                    </div>
+                </div>
+            </div>
+            <div class="row my-3">
+                <div class="col-sm-12 col-md-2">
+                    <button type="" name="submit" value="submit" class="w-100 btn bg-blue-btn">
+                        Submit </button>
+                </div>
+                <div class="col-sm-12 col-md-2">
+                    <a class="w-100 btn bg-blue-btn" (click)=addNewPayment()>
+                        Back
+                    </a>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>

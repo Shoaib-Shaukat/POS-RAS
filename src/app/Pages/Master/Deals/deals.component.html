@@ -1,0 +1,269 @@
+<section class="main-content-wrapper" [hidden]="isShow==true">
+    <section class="content-header">
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="top-left-header">Deals</h2>
+                <input type="hidden" class="datatable_name" data-title="Food Menu Categories" data-id_name="datatable">
+            </div>
+            <div class="col-md-6">
+                <a class="btn_list m-right bg-blue-btn btn" (click)="makeDeal()">
+                    <i data-feather="plus"></i> Make Deal</a>
+            </div>
+        </div>
+    </section>
+    <div class="box-wrapper" [hidden]="responseDealsModel.length == 0">
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>SN</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let p of responseDealsModel  let ndx=index;">
+                    <td></td>
+                    <td>{{ndx+1}}</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+<section class="main-content-wrapper" [hidden]="isShow==false">
+    <section class="content-header">
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="top-left-header">Menu Items</h2>
+                <input type="hidden" class="datatable_name" data-title="Food Menu Categories" data-id_name="datatable">
+            </div>
+            <div class="col-md-6">
+                <label>Total: </label>
+                <input type="number" [(ngModel)]="totalAmount" readonly
+                    style="background-color: #e9ecef; width: 85px; margin-right: 20px;" />
+                <a class="btn_list m-right bg-blue-btn btn" (click)=dealMakingDone()>
+                    <i data-feather="plus"></i> Done</a>
+                <button [hidden]="true" type="button" data-toggle="modal" data-target=".DealModal" id="dealsDone"
+                    #dealsDone></button>
+                <button [hidden]="true" type="button" data-toggle="modal" data-target=".viewVariantsModal"
+                    id="viewVariant" #viewVariant></button>
+
+            </div>
+        </div>
+    </section>
+    <div class="box-wrapper" [hidden]="ItemsResponseModelReplica.length == 0">
+        <form [formGroup]="SearchForm">
+            <div class="row my-3">
+                <div class="col-md-6 col-sm-8 mb-2">
+                    <div class="form-group">
+                        <label>Menu Category</label>
+                        <select class="form-control" formControlName="foodMenuID" (change)="filterCategories()">
+                            <option *ngFor="let p of FoodCatResponseModel" [value]="p.foodMenuID">
+                                {{ p.foodMenuName }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger0" class="row-border hover">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Quantity</th>
+                    <th></th>
+                    <th>Item Name</th>
+                    <th>Menu Category</th>
+                    <th style="text-align: right;">Price Rs.</th>
+                    <th>Variant</th>
+                    <th>Is Active</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let p of ItemsResponseModelReplica  let ndx=index;">
+                    <td><input [disabled]="p.hasVariant == true" type="checkbox" id="dealCheck" #dealCheck
+                            [checked]="p.Checked" name="dealCheck" (click)="checkDeal(dealCheck.checked,p)"></td>
+                    <td>
+                        <button [disabled]="p.hasVariant == true" class="btn btn-success color text-white btn-sm m-1"
+                            style="cursor: pointer;" (click)="minusQuantity(p)">-</button>
+                        {{p.Quantity}}
+                        <button [disabled]="p.hasVariant == true" class="btn btn-success color text-white btn-sm m-1"
+                            style="cursor: pointer;" (click)="plusQuantity(p)">+</button>
+                    </td>
+                    <td *ngIf="p.imageURl == null">
+                        -
+                    </td>
+                    <td *ngIf="p.imageURl != null">
+                        <div class="d-inline-block align-middle"><img src="{{p.imageURl}}" alt="user image"
+                                class="img-radius align-top" style="width: 50px;height: 50px;">
+                        </div>
+                    </td>
+                    <td>{{p.foodItemName}} <span *ngIf="p.refCode" style="font-style: italic;"> - ({{p.refCode}})</span>
+                    </td>
+                    <td>{{p.foodMenuName}}</td>
+                    <td *ngIf="p.hasVariant == true" style="text-align: right;">-</td>
+                    <td *ngIf="p.discount == 0 && p.hasVariant == false" style="text-align: right;">{{p.price |
+                        number}}</td>
+                    <td *ngIf="p.discount != 0 && p.hasVariant == false" style="text-align: right;">{{p.calculatedPrice
+                        | number}} / <del class="text-danger">{{p.price |
+                            number}}</del>
+                    </td>
+                    <td><input readonly type="checkbox" name="hasVariant" [checked]="p.hasVariant"
+                            value="{{p.hasVariant}}" onClick="return false"></td>
+                    <td><input readonly type="checkbox" name="isActive" [checked]="p.isActive" value="{{p.isActive}}"
+                            onClick="return false"></td>
+                    <td>
+                        <button [disabled]="p.hasVariant == false" class="btn btn-primary color text-white btn-sm m-1"
+                            title="View Variants" data-toggle="modal" data-target=".viewVariantsModal"
+                            (click)="getVariants(p)"> <i class="fa fa-eye" aria-hidden="true"></i></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<div class="modal fade DealModal" id="view-assigned-group-role-modal" data-backdrop="static" data-keyboard="false"
+    tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Deal</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" #closeDealsModal>
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="DealForm" (ngSubmit)="submitDeal()">
+                    <div class="row">
+                        <div class="col-sm-12 mb-2 col-md-6">
+                            <div class="form-group">
+                                <label>Deal Name<span class="required_star">*</span></label>
+                                <input tabindex="1" minlength="3" autocomplete="off" type="text"
+                                    formControlName="variantName" class="form-control" placeholder="Variant Name"
+                                    value="" [ngClass]="{ 'is-invalid': Vsubmitted && g.variantName.errors }" />
+                                <div *ngIf="Vsubmitted && g.variantName.errors" class="invalid-feedback">
+                                    <div *ngIf="g.variantName.errors.required">Deal
+                                        Name is
+                                        required</div>
+                                    <small
+                                        *ngIf="MenuItemsForm.controls['variantName'].errors?.minlength && !g.variantName.errors.whitespace"
+                                        class="text-danger">Variant
+                                        Name must be at
+                                        least 3 characters long.</small>
+                                    <small
+                                        *ngIf="g.variantName.errors.whitespace && !g.variantName.errors.required">Please
+                                        enter valid data</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 mb-2 col-md-6">
+                            <div class="form-group">
+                                <label>Deal Price</label>
+                                <input type="number" formControlName="variantPrice" class="form-control"
+                                    placeholder="Variant Price"
+                                    [ngClass]="{ 'is-invalid': Vsubmitted && g.variantPrice.errors }" />
+                                <div *ngIf="Vsubmitted && g.variantPrice.errors" class="invalid-feedback">
+                                    <div *ngIf="g.variantPrice.errors.required">Variant Price is required</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 mb-2 col-md-6">
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea formControlName="description" maxlength="250" class="form-control"
+                                    tabindex="3" autocomplete="off"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 mb-2 col-md-6">
+                            <div class="form-group float-start">
+                                <label class="col-sm-12">Is Active?</label>
+                                <div class="col-sm-6">
+                                    <input type="checkbox" class="form-control " formControlName="isActive"
+                                        (click)="isActiveCheck(IsActive.checked)" #IsActive />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 mb-2 col-md-6">
+                            <div class="form-group">
+                                <label>Upload File </label>
+                                <input tabindex="1" type="file" accept="image/*" #myInputV class="form-control"
+                                    placeholder="Upload File" (change)="attachDealImage($event);">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" (click)="submitDeal()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade viewVariantsModal" id="view-assigned-group-role-modal" data-backdrop="static"
+    data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Variants</h5>
+                <button type="button" (click)="closeVariantViewModal()" class="close" data-dismiss="modal"
+                    aria-label="Close" #closeViewVariantModal>
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="table-box">
+                    <div class="table-responsive">
+                        <table id="datatable" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Quantity</th>
+                                    <th></th>
+                                    <th>Variant Name</th>
+                                    <th style="text-align: right;">Price Rs.</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let p of responseVariant let ndx=index;">
+                                    <td><input type="checkbox" id="dealCheck" #dealCheck name="dealCheck"
+                                            [checked]="p.Checked" (click)="checkDeal(dealCheck.checked,p)"></td>
+                                    <td>
+                                        <button class="btn btn-primary color text-white btn-sm m-1"
+                                            style="cursor: pointer;" (click)="minusVQuantity(p)">-</button>
+                                        {{p.Quantity}}
+                                        <button class="btn btn-primary color text-white btn-sm m-1"
+                                            style="cursor: pointer;" (click)="plusVQuantity(p)">+</button>
+                                    </td>
+                                    <td *ngIf="p.imageURL == null">
+                                        -
+                                    </td>
+                                    <td *ngIf="p.imageURL != null">
+                                        <div class="d-inline-block align-middle"><img src="{{p.imageURL}}"
+                                                alt="user image" class="img-radius align-top"
+                                                style="width: 50px;height: 50px;">
+                                        </div>
+                                    </td>
+                                    <td>{{p.variantName}}</td>
+                                    <td *ngIf="p.discount == 0" style="text-align: right;">{{p.variantPrice |
+                                        number}}</td>
+                                    <td *ngIf="p.discount != 0" style="text-align: right;">{{p.calculatedPrice
+                                        | number}} / <del class="text-danger">{{p.variantPrice |
+                                            number}}</del>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" (click)="closeVariantViewModal()">Done</button>
+            </div>
+        </div>
+    </div>
+</div>

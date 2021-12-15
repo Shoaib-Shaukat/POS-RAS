@@ -1,0 +1,394 @@
+<section class="main-content-wrapper" [hidden]="isShow==true">
+    <section class="content-header">
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="top-left-header">Menu Items</h2>
+                <input type="hidden" class="datatable_name" data-title="Food Menu Categories" data-id_name="datatable">
+            </div>
+            <div class="col-md-6">
+                <a class="btn_list m-right bg-blue-btn btn" (click)=addNewFoodCategory()>
+                    <i data-feather="plus"></i> Add Menu Item</a>
+            </div>
+        </div>
+    </section>
+    <div class="box-wrapper" [hidden]="ItemsResponseModelReplica.length == 0">
+        <form [formGroup]="SearchForm">
+            <div class="row my-3">
+                <div class="col-md-6 col-sm-8 mb-2">
+                    <div class="form-group">
+                        <label>Menu Category</label>
+                        <select class="form-control" formControlName="foodMenuID" (change)="filterCategories()">
+                            <option *ngFor="let p of FoodCatResponseModel" [value]="p.foodMenuID">
+                                {{ p.foodMenuName }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+            <thead>
+                <tr>
+                    <th>SN</th>
+                    <th></th>
+                    <th>Item Name</th>
+                    <th>Menu Category</th>
+                    <th style="text-align: right;">Price Rs.</th>
+                    <th>Variant</th>
+                    <th>Is Active</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let p of ItemsResponseModelReplica  let ndx=index;">
+                    <td>{{ndx+1}}</td>
+                    <td *ngIf="p.imageURl == null">
+                        -
+                    </td>
+                    <td *ngIf="p.imageURl != null">
+                        <div class="d-inline-block align-middle"><img src="{{p.imageURl}}" alt="user image"
+                                class="img-radius align-top" style="width: 50px;height: 50px;">
+                        </div>
+                    </td>
+                    <td>{{p.foodItemName}} <span *ngIf="p.refCode" style="font-style: italic;"> - ({{p.refCode}})</span>
+                    </td>
+                    <td>{{p.foodMenuName}}</td>
+                    <td *ngIf="p.hasVariant == true" style="text-align: right;">-</td>
+                    <td *ngIf="p.discount == 0 && p.hasVariant == false" style="text-align: right;">{{p.price |
+                        number}}</td>
+                    <td *ngIf="p.discount != 0 && p.hasVariant == false" style="text-align: right;">{{p.calculatedPrice
+                        | number}} / <del class="text-danger">{{p.price |
+                            number}}</del>
+                    </td>
+                    <td><input readonly type="checkbox" name="hasVariant" [checked]="p.hasVariant"
+                            value="{{p.hasVariant}}" onClick="return false"></td>
+                    <td><input readonly type="checkbox" name="isActive" [checked]="p.isActive" value="{{p.isActive}}"
+                            onClick="return false"></td>
+                    <td>
+                        <button class="btn btn-success color text-white btn-sm m-1" title="Edit"
+                            (click)="EditFoodMenuCategory(p)"> <i class="fa fa-pencil" aria-hidden="true"></i></button>
+                        <button [disabled]="p.hasVariant == false" class="btn btn-primary color text-white btn-sm m-1"
+                            title="View Variants" data-toggle="modal" data-target=".viewVariantsModal"
+                            (click)="getVariants(p)"> <i class="fa fa-eye" aria-hidden="true"></i></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="main-content-wrapper" [hidden]="isShow==false">
+    <section class="content-header">
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="top-left-header" *ngIf="addMode == false">Add Menu Item</h2>
+                <h2 class="top-left-header" *ngIf="addMode == true">Edit Menu Item</h2>
+                <input type="hidden" class="datatable_name" data-title="Food Menu Categories" data-id_name="datatable">
+            </div>
+            <div class="col-md-6">
+                <a class="btn_list m-right bg-blue-btn btn" (click)="addVariant()" data-toggle="modal"
+                    data-target=".VariantModal">
+                    <i data-feather="plus"></i> Add Variant</a>
+            </div>
+        </div>
+    </section>
+    <div class="box-wrapper">
+        <div class="table-box">
+            <form [formGroup]="MenuItemsForm" (ngSubmit)="SaveMenuItems()">
+                <div class="row">
+                    <div class="col-sm-6 mb-2 col-md-4">
+                        <div class="form-group">
+                            <label>Item Name<span class="required_star">*</span></label>
+                            <input tabindex="1" minlength="3" autocomplete="off" type="text"
+                                formControlName="foodItemName" class="form-control" placeholder="Item Name" value=""
+                                [ngClass]="{ 'is-invalid': submitted && f.foodItemName.errors }" />
+                            <div *ngIf="submitted && f.foodItemName.errors" class="invalid-feedback">
+                                <div *ngIf="f.foodItemName.errors.required">Item
+                                    Name is
+                                    required</div>
+                                <small
+                                    *ngIf="MenuItemsForm.controls['foodItemName'].errors?.minlength && !f.foodItemName.errors.whitespace"
+                                    class="text-danger">Item
+                                    Name must be at
+                                    least 3 characters long.</small>
+                                <small
+                                    *ngIf="f.foodItemName.errors.whitespace && !f.foodItemName.errors.required">Please
+                                    enter valid data</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-2 col-md-2">
+                        <div class="form-group">
+                            <label>Refrence Code</label>
+                            <input tabindex="1" maxlength="10" autocomplete="off" type="text" formControlName="refCode"
+                                class="form-control" placeholder="Ref Code" value="" />
+                        </div>
+                    </div>
+                    <div class="col-sm-12 mb-2 col-md-6">
+                        <div class="form-group">
+                            <label>Menu Category</label>
+                            <select class="form-control" formControlName="foodMenuID"
+                                [ngClass]="{ 'is-invalid': submitted && f.foodMenuID.errors }">
+                                <option *ngFor="let p of FoodCatResponseModel" [value]="p.foodMenuID">
+                                    {{ p.foodMenuName }}
+                                </option>
+                            </select>
+                            <div *ngIf="submitted && f.foodMenuID.errors" class="invalid-feedback">
+                                <div *ngIf="f.foodMenuID.errors.required">Select Food Menu Category!</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 mb-2 col-md-6">
+                        <div class="form-group">
+                            <label>Item Price</label>
+                            <input type="number" formControlName="price" class="form-control"
+                                (change)="resetDiscounts()" [readonly]="ItemPrice == true" placeholder="Item Price" />
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-2 col-md-3">
+                        <div class="form-group">
+                            <label>Discount in Percentage</label>
+                            <input type="number" (change)="calDiscountRupees()" formControlName="discountPercentage"
+                                class="form-control" step="1"
+                                onkeypress="return event.charCode >= 48 && event.charCode <= 57 "
+                                [readonly]="ItemPrice == true || showDiscount == true" placeholder="Discount %" />
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-2 col-md-3">
+                        <div class="form-group">
+                            <label>Discount in Rupees</label>
+                            <input type="number" (change)="calDiscountPercentage()" formControlName="discountRupees"
+                                class="form-control" step="1"
+                                onkeypress="return event.charCode >= 48 && event.charCode <= 57 "
+                                [readonly]="ItemPrice == true || showDiscount == true" placeholder="Discount Rs." />
+                        </div>
+                    </div>
+                    <div class="col-sm-12 mb-2 col-md-6">
+                        <div class="form-group">
+                            <label>Calculated Price</label>
+                            <input type="number" formControlName="calculatedPrice" class="form-control" readonly />
+                        </div>
+                    </div>
+                    <div class="col-sm-12 mb-2 col-md-6">
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea formControlName="description" maxlength="250" class="form-control"
+                                autocomplete="off"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 mb-2 col-md-6">
+                        <div class="form-group">
+                            <label>Upload File </label>
+                            <input tabindex="1" type="file" accept="image/*" #myInput class="form-control"
+                                [disabled]="ItemPrice == true" placeholder="Upload File"
+                                (change)="attachImage($event);">
+                        </div>
+                    </div>
+                    <div class="col-sm-12 mb-2 col-md-6">
+                        <div class="form-group float-start">
+                            <label class="col-sm-12">Is Active?</label>
+                            <div class="col-sm-6">
+                                <input type="checkbox" class="form-control " formControlName="isActive"
+                                    (click)="isActiveCheck(IsActive.checked)" #IsActive />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row my-3">
+                        <div class="col-sm-12 col-md-2">
+                            <button type="" name="submit" value="submit" class="w-100 btn bg-blue-btn">
+                                Submit </button>
+                        </div>
+                        <div class="col-sm-12 col-md-2">
+                            <a class="w-100 btn bg-blue-btn" (click)=addNewFoodCategory()>
+                                Back
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <section class="main-content-wrapper" [hidden]="foodMenuItemModel.requestVariants.length == 0">
+                    <div class="table-box">
+                        <div class="table-responsive">
+                            <table id="datatable" class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>SN</th>
+                                        <th>Variant Name</th>
+                                        <th style="text-align: right;">Price Rs.</th>
+                                        <th style="text-align: right;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let p of foodMenuItemModel.requestVariants let ndx=index;">
+                                        <td>{{ndx+1}}</td>
+                                        <td>{{p.variantName}}</td>
+                                        <td *ngIf="p.discount == 0" style="text-align: right;">{{p.variantPrice |
+                                            number}}</td>
+                                        <td *ngIf="p.discount != 0" style="text-align: right;">{{p.calculatedPrice
+                                            | number}} / <del class="text-danger">{{p.variantPrice |
+                                                number}}</del>
+                                        </td>
+                                        <td style="text-align: right;">
+                                            <a class="btn btn-success color text-white btn-sm m-1" title="Edit"
+                                                (click)="editVariant(p)" data-toggle="modal"
+                                                data-target=".VariantModal"><i class="fa fa-pencil"
+                                                    aria-hidden="true"></i></a>
+                                            <a class="btn btn-secondary color text-white btn-sm m-1" title="Remove"
+                                                (click)="removeVariant(p)"><i class="fas fa-minus-circle"
+                                                    aria-hidden="true"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </form>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade VariantModal" id="view-assigned-group-role-modal" data-backdrop="static" data-keyboard="false"
+    tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Variant</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" #closeVariantModal>
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="VariantForm" (ngSubmit)="pushVariant()">
+                    <div class="row">
+                        <div class="col-sm-12 mb-2 col-md-6">
+                            <div class="form-group">
+                                <label>Variant Name<span class="required_star">*</span></label>
+                                <input tabindex="1" minlength="3" autocomplete="off" type="text"
+                                    formControlName="variantName" class="form-control" placeholder="Variant Name"
+                                    value="" [ngClass]="{ 'is-invalid': Vsubmitted && g.variantName.errors }" />
+                                <div *ngIf="Vsubmitted && g.variantName.errors" class="invalid-feedback">
+                                    <div *ngIf="g.variantName.errors.required">Variant
+                                        Name is
+                                        required</div>
+                                    <small
+                                        *ngIf="MenuItemsForm.controls['variantName'].errors?.minlength && !g.variantName.errors.whitespace"
+                                        class="text-danger">Variant
+                                        Name must be at
+                                        least 3 characters long.</small>
+                                    <small
+                                        *ngIf="g.variantName.errors.whitespace && !g.variantName.errors.required">Please
+                                        enter valid data</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 mb-2 col-md-6">
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea formControlName="description" maxlength="250" class="form-control"
+                                    tabindex="3" autocomplete="off"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 mb-2 col-md-6">
+                            <div class="form-group">
+                                <label>Variant Price</label>
+                                <input type="number" formControlName="variantPrice" class="form-control"
+                                    (change)="resetDiscountsV()" placeholder="Variant Price"
+                                    [ngClass]="{ 'is-invalid': Vsubmitted && g.variantPrice.errors }" />
+                                <div *ngIf="Vsubmitted && g.variantPrice.errors" class="invalid-feedback">
+                                    <div *ngIf="g.variantPrice.errors.required">Variant Price is required</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 mb-2 col-md-3">
+                            <div class="form-group">
+                                <label>Discount in Percentage</label>
+                                <input type="number" (change)="calDiscountRupeesV()"
+                                    formControlName="discountPercentage" class="form-control" step="1"
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57 "
+                                    [readonly]=" showVDiscount == true" placeholder="Discount %" />
+                            </div>
+                        </div>
+                        <div class="col-sm-6 mb-2 col-md-3">
+                            <div class="form-group">
+                                <label>Discount in Rupees</label>
+                                <input type="number" (change)="calDiscountPercentageV()"
+                                    formControlName="discountRupees" class="form-control" step="1"
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57 "
+                                    [readonly]="showVDiscount == true" placeholder="Discount Rs." />
+                            </div>
+                        </div>
+                        <div class="col-sm-12 mb-2 col-md-6">
+                            <div class="form-group">
+                                <label>Calculated Price</label>
+                                <input type="number" formControlName="calculatedPrice" class="form-control" readonly />
+                            </div>
+                        </div>
+                        <div class="col-sm-12 mb-2 col-md-6">
+                            <div class="form-group">
+                                <label>Upload File </label>
+                                <input tabindex="1" type="file" accept="image/*" #myInputV class="form-control"
+                                    placeholder="Upload File" (change)="attachImageV($event);">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" (click)="pushVariant()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade viewVariantsModal" id="view-assigned-group-role-modal" data-backdrop="static"
+    data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Variants</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" #closeViewVariantModal>
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="table-box">
+                    <div class="table-responsive">
+                        <table id="datatable" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>SN</th>
+                                    <th></th>
+                                    <th>Variant Name</th>
+                                    <th style="text-align: right;">Price Rs.</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let p of responseVariant let ndx=index;">
+                                    <td>{{ndx+1}}</td>
+                                    <td *ngIf="p.imageURL == null">
+                                        -
+                                    </td>
+                                    <td *ngIf="p.imageURL != null">
+                                        <div class="d-inline-block align-middle"><img src="{{p.imageURL}}"
+                                                alt="user image" class="img-radius align-top"
+                                                style="width: 50px;height: 50px;">
+                                        </div>
+                                    </td>
+                                    <td>{{p.variantName}}</td>
+                                    <td *ngIf="p.discount == 0" style="text-align: right;">{{p.variantPrice |
+                                        number}}</td>
+                                    <td *ngIf="p.discount != 0" style="text-align: right;">{{p.calculatedPrice
+                                        | number}} / <del class="text-danger">{{p.variantPrice |
+                                            number}}</del>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

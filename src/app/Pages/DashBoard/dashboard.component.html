@@ -1,0 +1,567 @@
+<div class="wrapper">
+  <section class="main-content-wrapper">
+    <div class="col-md-12">
+      <section class="content-header dashboard_content_header my-2">
+        <h3 class="top-left-header">
+          <span>Dashboard</span>
+          <small>Business Intelligence</small>
+        </h3>
+        <form class="ms-2" method="post" id="outlet_form"
+          action="http://dsbeta.work/demo/irestora_plus_multi_outlet/Dashboard/dashboard">
+          <select class="select_outlet_dashboard select2 form-control" id="#" name="outlet_id">
+            <option value="">Door Shop</option>
+            <option value="">DS New Shop</option>
+            <option value="">TR Outlet</option>
+            <option value="">Roin&#039;s Cafe</option>
+            <option value="">Test</option>
+            <option value="">ACK Master</option>
+            <option value="">DSD</option>
+            <option value="">sample</option>
+          </select>
+        </form>
+      </section>
+    </div>
+
+
+    <div class="row">
+      <div class="col-sm-12 col-md-6 col-lg-3">
+        <!-- small box -->
+        <div class="small-box box4column">
+          <div class="inner">
+            <h3>31</h3>
+
+            <p>Food Items</p>
+          </div>
+          <div class="icon">
+            <i class="fad fa-utensils-alt">"></i>
+          </div>
+          <!-- <a href="#" class="small-box-footer">&nbsp;</a> -->
+        </div>
+      </div>
+      <!-- ./col -->
+      <div class="col-sm-12 col-md-6 col-lg-3">
+        <!-- small box -->
+        <div class="small-box box4column">
+          <div class="inner">
+            <h3>134</h3>
+
+            <p>Ingredients</p>
+          </div>
+          <div class="icon">
+            <i class="fa fa-leaf"></i>
+          </div>
+          <!-- <a href="#" class="small-box-footer">&nbsp;</a> -->
+        </div>
+      </div>
+      <!-- ./col -->
+      <div class="col-sm-12 col-md-6 col-lg-3">
+        <!-- small box -->
+        <div class="small-box box4column">
+          <div class="inner">
+            <h3>8</h3>
+
+            <p>Customers</p>
+          </div>
+          <div class="icon">
+            <i class="fa fa-users"></i>
+          </div>
+          <!-- <a href="#" class="small-box-footer">&nbsp;</a> -->
+        </div>
+      </div>
+      <!-- ./col -->
+      <div class="col-sm-12 col-md-6 col-lg-3">
+        <!-- small box -->
+        <div class="small-box box4column">
+          <div class="inner">
+            <h3>6</h3>
+
+            <p>Users</p>
+          </div>
+          <div class="icon">
+            <i class="fa fa-user"></i>
+          </div>
+          <!-- <a href="#" class="small-box-footer">&nbsp;</a> -->
+        </div>
+      </div>
+      <!-- ./col -->
+    </div>
+    <!-- /.row -->
+    <!-- Main row -->
+    <!-- quick email widget -->
+    <div class="row">
+      <div class="col-lg-7">
+        <div class="box box-info">
+          <div class="box-header">
+            <i data-feather="link"></i>
+            <h3 class="box-title">Quick Links</h3>
+          </div>
+          <div class="box-body">
+            <div class="row">
+              <div class="col-sm-12 col-md-4 mb-3">
+                <a class="btn icon-btn btn-default-bordered w-100" href="#"><span class="fa fa-book p-2"></span>
+                  FoodMenu</a>
+                <a class="btn icon-btn btn-default-bordered w-100" href="#"><span class="fa fa-user p-2"></span>
+                  Supplier Payment</a>
+                <a class="btn icon-btn btn-default-bordered w-100" href="#"><span
+                    class="fa fa-television p-2"></span>POS</a>
+                <a class="btn icon-btn btn-default-bordered w-100" href="#"><span class="fa fa-money p-2"></span>
+                  Expense</a>
+                <a class="btn icon-btn btn-default-bordered w-100" href="#"><span class="fa fa-truck p-2"></span>
+                  Purchase</a>
+              </div>
+              <div class="col-sm-12 col-md-4 mb-3">
+                <a class="btn icon-btn btn-default-bordered w-100" href="#"><span class="fa fa-list p-2"></span>Daily
+                  Summary Report</a>
+                <a class="btn icon-btn btn-default-bordered w-100" href="#"><span class="fa fa-list p-2"></span>Register
+                  Report</a>
+                <a class="btn icon-btn btn-default-bordered w-100" href="#"><span class="fa fa-list p-2"></span>Profit
+                  Loss Report</a>
+                <a class="btn icon-btn btn-default-bordered w-100" href="#"><span class="fa fa-list p-2"></span>Sale
+                  Report</a>
+                <a class="btn icon-btn btn-default-bordered w-100" href="#"><span class="fa fa-list p-2"></span>Food
+                  Sales Report</a>
+              </div>
+              <div class="col-sm-12 col-md-4 mb-3">
+                <a class="btn icon-btn btn-default-bordered w-100" href="#"><span
+                    class="fa fa-cog p-2"></span>Setting</a>
+                <a class="btn icon-btn btn-default-bordered w-100" href="#"><span
+                    class="fa fa-cube p-2"></span>Stock</a>
+                <a class="btn icon-btn btn-default-bordered w-100" href="#"><span class="fa fa-adjust p-2"></span>Stock
+                  Adjustment</a>
+                <a class="btn icon-btn btn-default-bordered w-100" href="#"><span
+                    class="fa fa-users p-2"></span>Customer Receive</a>
+                <a class="btn icon-btn btn-default-bordered w-100" href="#"><span
+                    class="fa fa-clock-o p-2"></span>Attendance</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-5">
+        <div class="box box-info h-95">
+          <div class="box-header">
+            <i data-feather="briefcase"></i>
+            <h3 class="box-title">Dine In/Take Away/Delivery(This Month)</h3>
+          </div>
+          <div class="box-body">
+            <div class="chart-responsive ir_height260">
+              <canvas id="pieChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-7">
+        <div class="box box-info">
+          <div class="box-header">
+            <i data-feather="truck"></i>
+            <h3 class="box-title">Operational Comparision(This Month)</h3>
+          </div>
+          <div class="box-body ir_height280">
+            <div class="chart">
+              <div class="chart ir_height250" id="operational_comparision"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-5">
+        <div class="box box-info">
+          <div class="box-header">
+            <i data-feather="alert-triangle"></i>
+            <h3 class="box-title">
+              Ingredients in Alert/Low Stock<span class="ir_color_red">(133)</span>
+            </h3>
+          </div>
+          <div class="box-body ir_height280">
+            <ul class="todo-list">
+              <li class="todo-title">
+                <span class="text" class="ir_font_bold">Ingredient Name</span>
+                <div class="ir_fl_right_pr_fw">
+                  <span>Current Stock</span>
+                </div>
+              </li>
+            </ul>
+            <ul class="todo-list ir_txt_overflow" id="low_stock_ingredients">
+              <li>
+                <span class="text">Soyabin Oil (IG-001)</span>
+                <div class="ir_fl_right_c_red_pr_5">
+                  <span>-9276.20</span>
+                </div>
+              </li>
+              <li>
+                <span class="text">Onion(IG-002)</span>
+                <div class="ir_fl_right_c_red_pr_5">
+                  <span>-10600.00</span>
+                </div>
+              </li>
+              <li>
+                <span class="text">Potato(IG-003)</span>
+                <div class="ir_fl_right_c_red_pr_5">
+                  <span>-5915.00</span>
+                </div>
+              </li>
+              <li>
+                <span class="text">Beef(IG-004)</span>
+                <div class="ir_fl_right_c_red_pr_5">
+                  <span>-18875.90</span>
+                </div>
+              </li>
+              <li>
+                <span class="text">yogurt(IG-005)</span>
+                <div class="ir_fl_right_c_red_pr_5">
+                  <span>-800.00</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-7">
+        <div class="box box-info">
+          <div class="box-header">
+            <i data-feather="coffee"></i>
+            <h3 class="box-title">Top 10 Food Items This Month</h3>
+          </div>
+          <div class="box-body ir_height280">
+            <ul class="todo-list">
+              <li class="todo-title">
+                <div class="ir_font_bold ir_fl_left_pl_5">
+                  <span>SN</span>
+                </div>
+                <span class="text ir_font_bold">Food Name</span>
+                <div class="ir_fl_right_pr_fw">
+                  <span>Count</span>
+                </div>
+              </li>
+            </ul>
+            <ul class="todo-list ir_txt_overflow" id="top_ten_food_menu">
+              <li>
+                <div class="ir_fl_left_pl_5">
+                  <span>1</span>
+                </div>
+                <span class="text">Coca cola 400ml (015)</span>
+                <div class="ir_fl_right_c_pr_5">
+                  <span>25</span>
+                </div>
+              </li>
+              <li>
+                <div class="ir_fl_left_pl_5">
+                  <span>2</span>
+                </div>
+                <span class="text">Pepsi 250ml (010)</span>
+                <div class="ir_fl_right_c_pr_5">
+                  <span>7</span>
+                </div>
+              </li>
+              <li>
+                <div class="ir_fl_left_pl_5">
+                  <span>3</span>
+                </div>
+                <span class="text">Fish And Chips (021)</span>
+                <div class="ir_fl_right_c_pr_5">
+                  <span>6</span>
+                </div>
+              </li>
+              <li>
+                <div class="ir_fl_left_pl_5">
+                  <span>4</span>
+                </div>
+                <span class="text">Orange Chicken (04)</span>
+                <div class="ir_fl_right_c_pr_5">
+                  <span>4</span>
+                </div>
+              </li>
+              <li>
+                <div class="ir_fl_left_pl_5">
+                  <span>5</span>
+                </div>
+                <span class="text">Chicken Chow Mein (027)</span>
+                <div class="ir_fl_right_c_pr_5">
+                  <span>4</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-5">
+        <div class="box box-info">
+          <div class="box-header">
+            <i data-feather="users"></i>
+            <h3 class="box-title">Top 10 Customers This Month</h3>
+          </div>
+          <div class="box-body txt_28">
+            <ul class="todo-list">
+              <li class="todo-title">
+                <div class="ir_font_bold ir_fl_left_pl_5">
+                  <span>SN</span>
+                </div>
+                <span class="text" class="ir_font_bold">Customer Name</span>
+                <div class="ir_fl_right_pr_fw">
+                  <span>Sale Amount</span>
+                </div>
+              </li>
+            </ul>
+            <ul class="todo-list" id="top_ten_customer">
+              <li>
+                <div class="ir_fl_left_pl_5">
+                  <span>1</span>
+                </div>
+                <span class="text">Sylvester Stallone</span>
+                <div class="ir_fl_right_c_pr_5">
+                  <span>7992.00</span>
+                </div>
+              </li>
+              <li>
+                <div class="ir_fl_left_pl_5">
+                  <span>2</span>
+                </div>
+                <span class="text">Walk-in Customer</span>
+                <div class="ir_fl_right_c_pr_5">
+                  <span>4366.00</span>
+                </div>
+              </li>
+              <li>
+                <div class="ir_fl_left_pl_5">
+                  <span>3</span>
+                </div>
+                <span class="text">FoodPanda Order</span>
+                <div class="ir_fl_right_c_pr_5">
+                  <span>2850.00</span>
+                </div>
+              </li>
+              <li>
+                <div class="ir_fl_left_pl_5">
+                  <span>4</span>
+                </div>
+                <span class="text">test</span>
+                <div class="ir_fl_right_c_pr_5">
+                  <span>2566.30</span>
+                </div>
+              </li>
+              <li>
+                <div class="ir_fl_left_pl_5">
+                  <span>5</span>
+                </div>
+                <span class="text"></span>
+                <div class="ir_fl_right_c_pr_5">
+                  <span>0.00</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-7">
+        <div class="box box-info">
+          <div class="box-header">
+            <i data-feather="dollar-sign"></i>
+            <h3 class="box-title">Customer Receivables</h3>
+          </div>
+          <div class="box-body">
+            <ul class="todo-list">
+              <li class="todo-title">
+                <div class="ir_font_bold ir_fl_left_pl_5">
+                  <span>SN</span>
+                </div>
+                <span class="text" class="ir_font_bold">Customer Name</span>
+                <div class="ir_fl_right_pr_fw">
+                  <span>Due Amount</span>
+                </div>
+              </li>
+            </ul>
+            <ul class="todo-list ir_txt_overflow" id="customer_receivable">
+              <li>
+                <div class="ir_fl_left_pl_5">
+                  <span>1</span>
+                </div>
+                <span class="text">Calico Food Ingredients Ltd</span>
+                <div class="ir_fl_right_c_pr_5">
+                  <span>-4505200.00</span>
+                </div>
+              </li>
+              <li>
+                <div class="ir_fl_left_pl_5">
+                  <span>2</span>
+                </div>
+                <span class="text">Quadra Ingredients</span>
+                <div class="ir_fl_right_c_pr_5">
+                  <span>0.00</span>
+                </div>
+              </li>
+              <li>
+                <div class="ir_fl_left_pl_5">
+                  <span>3</span>
+                </div>
+                <span class="text">CK Ingredients</span>
+                <div class="ir_fl_right_c_pr_5">
+                  <span>-768877696.00</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-5">
+        <div class="box box-info">
+          <div class="box-header">
+            <i data-feather="dollar-sign"></i>
+            <h3 class="box-title">Supplier Payables</h3>
+          </div>
+          <div class="box-body">
+            <ul class="todo-list">
+              <li class="todo-title">
+                <div class="ir_font_bold ir_fl_left_pl_5">
+                  <span>SN</span>
+                </div>
+                <span class="text ir_font_bold">Supplier Name</span>
+                <div class="ir_fl_right_pr_fw">
+                  <span>Due Amount</span>
+                </div>
+              </li>
+            </ul>
+            <ul class="todo-list ir_txt_overflow" id="supplier_payable">
+              <li>
+                <div class="ir_fl_left_pl_5">
+                  <span>1</span>
+                </div>
+                <span class="text">Calico Food Ingredients Ltd</span>
+                <div class="ir_fl_right_c_pr_5">
+                  <span>-4505200.00</span>
+                </div>
+              </li>
+              <li>
+                <div class="ir_fl_left_pl_5">
+                  <span>2</span>
+                </div>
+                <span class="text">Quadra Ingredients</span>
+                <div class="ir_fl_right_c_pr_5">
+                  <span>0.00</span>
+                </div>
+              </li>
+              <li>
+                <div class="ir_fl_left_pl_5">
+                  <span>3</span>
+                </div>
+                <span class="text">CK Ingredients</span>
+                <div class="ir_fl_right_c_pr_5">
+                  <span>-768877696.00</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="box box-info">
+          <div class="box-header">
+            <i data-feather="briefcase"></i>
+            <h3 class="box-title">Monthly Sale Comparison</h3>
+          </div>
+          <div class="box-body">
+            <div class="chart">
+              <div id="chart_div" class="ir_w_100_h_280"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="modal fade" id="todaysSummary" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="ShortCut">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">Today's Summary</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true"><i data-feather="x"></i></span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="box-body table-responsive">
+          <table class="table">
+            <tr>
+              <td class="ir_w_80">Purchase(Only Paid Amount)</td>
+              <td><span id="purchase_today_"></span></td>
+            </tr>
+            <tr>
+              <td>Sale(Only Paid Amount)</td>
+              <td><span id="sale_today"></span></td>
+            </tr>
+            <tr>
+              <td>Total Tax</td>
+              <td><span id="totalVat"></span></td>
+            </tr>
+            <tr>
+              <td>Expense</td>
+              <td><span id="Expense"></span></td>
+            </tr>
+            <tr>
+              <td>Supplier Due Payment</td>
+              <td><span id="supplierDuePayment"></span></td>
+            </tr>
+            <tr>
+              <td>Customer Due Receive</td>
+              <td><span id="customerDueReceive"></span></td>
+            </tr>
+            <tr>
+              <td>Waste</td>
+              <td><span id="waste_today"></span></td>
+            </tr>
+            <tr>
+              <td>
+                Balance = (Sale + Customer Due Receive) - (Purchase + Supplier
+                Due Payment + Expense))
+              </td>
+              <td><span id="balance"></span></td>
+            </tr>
+          </table>
+
+          <br />
+          <div id="showCashStatus"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ./wrapper -->
+
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">
+          Register Details
+          <span id="opening_closing_register_time">(<span id="opening_register_time"></span> to
+            <span id="closing_register_time"></span>)</span>
+        </h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal">
+          <i data-feather="x"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="register_details_body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn bg-blue-btn" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

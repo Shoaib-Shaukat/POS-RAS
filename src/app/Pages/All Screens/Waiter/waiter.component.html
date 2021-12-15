@@ -1,0 +1,186 @@
+<div class="wrapper">
+    <div class="main_top">
+        <div class="row">
+            <div class="top_header col-sm-12 col-md-4">
+                <h1>Waiter Panel</h1>
+            </div>
+            <div class="top_menu col-sm-12 col-md-8 d-flex align-items-center justify-content-end">
+                <form id="language" method="post" accept-charset="utf-8">
+                    <select tabindex="-1" class="form-control select2 ir_w_100 select2-hidden-accessible" name="language" onchange="this.form.submit()" aria-hidden="true">
+      <option value="english" selected="">English</option>
+      <option value="spanish">Spanish</option>
+      <option value="french">French</option>
+      <option value="arabic">Arabic</option>
+    </select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 189.062px;"><span class="selection"><span class="select2-selection select2-selection--single"
+          role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="2"
+          aria-labelledby="select2-language-j3-container"><span class="select2-selection__rendered"
+            id="select2-language-j3-container" title="English">English</span>
+                    <span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span>
+                    </span>
+                    </span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+                </form>
+                <a class="btn bg-blue-btn me-2" id="logout_button"><i
+      class="fas fas-caret-square-left"></i>Back</a>
+
+                <div class="top_menu_right" id="group_by_order_item_holder ir_h_float_m"></div>
+
+                <!-- <div class="top_menu_right me-2 btn bg-blue-btn">
+                    <p class="m-0">
+                        <i class="fas fa-sync-alt ir_mouse_pointer" id="refresh_orders_button"></i>
+                    </p>
+                </div> -->
+
+                <button id="notification_button" data-bs-toggle="modal" data-bs-target="#notification_list_modal" class="btn bg-blue-btn me-2">
+    <i class="fas fa-bell me-2"></i> Notification (<span id="notification_counter">0</span>)</button>
+
+                <!-- <button id="help_button" data-bs-toggle="modal" data-bs-target="#help_modal" class="me-2 btn bg-blue-btn"><i
+      class="fas me-2 fa-question-circle"></i> Help</button> -->
+
+                <a class="btn bg-blue-btn me-2 d-flex align-items-center" id="logout_button"><i
+      class="fas me-2 fa-sign-out-alt"></i> Logout</a>
+
+
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+
+
+
+            <div class="bottom">
+                <div class="notification_wrapper">
+                    <h1 id="modal_notification_header">Notification List</h1>
+                    <div id="notification_list_header_holder">
+                        <div class="single_row_notification_header fix ir_h_bm">
+                            <div class="fix single_notification_check_box">
+                                <input type="checkbox" id="select_all_notification">
+                            </div>
+                            <div class="fix single_notification"><strong>Select All</strong></div>
+                            <div class="fix single_serve_button">
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div id="notification_list_holder" class="fix">
+                        <div class="single_row_notification fix" id="single_notification_row_244">
+                            <div class="fix single_notification_check_box"><input class="single_notification_checkbox" type="checkbox" id="single_notification_244" value="244"></div>
+                            <div class="fix single_notification">Table: Table 01, Customer: FoodPanda Order, Item: Massaman Beef Curry is ready to serve, Order: A 000104</div>
+                            <div class="fix single_serve_button"><button class="single_serve_b" id="notification_serve_button_244">Collect</button></div>
+                        </div>
+                        <div class="single_row_notification fix" id="single_notification_row_245">
+                            <div class="fix single_notification_check_box"><input class="single_notification_checkbox" type="checkbox" id="single_notification_245" value="245"></div>
+                            <div class="fix single_notification">Table: Table 01, Customer: FoodPanda Order, Item: Garlic Chive Shrimp Fried Rice With Garlic Chips is ready to serve, Order: A 000104</div>
+                            <div class="fix single_serve_button"><button class="single_serve_b" id="notification_serve_button_245">Collect</button></div>
+                        </div>
+                        <div class="single_row_notification fix" id="single_notification_row_246">
+                            <div class="fix single_notification_check_box"><input class="single_notification_checkbox" type="checkbox" id="single_notification_246" value="246"></div>
+                            <div class="fix single_notification">Table: Table 01, Customer: FoodPanda Order, Item: Hot And Sour Soup is ready to serve, Order: A 000104</div>
+                            <div class="fix single_serve_button"><button class="single_serve_b" id="notification_serve_button_246">Collect</button></div>
+                        </div>
+                        <div class="single_row_notification fix" id="single_notification_row_247">
+                            <div class="fix single_notification_check_box"><input class="single_notification_checkbox" type="checkbox" id="single_notification_247" value="247"></div>
+                            <div class="fix single_notification">Table: Table 01, Customer: FoodPanda Order, Item: Chicken Chow Mein is ready to serve, Order: A 000104</div>
+                            <div class="fix single_serve_button"><button class="single_serve_b" id="notification_serve_button_247">Collect</button></div>
+                        </div>
+                        <div class="single_row_notification fix" id="single_notification_row_248">
+                            <div class="fix single_notification_check_box"><input class="single_notification_checkbox" type="checkbox" id="single_notification_248" value="248"></div>
+                            <div class="fix single_notification">Table: Table 01, Customer: FoodPanda Order, Item: Shochu Mojito is ready to serve, Order: A 000104</div>
+                            <div class="fix single_serve_button"><button class="single_serve_b" id="notification_serve_button_248">Collect</button></div>
+                        </div>
+                        <div class="single_row_notification fix" id="single_notification_row_249">
+                            <div class="fix single_notification_check_box"><input class="single_notification_checkbox" type="checkbox" id="single_notification_249" value="249"></div>
+                            <div class="fix single_notification">Table: Table 01, Customer: FoodPanda Order, Item: Fish Tacos is ready to serve, Order: A 000104</div>
+                            <div class="fix single_serve_button"><button class="single_serve_b" id="notification_serve_button_249">Collect</button></div>
+                        </div>
+                        <div class="single_row_notification fix" id="single_notification_row_250">
+                            <div class="fix single_notification_check_box"><input class="single_notification_checkbox" type="checkbox" id="single_notification_250" value="250"></div>
+                            <div class="fix single_notification">Table: Table 01, Customer: FoodPanda Order, Item: Massaman Beef Curry is ready to serve, Order: A 000104</div>
+                            <div class="fix single_serve_button"><button class="single_serve_b" id="notification_serve_button_250">Collect</button></div>
+                        </div>
+                        <div class="single_row_notification fix" id="single_notification_row_251">
+                            <div class="fix single_notification_check_box"><input class="single_notification_checkbox" type="checkbox" id="single_notification_251" value="251"></div>
+                            <div class="fix single_notification">Table: Table 01, Customer: FoodPanda Order, Item: Garlic Chive Shrimp Fried Rice With Garlic Chips is ready to serve, Order: A 000104</div>
+                            <div class="fix single_serve_button"><button class="single_serve_b" id="notification_serve_button_251">Collect</button></div>
+                        </div>
+                        <div class="single_row_notification fix" id="single_notification_row_252">
+                            <div class="fix single_notification_check_box"><input class="single_notification_checkbox" type="checkbox" id="single_notification_252" value="252"></div>
+                            <div class="fix single_notification">Table: Table 01, Customer: FoodPanda Order, Item: Hot And Sour Soup is ready to serve, Order: A 000104</div>
+                            <div class="fix single_serve_button"><button class="single_serve_b" id="notification_serve_button_252">Collect</button></div>
+                        </div>
+                        <div class="single_row_notification fix" id="single_notification_row_253">
+                            <div class="fix single_notification_check_box"><input class="single_notification_checkbox" type="checkbox" id="single_notification_253" value="253"></div>
+                            <div class="fix single_notification">Table: Table 01, Customer: FoodPanda Order, Item: Chicken Chow Mein is ready to serve, Order: A 000104</div>
+                            <div class="fix single_serve_button"><button class="single_serve_b" id="notification_serve_button_253">Collect</button></div>
+                        </div>
+                        <div class="single_row_notification fix" id="single_notification_row_254">
+                            <div class="fix single_notification_check_box"><input class="single_notification_checkbox" type="checkbox" id="single_notification_254" value="254"></div>
+                            <div class="fix single_notification">Table: None, Customer: Walk-in Customer, Item: Shochu Mojito is ready to serve, Order: A 000111</div>
+                            <div class="fix single_serve_button"><button class="single_serve_b" id="notification_serve_button_254">Collect</button></div>
+                        </div>
+                        <div class="single_row_notification fix" id="single_notification_row_255">
+                            <div class="fix single_notification_check_box"><input class="single_notification_checkbox" type="checkbox" id="single_notification_255" value="255"></div>
+                            <div class="fix single_notification">Table: None, Customer: Walk-in Customer, Item: Tuna Sashimi Pizza is ready to serve, Order: A 000030</div>
+                            <div class="fix single_serve_button"><button class="single_serve_b" id="notification_serve_button_255">Collect</button></div>
+                        </div>
+                        <div class="single_row_notification fix" id="single_notification_row_256">
+                            <div class="fix single_notification_check_box"><input class="single_notification_checkbox" type="checkbox" id="single_notification_256" value="256"></div>
+                            <div class="fix single_notification">Table: None, Customer: Walk-in Customer, Item: Best Eggs Benedict is ready to serve, Order: A 000030</div>
+                            <div class="fix single_serve_button"><button class="single_serve_b" id="notification_serve_button_256">Collect</button></div>
+                        </div>
+                        <div class="single_row_notification fix" id="single_notification_row_257">
+                            <div class="fix single_notification_check_box"><input class="single_notification_checkbox" type="checkbox" id="single_notification_257" value="257"></div>
+                            <div class="fix single_notification">Table: None, Customer: Walk-in Customer, Item: Shrimp Toast is ready to serve, Order: A 000030</div>
+                            <div class="fix single_serve_button"><button class="single_serve_b" id="notification_serve_button_257">Collect</button></div>
+                        </div>
+                        <div class="single_row_notification fix" id="single_notification_row_258">
+                            <div class="fix single_notification_check_box"><input class="single_notification_checkbox" type="checkbox" id="single_notification_258" value="258"></div>
+                            <div class="fix single_notification">Table: None, Customer: Walk-in Customer, Item: Tuna Sashimi Pizza is ready to serve, Order: A 000030</div>
+                            <div class="fix single_serve_button"><button class="single_serve_b" id="notification_serve_button_258">Collect</button></div>
+                        </div>
+                        <div class="single_row_notification fix" id="single_notification_row_259">
+                            <div class="fix single_notification_check_box"><input class="single_notification_checkbox" type="checkbox" id="single_notification_259" value="259"></div>
+                            <div class="fix single_notification">Table: None, Customer: Walk-in Customer, Item: Best Eggs Benedict is ready to serve, Order: A 000030</div>
+                            <div class="fix single_serve_button"><button class="single_serve_b" id="notification_serve_button_259">Collect</button></div>
+                        </div>
+                        <div class="single_row_notification fix" id="single_notification_row_260">
+                            <div class="fix single_notification_check_box"><input class="single_notification_checkbox" type="checkbox" id="single_notification_260" value="260"></div>
+                            <div class="fix single_notification">Table: None, Customer: Walk-in Customer, Item: Shrimp Toast is ready to serve, Order: A 000030</div>
+                            <div class="fix single_serve_button"><button class="single_serve_b" id="notification_serve_button_260">Collect</button></div>
+                        </div>
+                        <div class="single_row_notification fix" id="single_notification_row_261">
+                            <div class="fix single_notification_check_box"><input class="single_notification_checkbox" type="checkbox" id="single_notification_261" value="261"></div>
+                            <div class="fix single_notification">Table: None, Customer: Walk-in Customer, Item: Pepsi 250ml is ready to serve, Order: A 000032</div>
+                            <div class="fix single_serve_button"><button class="single_serve_b" id="notification_serve_button_261">Collect</button></div>
+                        </div>
+                        <div class="single_row_notification fix" id="single_notification_row_262">
+                            <div class="fix single_notification_check_box"><input class="single_notification_checkbox" type="checkbox" id="single_notification_262" value="262"></div>
+                            <div class="fix single_notification">Table: None, Customer: Walk-in Customer, Item: Pepsi 250ml is ready to serve, Order: A 000032</div>
+                            <div class="fix single_serve_button"><button class="single_serve_b" id="notification_serve_button_262">Collect</button></div>
+                        </div>
+                        <div class="single_row_notification fix" id="single_notification_row_263">
+                            <div class="fix single_notification_check_box"><input class="single_notification_checkbox" type="checkbox" id="single_notification_263" value="263"></div>
+                            <div class="fix single_notification">Table: None, Customer: Walk-in Customer, Item: Pepsi 250ml is ready to serve, Order: A 000032</div>
+                            <div class="fix single_serve_button"><button class="single_serve_b" id="notification_serve_button_263">Collect</button></div>
+                        </div>
+                        <div class="single_row_notification fix" id="single_notification_row_264">
+                            <div class="fix single_notification_check_box"><input class="single_notification_checkbox" type="checkbox" id="single_notification_264" value="264"></div>
+                            <div class="fix single_notification">Table: None, Customer: Walk-in Customer, Item: Pepsi 250ml is ready to serve, Order: A 000032</div>
+                            <div class="fix single_serve_button"><button class="single_serve_b" id="notification_serve_button_264">Collect</button></div>
+                        </div>
+                    </div>
+                    <!-- <span class="btn-close">&times;</span> -->
+                    <!-- <p>Some text in the Modal..</p> -->
+                    <div id="notification_close_delete_button_holder">
+                        <button class="btn bg-red-btn" id="notification_remove_all">Remove</button>
+                        <!-- <button id="notification_close">Close</button> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>

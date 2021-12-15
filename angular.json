@@ -1,0 +1,163 @@
+{
+    "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+    "cli": {
+        "analytics": "bf904279-1908-49f5-98f2-17bf35755282"
+    },
+    "version": 1,
+    "newProjectRoot": "projects",
+    "projects": {
+        "POS": {
+            "projectType": "application",
+            "schematics": {
+                "@schematics/angular:application": {
+                    "strict": true
+                }
+            },
+            "root": "",
+            "sourceRoot": "src",
+            "prefix": "app",
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:browser",
+                    "options": {
+                        "outputPath": "dist/POS",
+                        "index": "src/index.html",
+                        "main": "src/main.ts",
+                        "polyfills": "src/polyfills.ts",
+                        "tsConfig": "tsconfig.app.json",
+                        "assets": [
+                            "src/favicon.ico",
+                            "src/assets"
+                        ],
+                        "styles": [
+                            "node_modules/datatables.net-dt/css/jquery.dataTables.css",
+                            "node_modules/ngx-toastr/toastr.css",
+                            "node_modules/bootstrap/dist/css/bootstrap.min.css",
+                            "src/assets/css/AdminLTE.css",
+                            "src/assets/css/.nice-select.css",
+                            "src/assets/css/common.css",
+                            "src/assets/css/currency-flag.css",
+                            "src/assets/css/custom.css",
+                            "src/assets/css/login.css",
+                            "src/assets/css/login2.css",
+                            "src/assets/css/newdesign.css",
+                            "src/assets/css/signIn.css",
+                            "src/assets/css/tooltip_custom.css",
+                            "src/assets/css/userHome.css",
+                            "src/assets/css/select2.min.css",
+                            "src/assets/css/morris.css",
+                            "src/assets/css/poscss/posstyle2.css",
+                            "src/assets/css/poscss/customModal.css",
+                            "src/assets/css/poscss/tippy.css",
+                            "src/assets/css/poscss/scale.css",
+                            "src/assets/css/poscss/theme_light.css",
+                            "src/assets/css/poscss/jquery.scrollbar.css",
+                            "src/assets/css/poscss/barstyle.css",
+                            "src/styles.css",
+                            "node_modules/datatables.net-dt/css/jquery.dataTables.min.css"
+                        ],
+                        "scripts": [
+                            "node_modules/jquery/dist/jquery.js",
+                            "node_modules/datatables.net/js/jquery.dataTables.js",
+                            "src/assets/js/bootstrap.bundle.min.js",
+                            "src/assets/js/jquery-3.1.1.min.js",
+                            "src/assets/js/adminlte.min.js",
+                            "src/assets/js/demo.js",
+                            "src/assets/js/fastclick.js",
+                            "src/assets/js/feather.min.js",
+                            "src/assets/js/jquery.cookie.js",
+                            "src/assets/js/jquery.nice-select.min.js",
+                            "src/assets/js/menu.js",
+                            "src/assets/js/newDesign.js",
+                            "src/assets/js/user_home_buttom1222021v1.js",
+                            "src/assets/js/userhome.js",
+                            "src/assets/js/select2.full.min.js",
+                            "src/assets/js/icheck.min.js",
+                            "node_modules/jszip/dist/jszip.js",
+                            "src/assets/js/Chart.js",
+                            "src/assets/js/dashboard.js",
+                            "src/assets/js/loader.js",
+                            "src/assets/js/morris.min.js",
+                            "src/assets/js/raphael.min.js",
+                            "src/assets/js/jquery.inputmask.js",
+                            "src/assets/css/poscss/js/slimScrollbar.js",
+                            "src/assets/css/poscss/js/calculator.js",
+                            "src/assets/css/poscss/js/items.js",
+                            "src/assets/css/poscss/js/marquee.js",
+                            "node_modules/jquery/dist/jquery.min.js",
+                            "node_modules/datatables.net/js/jquery.dataTables.min.js"
+                        ]
+                    },
+                    "configurations": {
+                        "production": {
+                            "budgets": [
+                                {
+                                    "type": "initial",
+                                    "maximumWarning": "500kb",
+                                    "maximumError": "1mb"
+                                },
+                                {
+                                    "type": "anyComponentStyle",
+                                    "maximumWarning": "2kb",
+                                    "maximumError": "4kb"
+                                }
+                            ],
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/environment.prod.ts"
+                                }
+                            ],
+                            "outputHashing": "all"
+                        },
+                        "development": {
+                            "buildOptimizer": false,
+                            "optimization": false,
+                            "vendorChunk": true,
+                            "extractLicenses": false,
+                            "sourceMap": true,
+                            "namedChunks": true
+                        }
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "serve": {
+                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "configurations": {
+                        "production": {
+                            "browserTarget": "POS:build:production"
+                        },
+                        "development": {
+                            "browserTarget": "POS:build:development"
+                        }
+                    },
+                    "defaultConfiguration": "development"
+                },
+                "extract-i18n": {
+                    "builder": "@angular-devkit/build-angular:extract-i18n",
+                    "options": {
+                        "browserTarget": "POS:build"
+                    }
+                },
+                "test": {
+                    "builder": "@angular-devkit/build-angular:karma",
+                    "options": {
+                        "main": "src/test.ts",
+                        "polyfills": "src/polyfills.ts",
+                        "tsConfig": "tsconfig.spec.json",
+                        "karmaConfig": "karma.conf.js",
+                        "assets": [
+                            "src/favicon.ico",
+                            "src/assets"
+                        ],
+                        "styles": [
+                            "src/styles.css"
+                        ],
+                        "scripts": []
+                    }
+                }
+            }
+        }
+    },
+    "defaultProject": "POS"
+}

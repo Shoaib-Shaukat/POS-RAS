@@ -1,0 +1,111 @@
+<section class="main-content-wrapper" [hidden]="isShow==true">
+    <section class="content-header">
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="top-left-header">Tables</h2>
+                <input type="hidden" class="datatable_name" data-title="Tables" data-id_name="datatable">
+            </div>
+            <div class="col-md-6">
+                <a class="btn_list m-right bg-blue-btn btn" (click)=addNewFoodCategory()>
+                    <i data-feather="plus"></i> Add Table</a>
+            </div>
+        </div>
+    </section>
+    <div class="box-wrapper" [hidden]="responseTable.length == 0">
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+            <thead>
+                <tr>
+                    <th>SN</th>
+                    <th>Table Name</th>
+                    <th>Seat Capacity</th>
+                    <th>Is Active</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let p of responseTable let ndx=index;">
+                    <td>{{ndx+1}}</td>
+                    <td>{{p.tableName}}</td>
+                    <td>{{p.seatCapacity}}</td>
+                    <td><input readonly type="checkbox" name="isActive" [checked]="p.isActive" value="{{p.isActive}}"
+                            onClick="return false"></td>
+                    <td>
+                        <button class="btn btn-success color text-white btn-sm m-1" title="Edit"
+                            (click)="editTableInfo(p)">
+                            <i class="fa fa-pencil" aria-hidden="true"></i></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="main-content-wrapper" [hidden]="isShow==false">
+    <section class="content-header">
+        <h3 *ngIf="addMode == false" class="top-left-header">
+            Add Table </h3>
+        <h3 *ngIf="addMode == true" class="top-left-header">
+            Edit Table </h3>
+    </section>
+
+    <form [formGroup]="TableForm" (ngSubmit)="saveTableInfo()">
+        <div class="row">
+            <div class="col-sm-12 mb-2 col-md-6">
+                <div class="form-group">
+                    <label>Table Name<span class="required_star">*</span></label>
+                    <input tabindex="1" minlength="2" autocomplete="off" type="text" formControlName="tableName"
+                        class="form-control" placeholder="Table Name" value=""
+                        [ngClass]="{ 'is-invalid': submitted && f.tableName.errors }" />
+                    <div *ngIf="submitted && f.tableName.errors" class="invalid-feedback">
+                        <div *ngIf="f.tableName.errors.required">Table Name is required</div>
+                        <small
+                            *ngIf="TableForm.controls['tableName'].errors?.minlength && !f.tableName.errors.whitespace"
+                            class="text-danger">Table
+                            Name must be at
+                            least 2 characters long.</small>
+                        <small *ngIf="f.tableName.errors.whitespace && !f.tableName.errors.required">Please enter valid
+                            data</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 mb-2 col-md-6">
+                <div class="form-group">
+                    <label>Seating Capacity<span class="required_star">*</span></label>
+                    <input tabindex="1" autocomplete="off" type="number" formControlName="seatCapacity"
+                        class="form-control" placeholder="Seating Capacity" value=""
+                        [ngClass]="{ 'is-invalid': submitted && f.seatCapacity.errors }" />
+                    <div *ngIf="submitted && f.seatCapacity.errors" class="invalid-feedback">
+                        <div *ngIf="f.seatCapacity.errors.required">Seating Capacity is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 mb-2 col-md-6">
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea formControlName="description" maxlength="250" class="form-control"
+                        autocomplete="off"></textarea>
+                </div>
+            </div>
+            <div class="col-sm-12 mb-2 col-md-6">
+                <div class="form-group float-start">
+                    <label class="col-sm-12">Is Active?</label>
+                    <div class="col-sm-6">
+                        <input type="checkbox" class="form-control " formControlName="isActive"
+                            (click)="isActiveCheck(IsActive.checked)" #IsActive />
+                    </div>
+                </div>
+            </div>
+            <div class="row my-3">
+                <div class="col-sm-12 col-md-2">
+                    <button type="" name="submit" value="submit" class="w-100 btn bg-blue-btn">
+                        Submit </button>
+                </div>
+                <div class="col-sm-12 col-md-2">
+                    <a class="w-100 btn bg-blue-btn" (click)=addNewFoodCategory()>
+                        Back
+                    </a>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>

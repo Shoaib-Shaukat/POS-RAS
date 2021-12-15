@@ -1,0 +1,176 @@
+<header class="main-header">
+  <nav class="navbar navbar-static-top">
+    <div class="wrapper_up_wrapper">
+      <div class="hh_wrapper">
+        <div class="navbar-custom-menu">
+          <div class="menu-trigger-box">
+            <a href="javascript:void(0)" data-toggle="push-menu" class="st"><svg xmlns="http://www.w3.org/2000/svg"
+                width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </svg></a>
+            <a href="javascript:void(0)" class="om"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" class="feather feather-grid">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg></a>
+          </div>
+          <ul class="screen-list">
+            <li class="dropdown user user-menu">
+              <a href="">
+                <!-- <i class="fa fa-cutlery"></i> -->
+                <i data-feather="coffee"></i>
+                <span class="hidden-xs">POS</span>
+              </a>
+            </li>
+            <li class="dropdown user user-menu">
+              <a href="">
+                <i data-feather="truck"></i>
+                <span class="hidden-xs">Add Purchase</span>
+              </a>
+            </li>
+            <li class="dropdown user user-menu">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                <i data-feather="truck"></i> <span class="hidden-xs">Today's Summary</span>
+              </a>
+            </li>
+
+            <li class="dropdown user user-menu">
+              <a href="#" id="register_details">
+                <i data-feather="info"></i> <span class="hidden-xs">Register Details</span>
+              </a>
+            </li>
+            <li class="dropdown user user-menu ir_display_none" id="close_register_button">
+              <a href="#" id="register_close">
+                <i data-feather="x-circle"></i> <span class="hidden-xs">Close Register</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="navbar-custom-menu">
+
+          <ul class="menu-list">
+            <!-- <li class="lang-dropdown">
+              <button class="show-drop-result"><a href="#"><i class="currency-flag currency-flag-usd"></i>
+                  <span>English</span></a></button>
+              <ul class="lang-dropdown-menu">
+                <li data-lang="French" data-icon="xpf"><a href="#"><i class="currency-flag currency-flag-xpf"></i>
+                    <span>French</span></a></li>
+                <li data-lang="Spanish" data-icon="spn"><a href="#"><i class="currency-flag currency-flag-spn"></i>
+                    <span>Spanish</span></a></li>
+              </ul>
+            </li> -->
+            <li class="user-info-box">
+              <div class="user-profile">
+                <div class="user-info">
+                  <p class="user-name">{{userName}}</p>
+                  <!-- <span class="user-role">Admin</span> -->
+                </div>
+                <img class="user-avatar" src="http://dsbeta.work/demo/irestora_plus_multi_outlet/images/avatar.png"
+                  alt="">
+              </div>
+              <div class="c-dropdown-menu">
+                <ul>
+                  <li><a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" class="feather feather-sliders">
+                        <line x1="4" y1="21" x2="4" y2="14"></line>
+                        <line x1="4" y1="10" x2="4" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12" y2="3"></line>
+                        <line x1="20" y1="21" x2="20" y2="16"></line>
+                        <line x1="20" y1="12" x2="20" y2="3"></line>
+                        <line x1="1" y1="14" x2="7" y2="14"></line>
+                        <line x1="9" y1="8" x2="15" y2="8"></line>
+                        <line x1="17" y1="16" x2="23" y2="16"></line>
+                      </svg> Manage Users</a></li>
+                  <li><a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" class="feather feather-user">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                      </svg> Change Profile</a></li>
+                  <!-- <li><a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" class="feather feather-key">
+                        <path
+                          d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4">
+                        </path>
+                      </svg> Change Password</a></li> -->
+                  <li><a routerLink="/login"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" class="feather feather-log-out">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                      </svg> Logout</a></li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="ShortCut">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">Today's Summary</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i
+              data-feather="x"></i></span></button>
+      </div>
+      <div class="modal-body">
+        <div class="box-body table-responsive">
+          <table class="table">
+            <tr>
+              <td class="ir_w_80">
+                Purchase(Only Paid Amount)</td>
+              <td><span id="purchase_today_"></span></td>
+            </tr>
+            <tr>
+              <td>Sale(Only Paid Amount)</td>
+              <td><span id="sale_today"></span></td>
+            </tr>
+            <tr>
+              <td>Total Tax</td>
+              <td><span id="totalVat"></span></td>
+            </tr>
+            <tr>
+              <td>Expense</td>
+              <td><span id="Expense"></span></td>
+            </tr>
+            <tr>
+              <td>Supplier Due Payment</td>
+              <td><span id="supplierDuePayment"></span></td>
+            </tr>
+            <tr>
+              <td>Customer Due Receive</td>
+              <td><span id="customerDueReceive"></span></td>
+            </tr>
+            <tr>
+              <td>Waste</td>
+              <td><span id="waste_today"></span></td>
+            </tr>
+            <tr>
+              <td>Balance = (Sale +
+                Customer Due Receive) - (Purchase +
+                Supplier Due Payment + Expense))</td>
+              <td><span id="balance"></span></td>
+            </tr>
+          </table>
+
+          <br>
+          <div id="showCashStatus"></div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

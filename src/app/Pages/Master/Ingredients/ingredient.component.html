@@ -1,0 +1,153 @@
+<section class="main-content-wrapper">
+  <section class="content-header">
+    <div class="row">
+      <div class="col-md-6" [hidden]="isShow==true">
+        <h2 class="top-left-header">Ingredients </h2>
+        <input type="hidden" class="datatable_name" data-title="Ingredients" data-id_name="datatable">
+      </div>
+      <div class="col-md-6" [hidden]="isShow==true">
+
+        <div class="btn_list m-right d-flex">
+
+          <a class="btn bg-blue-btn m-right" (click)=addNewIngredient()>
+            <i data-feather="plus"></i> Add Ingredient </a>
+
+          <a class="btn bg-blue-btn">
+            <i data-feather="upload"></i> Upload Ingredient </a>
+
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="box-wrapper"  [hidden]="isShow==true">
+    <!-- general form elements -->
+    <div class="table-box">
+      <!-- /.box-header -->
+      <div class="table-responsive">
+        <table id="datatable" class="table">
+          <thead>
+            <tr>
+              <th class="ir_w_22">Name</th>
+              <th class="ir_w_6">Code</th>
+              <th class="ir_w_16">Category</th>
+              <th class="ir_w_12">Purchase Price</th>
+              <th class="ir_w_15">Alert Quantity/Amount</th>
+              <th class="ir_w_4">Unit</th>
+              <th class="ir_w_1 ir_txt_center not-export-col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr  *ngFor="let ingredient of IngredientResponse">
+              <td>{{ingredient.name}}</td>
+              <td>{{ingredient.code}}</td>
+              <td> {{ingredient.category}}</td>
+              <td>{{ingredient.purchasePrice}}</td>
+              <td>{{ingredient.alertQty}}</td>
+              <td>{{ingredient.unit}}</td>
+              <td class="ir_txt_center">
+                <div class="btn-group  actionDropDownBtn">
+                  <button type="button" class="btn bg-blue-color dropdown-toggle" id="dropdownMenuButton1"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    <i data-feather="more-vertical"></i>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton1" role="menu">
+                    <li><a (click)="EditIngredient(ingredient)"><i class="fa fa-pencil tiny-icon"></i>Edit</a></li>
+                    <!-- <li><a class="delete"><i class="fa fa-trash tiny-icon"></i>Delete</a></li> -->
+                  </ul>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+
+        </table>
+      </div>
+      <!-- /.box-body -->
+    </div>
+  </div>
+</section>
+
+<div class="content-wrapper" [hidden]="isShow==false">
+  <!-- Main content -->
+  <section class="main-content-wrapper">
+    <section class="content-header">
+      <h3 class="top-left-header">
+        Add Ingredient </h3>
+    </section>
+
+    <div class="box-wrapper">
+      <div class="table-box">
+        <!-- form start -->
+        <form [formGroup]="ingredientForm" (ngSubmit)="onIgredientSubmit()">
+          <div>
+            <div class="row">
+              <div class="col-sm-12 mb-2 col-md-6">
+
+                <div class="form-group">
+                  <label>Name <span class="required_star">*</span></label>
+                  <input tabindex="1" type="text" formControlName="name" class="form-control" placeholder="Name" value="">
+                </div>
+                <div class="form-group">
+                  <label>Category <span class="required_star">*</span></label>
+                  <select tabindex="2" (change)="changeCategory()" class="form-control select2 ir_w_100"
+                  formControlName="ingredientCategoryID">
+                    <option value="">Select</option>
+                    <option *ngFor="let category of IngredientCategory" [value]="category.ingredientCategoryID">
+                      {{category.name}}</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Unit <span class="required_star">*</span></label>
+                  <select tabindex="3" class="form-control select2 ir_w_100" formControlName="unit">
+                    <option>Select</option>
+                    <option *ngFor="let unit of unitResponse">
+                      {{unit.name}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-sm-12 mb-2 col-md-6">
+
+                <div class="form-group">
+                  <label>Purchase Price <span class="required_star">*</span></label>
+                  <div class="d-flex">
+                    <input tabindex="4" type="text" formControlName="purchaseprice" class="form-control integerchk"
+                      placeholder="Purchase Price" value="">
+
+                    <div class="tooltip_custom">
+                      <i class="fa fa-question fa-2x" data-bs-toggle="tooltip" data-bs-placement="top"
+                        title="You can change this price in purchase form" class="form_question"></i>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label>Alert Qty <span class="required_star">*</span></label>
+                  <input tabindex="5" type="text" formControlName="alertqty" class="form-control integerchk"
+                    placeholder="Alert Qty" value="">
+                </div>
+
+                <div class="form-group">
+                  <label>Code</label>
+                  <input tabindex="6" type="text" formControlName="code" class="form-control" placeholder="Code" value="139">
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <!-- /.box-body -->
+
+          <div class="row mt-2">
+            <div class="col-sm-12 col-md-2 mb-2">
+              <button type="submit" name="submit" value="submit" [hidden]="addMode" (click)="SaveIngredient('New')" class="btn bg-blue-btn w-100">Submit</button>
+              <button type="submit" name="submit" value="submit" [hidden]="!addMode" (click)="SaveIngredient('Update')" class="btn bg-blue-btn w-100">Update</button>
+            </div>
+            <div class="col-sm-12 col-md-2 mb-2">
+              <a class="btn bg-blue-btn w-100" (click)=addNewIngredient()>
+                Back </a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section> <!-- /.content -->
+</div>
