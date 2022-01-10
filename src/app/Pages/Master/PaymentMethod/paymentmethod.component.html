@@ -17,8 +17,8 @@
                 <tr>
                     <th>SN</th>
                     <th>Payment Name</th>
-                    <th>Tax %</th>
-                    <th>Service Charges %</th>
+                    <th style="text-align: center;">Tax %</th>
+                    <th style="text-align: center;">Service Charges %</th>
                     <th>Is Active</th>
                     <th>Actions</th>
                 </tr>
@@ -27,8 +27,11 @@
                 <tr *ngFor="let p of responsePaymentModel let ndx=index;">
                     <td>{{ndx+1}}</td>
                     <td>{{p.paymentName}}</td>
-                    <td>{{p.taxPercentage}}</td>
-                    <td>{{p.serviceChargePercentage}}</td>
+                    <td style="text-align: center;" *ngIf="p.taxPercentage != null">{{p.taxPercentage}}%</td>
+                    <td style="text-align: center;" *ngIf="p.taxPercentage == null">-</td>
+                    <td style="text-align: center;" *ngIf="p.serviceChargePercentage != null">
+                        {{p.serviceChargePercentage}}%</td>
+                    <td style="text-align: center;" *ngIf="p.serviceChargePercentage == null">-</td>
                     <td><input readonly type="checkbox" name="isActive" [checked]="p.isActive" value="{{p.isActive}}"
                             onClick="return false"></td>
                     <td>
@@ -74,15 +77,23 @@
             <div class="col-sm-6 mb-2 col-md-3">
                 <div class="form-group">
                     <label>Tax %</label>
-                    <input type="number" formControlName="taxPercentage" class="form-control" step="1"
-                        onkeypress="return event.charCode >= 48 && event.charCode <= 57 " />
+                    <input type="number" type="number" min="0" max="100" formControlName="taxPercentage"
+                        class="form-control" step="1" onkeypress="return event.charCode >= 48 && event.charCode <= 57 "
+                        [ngClass]="{ 'is-invalid': submitted && f.taxPercentage.errors }" />
+                    <div *ngIf="submitted && f.taxPercentage.errors" class="invalid-feedback">
+                        <small *ngIf="f.taxPercentage.errors">Please enter a value between 0 and 100</small>
+                    </div>
                 </div>
             </div>
             <div class="col-sm-6 mb-2 col-md-3">
                 <div class="form-group">
                     <label>Service Charges %</label>
-                    <input type="number" formControlName="serviceChargePercentage" class="form-control" step="1"
-                        onkeypress="return event.charCode >= 48 && event.charCode <= 57 " />
+                    <input type="number" min="0" max="100" formControlName="serviceChargePercentage"
+                        class="form-control" step="1" onkeypress="return event.charCode >= 48 && event.charCode <= 57 "
+                        [ngClass]="{ 'is-invalid': submitted && f.serviceChargePercentage.errors }" />
+                    <div *ngIf="submitted && f.serviceChargePercentage.errors" class="invalid-feedback">
+                        <small *ngIf="f.serviceChargePercentage.errors">Please enter a value between 0 and 100</small>
+                    </div>
                 </div>
             </div>
             <div class="col-sm-12 mb-2 col-md-6">

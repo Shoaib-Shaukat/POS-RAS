@@ -31,7 +31,7 @@ export class CustomerComponent implements OnInit {
     this.requestCustomer = new requestCustomer();
 
   }
-  addNewFoodCategory() {
+  addCustomer() {
     this.submitted = false;
     this.CustomerForm.reset();
     this.isShow = !this.isShow;

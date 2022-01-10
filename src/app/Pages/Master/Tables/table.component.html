@@ -17,7 +17,7 @@
                 <tr>
                     <th>SN</th>
                     <th>Table Name</th>
-                    <th>Seat Capacity</th>
+                    <th style="text-align: center;">Seat Capacity</th>
                     <th>Is Active</th>
                     <th>Actions</th>
                 </tr>
@@ -26,7 +26,7 @@
                 <tr *ngFor="let p of responseTable let ndx=index;">
                     <td>{{ndx+1}}</td>
                     <td>{{p.tableName}}</td>
-                    <td>{{p.seatCapacity}}</td>
+                    <td style="text-align: center;">{{p.seatCapacity}}</td>
                     <td><input readonly type="checkbox" name="isActive" [checked]="p.isActive" value="{{p.isActive}}"
                             onClick="return false"></td>
                     <td>

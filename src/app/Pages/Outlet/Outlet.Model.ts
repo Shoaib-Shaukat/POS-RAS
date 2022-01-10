@@ -15,6 +15,7 @@ export class OutletRequestModel {
         this.isDeleted = false;
         this.companyID = 0;
         this.ownerID = 0;
+        this.symbol = "";
     }
     outletID: number;
     outletName: string;
@@ -30,6 +31,7 @@ export class OutletRequestModel {
     isDeleted: boolean;
     companyID: number;
     ownerID: number;
+    symbol: string;
 }
 
 export class OutletResponseModel {
@@ -47,6 +49,7 @@ export class OutletResponseModel {
         this.modifiedBy = "";
         this.isDeleted = false;
         this.companyID = 0;
+        this.symbol = "";
     }
     outletID: number;
     outletName: string;
@@ -61,4 +64,5 @@ export class OutletResponseModel {
     modifiedBy: string;
     isDeleted: boolean;
     companyID: number;
+    symbol: string;
 }

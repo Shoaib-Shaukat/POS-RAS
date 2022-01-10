@@ -5,6 +5,7 @@ import { ApiService } from 'src/app/Services/API/api.service';
 import { GvarService } from './../../Services/Globel/gvar.service'
 import { OutletRequestModel, OutletResponseModel } from './Outlet.Model';
 import { Router } from '@angular/router';
+import { CurrencyModelResponse } from '../Master/Currency/currencyModel';
 
 @Component({
   selector: 'app-outlet',
@@ -14,6 +15,7 @@ import { Router } from '@angular/router';
 export class OutletComponent implements OnInit {
   OutletRequestModel: OutletRequestModel;
   OutletResponseModel: OutletResponseModel[];
+  CurrencyModelResponse: CurrencyModelResponse[];
   isShow = false;
   OutletForm: FormGroup;
   submitted: boolean = false;
@@ -22,6 +24,7 @@ export class OutletComponent implements OnInit {
     this.OutletForm = new FormGroup({});
     this.OutletRequestModel = new OutletRequestModel();
     this.OutletResponseModel = [];
+    this.CurrencyModelResponse = [];
   }
 
   ngOnInit(): void {
@@ -30,6 +33,7 @@ export class OutletComponent implements OnInit {
     this.submitted = false;
     this.IntializeForm();
     this.getOutlets();
+    this.getCurrencies();
   }
 
   IntializeForm() {
@@ -48,6 +52,7 @@ export class OutletComponent implements OnInit {
       isDeleted: new FormControl(""),
       companyID: new FormControl(""),
       ownerID: new FormControl(""),
+      symbol: new FormControl("", [Validators.required]),
     });
   }
 
@@ -134,7 +139,9 @@ export class OutletComponent implements OnInit {
 
   enterInOutlet(p: any) {
     this.GV.OutletID = p.outletID;
+    this.GV.Currency = p.symbol;
     this.GV.OutletName = p.outletName;
+    this.GV.OutletAddress = p.address;
     if (p.outletID == undefined) {
       this.GV.OutletID = 0;
     }
@@ -147,5 +154,19 @@ export class OutletComponent implements OnInit {
     this.addMode = !this.addMode;
     this.isShow = !this.isShow;
     this.OutletForm.patchValue(p);
+  }
+
+  getCurrencies() {
+    this.API.getdata('/Generic/getCurrency?OwnerID=' + this.GV.ownerID).subscribe(c => {
+      if (c != null) {
+        this.CurrencyModelResponse = c.responseCurrencies;
+      }
+    },
+      error => {
+        this.toastr.error(error.statusText, 'Error', {
+          timeOut: 3000,
+          'progressBar': true,
+        });
+      });
   }
 }

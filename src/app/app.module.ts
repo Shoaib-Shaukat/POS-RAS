@@ -29,6 +29,10 @@ import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { ApiService } from './Services/API/api.service';
 import { Auth } from './Services/GuardService/guard-service.service';
 import { TwoDigitDecimalNumberDirective } from './Pages/two-digit-decimal-number.directive';
+import { CurrencyComponent } from './Pages/Master/Currency/currency.component';
+import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
+import { NgxPrintModule } from 'ngx-print';
+import { OrdersComponent } from './Pages/All Screens/Orders/orders.component';
 const maskConfig: Partial<IConfig> = {
   validation: false,
 };
@@ -52,7 +56,9 @@ const maskConfig: Partial<IConfig> = {
     SaleComponent,
     RegisterComponent,
     CompaniesComponent,
+    CurrencyComponent,
     TwoDigitDecimalNumberDirective,
+    OrdersComponent,
   ],
   imports: [
     BrowserModule,
@@ -63,7 +69,9 @@ const maskConfig: Partial<IConfig> = {
     BrowserAnimationsModule,
     SharedModule,
     DataTablesModule,
+    NgxPrintModule,
     NgxMaskModule.forRoot(maskConfig),
+    NgMultiSelectDropDownModule.forRoot(),
   ],
   providers: [ApiService, Auth, ToastrService, HttpClientModule, { provide: LocationStrategy, useClass: HashLocationStrategy }],
 

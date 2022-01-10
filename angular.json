@@ -46,6 +46,7 @@
                             "src/assets/css/userHome.css",
                             "src/assets/css/select2.min.css",
                             "src/assets/css/morris.css",
+                            "src/assets/css/poscss/posstyle.css",
                             "src/assets/css/poscss/posstyle2.css",
                             "src/assets/css/poscss/customModal.css",
                             "src/assets/css/poscss/tippy.css",

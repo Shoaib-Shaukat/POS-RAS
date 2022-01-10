@@ -30,7 +30,7 @@ import { DealsComponent } from './Deals/deals.component';
     PaymentmethodComponent,
     TableComponent,
     FoodItemsComponent,
-    DealsComponent,
+    DealsComponent
   ],
   imports: [
     CommonModule,

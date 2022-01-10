@@ -46,8 +46,8 @@ export class PaymentmethodComponent implements OnInit {
       OwnerID: new FormControl(""),
       paymentID: new FormControl(""),
       description: new FormControl(""),
-      taxPercentage: new FormControl(""),
-      serviceChargePercentage: new FormControl(""),
+      taxPercentage: new FormControl("", [Validators.max(100), Validators.min(0)]),
+      serviceChargePercentage: new FormControl("", [Validators.max(100), Validators.min(0)]),
     });
   }
   ngOnInit(): void {

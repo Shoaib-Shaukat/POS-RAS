@@ -1,4 +1,17 @@
+export class DealsModel {
+    DealID: number;
+    DealName: string;
+    DealPrice: number;
+    description: string;
+    isActive: boolean;
+    imageURL: any;
+    outletID: number;
+    OwnerID: number;
+    itemsDescription: string;
+}
 export class requestDealsModel {
+    DealID: number;
+    DealDetailID: number;
     FoodItemName: string;
     CalPrice: number;
     Price: number;
@@ -13,17 +26,13 @@ export class requestDealsModel {
     Quantity: number;
 }
 export class responseDealsModel {
-    FoodItemName: string;
-    CalPrice: number;
-    Price: number;
-    FoodItemID: number;
-    FoodMenuID: number;
-    FoodMenuName: string;
-    hasVariant: boolean;
-    RefCode: number;
-    variantID: number;
-    variantName: string;
-    variantPrice: number;
+    dealID: number;
+    dealName: string;
+    dealPrice: number;
+    description: string;
+    imageURL: any;
+    isActive: boolean;
+    itemsDescription: string;
 }
 
 export class responseFoodMenuItem {
@@ -55,4 +64,16 @@ export class responseVariant {
     imageURL: any;
     Quantity: number;
     Checked: boolean;
+}
+
+
+export class DealModelRequest {
+    DealsArray: requestDealsModel[];
+    DealObject: DealsModel;
+
+    constructor() {
+        this.DealsArray = [];
+        this.DealObject = new DealsModel();
+
+    }
 }

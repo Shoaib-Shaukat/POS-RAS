@@ -13,6 +13,8 @@ import { RegisterComponent } from './Pages/Register/register.component';
 import { SaleComponent } from './Pages/Sale/sale.component';
 import { LayoutComponent } from './Pages/Shared/Layout/layout.component';
 import { Auth } from '../app/Services/GuardService/guard-service.service';
+import { CurrencyComponent } from './Pages/Master/Currency/currency.component';
+import { OrdersComponent } from './Pages/All Screens/Orders/orders.component';
 const routes: Routes = [
   {
     path: '', component: LayoutComponent, canActivate: [Auth], children: [
@@ -21,7 +23,7 @@ const routes: Routes = [
       { path: 'Sale', component: SaleComponent },
       { path: 'Companies', component: CompaniesComponent },
       { path: 'Users', component: RegisterComponent },
-
+      { path: 'Currency', component: CurrencyComponent },
       {
         path: 'Master',
         loadChildren: () => import('../app/Pages/Master/master.module').then(module => module.MasterModule)
@@ -30,9 +32,11 @@ const routes: Routes = [
       {
         path: 'AllScreen', component: AllscreenComponent, children: [
           { path: 'Pos', component: PosComponent },
-          { path: 'Bar', component: BarComponent },
+          { path: 'Orders', component: OrdersComponent },
           { path: 'Kitchen', component: KitchenComponent },
           { path: 'Waiter', component: WaiterComponent },
+          { path: 'Waiter', component: WaiterComponent },
+          
         ]
       }
 

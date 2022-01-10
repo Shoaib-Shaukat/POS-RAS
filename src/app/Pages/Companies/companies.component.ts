@@ -79,9 +79,10 @@ export class CompaniesComponent implements OnInit {
     }
   }
 
-  enterInCompany(companyID: any) {
-    this.GV.companyID = companyID;
-    if (companyID == undefined) {
+  enterInCompany(p: any) {
+    this.GV.companyID = p.companyID;
+    this.GV.companyName = p.companyName;
+    if (p.companyID == undefined) {
       this.GV.companyID = 0;
     }
     if (this.GV.companyID > 0) {

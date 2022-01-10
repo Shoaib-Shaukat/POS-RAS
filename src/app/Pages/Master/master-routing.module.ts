@@ -22,7 +22,6 @@ const routes: Routes = [
   { path: 'Table', component: TableComponent },
   { path: 'Items', component: FoodItemsComponent },
   { path: 'Deals', component: DealsComponent },
-  
 ];
 
 @NgModule({

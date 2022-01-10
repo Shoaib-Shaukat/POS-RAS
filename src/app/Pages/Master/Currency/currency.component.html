@@ -1,0 +1,94 @@
+<section class="main-content-wrapper" [hidden]="isShow==true">
+    <section class="content-header">
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="top-left-header">Currencies</h2>
+                <input type="hidden" class="datatable_name" data-title="Tables" data-id_name="datatable">
+            </div>
+            <div class="col-md-6">
+                <a class="btn_list m-right bg-blue-btn btn" (click)=addNewCurrency()>
+                    <i data-feather="plus"></i> Add Currency</a>
+            </div>
+        </div>
+    </section>
+    <div class="box-wrapper" [hidden]="CurrencyModelResponse.length == 0">
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+            <thead>
+                <tr>
+                    <th>SN</th>
+                    <th>Currency Name</th>
+                    <th style="text-align: center;">Symbol</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let p of CurrencyModelResponse let ndx=index;">
+                    <td>{{ndx+1}}</td>
+                    <td>{{p.currencyName}}</td>
+                    <td style="text-align: center;">{{p.symbol}}</td>
+                    <td>
+                        <button class="btn btn-success color text-white btn-sm m-1" title="Edit"
+                            (click)="editCurrencyInfo(p)">
+                            <i class="fa fa-pencil" aria-hidden="true"></i></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="main-content-wrapper" [hidden]="isShow==false">
+    <section class="content-header">
+        <h3 *ngIf="addMode == false" class="top-left-header">
+            Add Currency </h3>
+        <h3 *ngIf="addMode == true" class="top-left-header">
+            Edit Currency </h3>
+    </section>
+
+    <form [formGroup]="CurrencyForm" (ngSubmit)="savePaymentInfo()">
+        <div class="row">
+            <div class="col-sm-12 mb-2 col-md-6">
+                <div class="form-group">
+                    <label>Currency Name<span class="required_star">*</span></label>
+                    <input tabindex="1" minlength="2" autocomplete="off" type="text" formControlName="currencyName"
+                        class="form-control" placeholder="Currency Name" value=""
+                        [ngClass]="{ 'is-invalid': submitted && f.currencyName.errors }" />
+                    <div *ngIf="submitted && f.currencyName.errors" class="invalid-feedback">
+                        <div *ngIf="f.currencyName.errors.required">Currency Name is required</div>
+                        <small
+                            *ngIf="CurrencyForm.controls['currencyName'].errors?.minlength && !f.currencyName.errors.whitespace"
+                            class="text-danger">Currency Name must be at
+                            least 2 characters long.</small>
+                        <small *ngIf="f.currencyName.errors.whitespace && !f.currencyName.errors.required">Please enter
+                            valid
+                            data</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 mb-2 col-md-3">
+                <div class="form-group">
+                    <label>Symbol<span class="required_star">*</span></label>
+                    <input tabindex="1" autocomplete="off" type="text" formControlName="symbol" class="form-control"
+                        placeholder="Symbol" value="" [ngClass]="{ 'is-invalid': submitted && f.symbol.errors }" />
+                    <div *ngIf="submitted && f.symbol.errors" class="invalid-feedback">
+                        <div *ngIf="f.symbol.errors.required">Symbol is required</div>
+                        <small *ngIf="f.symbol.errors.whitespace && !f.symbol.errors.required">Please enter
+                            valid
+                            data</small>
+                    </div>
+                </div>
+            </div>
+            <div class="row my-3">
+                <div class="col-sm-12 col-md-2">
+                    <button type="" name="submit" value="submit" class="w-100 btn bg-blue-btn">
+                        Submit </button>
+                </div>
+                <div class="col-sm-12 col-md-2">
+                    <a class="w-100 btn bg-blue-btn" (click)=addNewCurrency()>
+                        Back
+                    </a>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>

@@ -1,3 +1,24 @@
-.modal-xl{
+.modal-xl {
     max-width: 900px !important;
-  }
+}
+
+.modal-dialog {
+    overflow-y: initial !important
+}
+
+.modal-footer {
+    max-height: calc(200vh - 300px);
+    overflow-y: auto;
+}
+
+.imgClass {
+    width: 80px;
+    height: 50px;
+}
+
+.desc {
+    font-variant: all-petite-caps;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}

@@ -1,0 +1,123 @@
+<section class="main-content-wrapper" [hidden]="isShow==true">
+    <section class="content-header">
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="top-left-header">Orders</h2>
+                <input type="hidden" class="datatable_name" data-title="Tables" data-id_name="datatable">
+            </div>
+            <div class="col-md-6">
+                <a class="btn_list m-right bg-blue-btn btn" (click)=addOrder()>
+                    <i data-feather="plus"></i> Add Order</a>
+            </div>
+        </div>
+    </section>
+    <div class="box-wrapper" [hidden]="responseOrder.length == 0">
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+            <thead>
+                <tr>
+                    <th>SN</th>
+                    <th>Order No</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let p of responseOrder let ndx=index;">
+                    <td>{{ndx+1}}</td>
+                    <td>{{p.orderID}}</td>
+                    <td>
+                        <button class="btn btn-primary color text-white btn-sm m-1" (click)="viewOrder(p)"
+                            title="View Order" data-toggle="modal" data-target=".viewOrderModal">
+                            <i class="fa fa-eye" aria-hidden="true"></i></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+
+<div class="modal fade viewOrderModal" id="view-assigned-group-role-modal" data-backdrop="static" data-keyboard="false"
+    tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Order Detail</h5>
+                <button type="button" (click)="closeOrderDetailModal()" class="close" data-dismiss="modal"
+                    aria-label="Close" #closeOrderModal>
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h5>Order No: {{POSModelRequest.responseOrder.orderID}}</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Customer Ref Code</label>
+                            <textarea class="form-control" style="height: 40px;"
+                                readonly>{{POSModelRequest.responseCustomer.refCode}}</textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Table</label>
+                            <textarea class="form-control" style="height: 40px;" readonly>{{tableList}}</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label><b>Items</b></label>
+                        <div class="table-box anyClassThree">
+                            <div class="table-responsive">
+                                <table id="datatable" class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Qty</th>
+                                            <th style="text-align: right;">Price</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let p of POSModelRequest.responseReceiptArr let ndx=index;">
+                                            <td *ngIf="!p.variantID && !p.dealID">
+                                                {{p.foodItemName}}</td>
+                                            <td *ngIf="p.variantID && !p.dealID">
+                                                {{p.foodItemName}} ({{p.variantName}})
+                                            </td>
+                                            <td *ngIf="p.dealID">{{p.dealName}}</td>
+                                            <td>
+                                                {{p.quantity}}
+                                            </td>
+                                            <td *ngIf="!p.variantID && !p.dealID && p.discount == 0"
+                                                style="text-align: right;">
+                                                {{GV.Currency}} {{p.price | number}}
+                                            </td>
+                                            <td *ngIf="!p.variantID && !p.dealID && p.discount != 0"
+                                                style="text-align: right;">
+                                                {{GV.Currency}} {{p.calculatedPrice | number}}
+                                            </td>
+                                            <td *ngIf="p.variantID && !p.dealID && p.discount == 0"
+                                                style="text-align: right;">
+                                                {{GV.Currency}} {{p.variantPrice | number}}
+                                            </td>
+                                            <td *ngIf="p.variantID && !p.dealID && p.discount != 0"
+                                                style="text-align: right;">
+                                                {{GV.Currency}} {{p.calculatedPrice | number}}
+                                            </td>
+                                            <td *ngIf="p.dealID" style="text-align: right;">
+                                                {{GV.Currency}} {{p.dealPrice | number}}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" (click)="closeOrderDetailModal()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

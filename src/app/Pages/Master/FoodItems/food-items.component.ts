@@ -23,7 +23,8 @@ export class FoodItemsComponent implements OnInit, OnDestroy {
   imageUrl: string;
   imageUrlV: string;
   Image: any;
-  file: any[] = []
+  file: any[] = [];
+  symbol: string = "";
   fileName: string = "No file chosen";
   dtOptions: DataTables.Settings = {};
   dtTrigger: Subject<any> = new Subject<any>();
@@ -50,8 +51,6 @@ export class FoodItemsComponent implements OnInit, OnDestroy {
   isShow: boolean = false;
   showDiscount: boolean = false;
   showVDiscount: boolean = false;
-  outletID: number;
-  OwnerID: number;
   constructor(private API: ApiService,
     private GV: GvarService,
     public toastr: ToastrService,
@@ -64,10 +63,9 @@ export class FoodItemsComponent implements OnInit, OnDestroy {
     this.defaultFoodCat = new FoodCatResponseModel();
   }
   ngOnInit(): void {
+    this.symbol = this.GV.Currency;
     this.responseFoodMenuItem = [];
     this.ItemsResponseModelReplica = [];
-    this.outletID = this.GV.OutletID;
-    this.OwnerID = this.GV.ownerID;
     this.InitializeForm();
     this.getAllItems();
     this.GetFoodMenuCategory();
@@ -99,6 +97,7 @@ export class FoodItemsComponent implements OnInit, OnDestroy {
       hasVariant: new FormControl(),
       foodMenuID: new FormControl("", [Validators.required]),
       OwnerID: new FormControl(),
+      outletID: new FormControl(),
       discount: new FormControl(),
       calculatedPrice: new FormControl(),
       discountPercentage: new FormControl(),
@@ -109,6 +108,7 @@ export class FoodItemsComponent implements OnInit, OnDestroy {
     this.VariantForm = new FormGroup({
       variantID: new FormControl(),
       variantName: new FormControl("", [Validators.required, this.noWhitespaceValidator]),
+      RefCode: new FormControl(),
       variantPrice: new FormControl(undefined, [Validators.required]),
       discount: new FormControl(),
       calculatedPrice: new FormControl(),
@@ -142,7 +142,7 @@ export class FoodItemsComponent implements OnInit, OnDestroy {
       });
       return;
     }
-    this.API.getdata('/FoodMenu/getfoodMenu?OutletID=' + this.outletID).subscribe(c => {
+    this.API.getdata('/FoodMenu/getfoodMenu?OutletID=' + this.GV.OutletID).subscribe(c => {
       if (c != null) {
         this.FoodCatResponseModel = c.foodMenuResponses;
         this.defaultFoodCat.foodMenuID = 0;
@@ -161,6 +161,13 @@ export class FoodItemsComponent implements OnInit, OnDestroy {
 
   SaveMenuItems() {
     this.submitted = true;
+    if (this.MenuItemsForm.controls.foodMenuID.value == 0) {
+      this.toastr.error("Select Food Menu Category", 'Error', {
+        timeOut: 3000,
+        'progressBar': true,
+      });
+      return
+    }
     if (this.MenuItemsForm.valid) {
       //this.uploadFiles();
       if (this.foodMenuItemModel.requestVariants.length > 0) {
@@ -191,7 +198,9 @@ export class FoodItemsComponent implements OnInit, OnDestroy {
       if (this.MenuItemsForm.controls.refCode.value == null) {
         this.MenuItemsForm.controls.refCode.setValue("");
       }
-      this.MenuItemsForm.controls.OwnerID.setValue(this.OwnerID);
+      
+      this.MenuItemsForm.controls.outletID.setValue(this.GV.OutletID);
+      this.MenuItemsForm.controls.OwnerID.setValue(this.GV.ownerID);
       this.MenuItemsForm.controls.foodMenuID.setValue(+(this.MenuItemsForm.controls.foodMenuID.value));
       this.foodMenuItemModel.requestFoodMenuItem = this.MenuItemsForm.value;
       if (this.imageUrl == null || this.imageUrl == "" || this.imageUrl == undefined) {
@@ -202,14 +211,22 @@ export class FoodItemsComponent implements OnInit, OnDestroy {
       }
       this.API.PostData('/FoodMenu/AddEditfoodMenuItem', this.foodMenuItemModel).subscribe(c => {
         if (c != null) {
-          this.toastr.success(c.message, 'Success', {
-            timeOut: 3000,
-            'progressBar': true,
-          });
-          this.isShow = !this.isShow;
-          this.foodMenuItemModel = new MenuItemsModel();
-          this.SearchForm.controls.foodMenuID.setValue(0);
-          this.getAllItems();
+          if (c.status == "Failed") {
+            this.toastr.error(c.message, 'Error', {
+              timeOut: 3000,
+              'progressBar': true,
+            });
+          }
+          else {
+            this.toastr.success(c.message, 'Success', {
+              timeOut: 3000,
+              'progressBar': true,
+            });
+            this.isShow = !this.isShow;
+            this.foodMenuItemModel = new MenuItemsModel();
+            this.SearchForm.controls.foodMenuID.setValue(0);
+            this.getAllItems();
+          }
         }
       },
         error => {
@@ -261,6 +278,9 @@ export class FoodItemsComponent implements OnInit, OnDestroy {
   pushVariant() {
     this.Vsubmitted = true;
     if (this.VariantForm.valid) {
+      if (this.VariantForm.controls.RefCode.value == null) {
+        this.VariantForm.controls.RefCode.setValue("");
+      }
       if (this.VariantForm.controls.variantID.value == null) {
         this.VariantForm.controls.variantID.setValue(0);
       }
@@ -361,8 +381,10 @@ export class FoodItemsComponent implements OnInit, OnDestroy {
       });
       return;
     }
-    this.API.getdata('/FoodMenu/getfoodItemAgainstOutletID?outletID=' + this.outletID).subscribe(c => {
+    this.API.getdata('/FoodMenu/getfoodItemAgainstOutletID?outletID=' + this.GV.OutletID).subscribe(c => {
       if (c != null) {
+        this.responseFoodMenuItem = [];
+        this.ItemsResponseModelReplica = [];
         this.responseFoodMenuItem = c.responseFoodMenuItems;
         this.ItemsResponseModelReplica = c.responseFoodMenuItems;
         this.dtTrigger.next();

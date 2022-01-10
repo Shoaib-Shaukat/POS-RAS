@@ -15,18 +15,10 @@
           box-shadow: 0 8px 25px -8px #c90000 !important;
 }
 
-.bg-blue-btn {
-  background-color: #f15a29;
-}
-
-.bg-blue-btn:hover, .bg-blue-btn:focus {
-  -webkit-box-shadow: 0 8px 25px -8px #7367f0 !important;
-          box-shadow: 0 8px 25px -8px #7367f0 !important;
-}
-
 .bg-blue-btn,
 .bg-red-btn {
   color: white;
+  background-color: #f15a29;
   text-decoration: none;
   padding: 8.5px 21px !important;
   border-radius: 0.358rem !important;
@@ -45,7 +37,27 @@
   -webkit-transition: all 0.3s;
   transition: all 0.3s;
 }
-
+.bg-grey-btn {
+  color: white;
+  background-color: #797979;
+  text-decoration: none;
+  padding: 8.5px 21px !important;
+  border-radius: 0.358rem !important;
+  font-weight: 500;
+  font-size: 14px;
+  text-transform: capitalize;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+}
 .bg-login-btn {
   background-color: #f15a29;
   width: auto;
@@ -84,6 +96,10 @@
 .bg-red-btn:hover,
 .bg-red-btn:focus {
   background-color: #c90000 !important;
+  color: white !important;
+}
+.bg-grey-btn:hover, .bg-grey-btn:focus {
+  background-color: #383838 !important;
   color: white !important;
 }
 

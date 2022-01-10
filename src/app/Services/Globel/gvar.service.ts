@@ -11,6 +11,9 @@ export class GvarService {
   G_IsRunning: boolean = false;
   companyID: number = 0;
   OutletID: number = 0;
+  OutletAddress: string = "";
+  Currency: string = "";
+  companyName: string = "";
   ownerID: number = 0;
   OutletName: string = "";
   locationID: number;

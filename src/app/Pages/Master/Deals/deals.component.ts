@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -5,8 +6,9 @@ import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { ApiService } from 'src/app/Services/API/api.service';
 import { GvarService } from 'src/app/Services/Globel/gvar.service';
-import { FoodCatResponseModel, MenuItemsModel, requestFoodMenuItem, requestVariant } from '../FoodItems/ItemsModel';
-import { requestDealsModel, responseDealsModel, responseFoodMenuItem, responseVariant } from './dealsModel';
+import Swal from 'sweetalert2';
+import { FoodCatResponseModel, MenuItemsModel, requestVariant } from '../FoodItems/ItemsModel';
+import { DealModelRequest, responseDealsModel, responseFoodMenuItem, responseVariant } from './dealsModel';
 
 
 @Component({
@@ -15,9 +17,14 @@ import { requestDealsModel, responseDealsModel, responseFoodMenuItem, responseVa
   styleUrls: ['./deals.component.css']
 })
 export class DealsComponent implements OnInit {
+  itemsArr: any = [];
+  DealId: any;
+  itemsDescription: any = "";
+  splitString: any = [];
   //.................Deals.....................
-  requestDealsModel: requestDealsModel[];
   responseDealsModel: responseDealsModel[];
+  DealModelRequest: DealModelRequest;
+  Dsubmitted: boolean = false;
   //...........................................
   @ViewChild('myInput')
   myInputVariable: ElementRef;
@@ -27,22 +34,19 @@ export class DealsComponent implements OnInit {
   dtOptions: DataTables.Settings = {};
   dtTrigger: Subject<any> = new Subject<any>();
 
-  dtOptions0: DataTables.Settings = {};
-  dtTrigger0: Subject<any> = new Subject<any>();
-
   @ViewChildren("closeVariantModal") closeVariantModal: any;
   @ViewChildren("closeViewVariantModal") closeViewVariantModal: any;
   @ViewChildren("attachItemImageModal") attachItemImageModal: any;
+  @ViewChildren("closeDealsModal") closeDealsModal: any;
+
   MenuItemsForm: FormGroup;
   VariantForm: FormGroup;
   SearchForm: FormGroup;
   DealForm: FormGroup;
   responseVariant: responseVariant[];
   requestVariant: requestVariant;
-  foodMenuItemModel: MenuItemsModel;
   responseFoodMenuItem: responseFoodMenuItem[];
   ItemsResponseModelReplica: responseFoodMenuItem[];
-  requestFoodMenuItem: requestFoodMenuItem;
   FoodCatResponseModel: FoodCatResponseModel[];
   defaultFoodCat: FoodCatResponseModel;
   addMode: boolean = false;
@@ -63,21 +67,21 @@ export class DealsComponent implements OnInit {
   Image: any;
   file: any[] = [];
   fileName: string = "No file chosen";
+  symbol: string = "";
 
-  constructor(private API: ApiService,
+  constructor(private API: ApiService, private http: HttpClient,
     private GV: GvarService,
     public toastr: ToastrService,
     private route: ActivatedRoute,
     private router: Router) {
-    this.requestDealsModel = [];
     this.responseDealsModel = [];
-    this.requestFoodMenuItem = new requestFoodMenuItem();
     this.FoodCatResponseModel = [];
-    this.foodMenuItemModel = new MenuItemsModel();
     this.responseVariant = [];
     this.defaultFoodCat = new FoodCatResponseModel();
+    this.DealModelRequest = new DealModelRequest();
   }
   ngOnInit(): void {
+    this.symbol = this.GV.Currency;
     this.getDeals();
     this.responseFoodMenuItem = [];
     this.ItemsResponseModelReplica = [];
@@ -90,10 +94,12 @@ export class DealsComponent implements OnInit {
       pagingType: 'full_numbers',
       pageLength: 10,
     };
+    this.Dsubmitted = false;
   }
 
   get f() { return this.MenuItemsForm.controls; }
   get g() { return this.VariantForm.controls; }
+  get h() { return this.DealForm.controls; }
 
   public noWhitespaceValidator(control: FormControl) {
     const isWhitespace = (control.value || '').trim().length === 0;
@@ -135,11 +141,19 @@ export class DealsComponent implements OnInit {
       foodMenuID: new FormControl(""),
     });
     this.DealForm = new FormGroup({
-
+      DealID: new FormControl(""),
+      DealName: new FormControl("", [Validators.required, this.noWhitespaceValidator]),
+      DealPrice: new FormControl("", [Validators.required]),
+      description: new FormControl(""),
+      isActive: new FormControl(""),
+      imageURL: new FormControl("", [Validators.required]),
+      totalAmountRs: new FormControl(""),
+      itemsDescription: new FormControl(""),
     });
   }
 
   makeDeal() {
+    this.resetDeals();
     this.isShow = !this.isShow;
     this.addMode = !this.addMode;
   }
@@ -169,73 +183,11 @@ export class DealsComponent implements OnInit {
       });
   }
 
-  SaveMenuItems() {
-    this.submitted = true;
-    if (this.MenuItemsForm.valid) {
-      //this.uploadFiles();
-      if (this.foodMenuItemModel.requestVariants.length > 0) {
-        this.MenuItemsForm.controls.hasVariant.setValue(true);
-        this.imageUrl = "";
-      }
-      else {
-        this.MenuItemsForm.controls.hasVariant.setValue(false);
-      }
-      if (this.MenuItemsForm.controls.isActive.value == "" || this.MenuItemsForm.controls.isActive.value == null) {
-        this.MenuItemsForm.controls.isActive.setValue(false);
-      }
-      if (this.MenuItemsForm.controls.foodMenuID.value == null) {
-        this.MenuItemsForm.controls.foodMenuID.setValue(0);
-      }
-      if (this.MenuItemsForm.controls.foodItemID.value == null) {
-        this.MenuItemsForm.controls.foodItemID.setValue(0);
-      }
-      if (this.MenuItemsForm.controls.discountPercentage.value != null && this.MenuItemsForm.controls.discountPercentage.value != 0) {
-        this.MenuItemsForm.controls.discount.setValue(this.MenuItemsForm.controls.discountPercentage.value);
-      }
-      else {
-        this.MenuItemsForm.controls.discount.setValue(0);
-      }
-      if (this.MenuItemsForm.controls.calculatedPrice.value == null) {
-        this.MenuItemsForm.controls.calculatedPrice.setValue(0);
-      }
-      if (this.MenuItemsForm.controls.refCode.value == null) {
-        this.MenuItemsForm.controls.refCode.setValue("");
-      }
-      this.MenuItemsForm.controls.OwnerID.setValue(this.OwnerID);
-      this.MenuItemsForm.controls.foodMenuID.setValue(+(this.MenuItemsForm.controls.foodMenuID.value));
-      this.foodMenuItemModel.requestFoodMenuItem = this.MenuItemsForm.value;
-      if (this.imageUrl == null || this.imageUrl == "" || this.imageUrl == undefined) {
-        this.imageUrl = ""
-      }
-      else {
-        this.foodMenuItemModel.requestFoodMenuItem.imageURl = this.imageUrl;
-      }
-      this.API.PostData('/FoodMenu/AddEditfoodMenuItem', this.foodMenuItemModel).subscribe(c => {
-        if (c != null) {
-          this.toastr.success(c.message, 'Success', {
-            timeOut: 3000,
-            'progressBar': true,
-          });
-          this.isShow = !this.isShow;
-          this.foodMenuItemModel = new MenuItemsModel();
-          this.SearchForm.controls.foodMenuID.setValue(0);
-          this.getAllItems();
-        }
-      },
-        error => {
-          this.toastr.error(error.message, 'Error', {
-            timeOut: 3000,
-            'progressBar': true,
-          });
-        });
-    }
-  }
-
   isActiveCheck(check: boolean) {
     if (check == true) {
-      this.MenuItemsForm.controls.isActive.setValue(true);
+      this.DealForm.controls.isActive.setValue(true);
     } else {
-      this.MenuItemsForm.controls.isActive.setValue(false);
+      this.DealForm.controls.isActive.setValue(false);
     }
   }
 
@@ -256,7 +208,7 @@ export class DealsComponent implements OnInit {
       if (c != null) {
         this.responseFoodMenuItem = c.responseFoodMenuItems;
         this.ItemsResponseModelReplica = c.responseFoodMenuItems;
-        this.dtTrigger0.next();
+        this.dtTrigger.next();
 
         this.ItemsResponseModelReplica.forEach((element) => { element.Quantity = 1 });
         this.ItemsResponseModelReplica.forEach((element) => { element.Checked = false });
@@ -279,17 +231,18 @@ export class DealsComponent implements OnInit {
         this.responseVariant.forEach((element) => { element.Quantity = 1 });
         this.responseVariant.forEach((element) => { element.Checked = false });
         //................................................
-        for (let i = 0; i < this.requestDealsModel.length; i++) {
-          if (this.requestDealsModel[i].variantID) {
+        for (let i = 0; i < this.DealModelRequest.DealsArray.length; i++) {
+          if (this.DealModelRequest.DealsArray[i].variantID) {
             for (let j = 0; j < this.responseVariant.length; j++) {
-              if (this.requestDealsModel[i].variantID == this.responseVariant[j].variantID) {
+              if (this.DealModelRequest.DealsArray[i].variantID == this.responseVariant[j].variantID) {
                 this.responseVariant[j].Checked = true;
+                this.responseVariant[j].Quantity = this.DealModelRequest.DealsArray[i].Quantity;
               }
             }
           }
         }
         //................................................
-        // this.requestDealsModel.forEach((element) => {
+        // this.DealModelRequest.DealsArray.forEach((element) => {
         //   var checkdup = this.responseVariant.find(
         //     (x) => x.variantID == element.variantID
         //   );
@@ -359,22 +312,54 @@ export class DealsComponent implements OnInit {
         this.responseVariant[index].Checked = true;
       }
       let body = {
+        DealID: p.DealID,
+        DealDetailID: p.DealDetailID,
         FoodItemName: p.foodItemName,
         CalPrice: p.calculatedPrice,
         Price: p.price,
         FoodItemID: p.foodItemID,
         FoodMenuID: p.foodMenuID,
         FoodMenuName: p.foodMenuName,
-        hasVariant: p.hasVariant,
         RefCode: p.refCode,
         variantID: p.variantID,
         variantName: p.variantName,
         variantPrice: p.variantPrice,
+        hasVariant: p.hasVariant,
         Quantity: p.Quantity
       }
-      this.requestDealsModel.push(body);
+      if (body.DealID == undefined || body.DealID == null) {
+        body.DealID = 0;
+      }
+      if (body.DealDetailID == undefined || body.DealDetailID == null) {
+        body.DealDetailID = 0;
+      }
+      if (body.variantID == undefined || body.variantID == null) {
+        body.variantID = 0;
+      }
+      if (body.variantName == undefined || body.variantName == null) {
+        body.variantName = "";
+      }
+      if (body.variantPrice == undefined || body.variantPrice == null) {
+        body.variantPrice = 0;
+      }
+      if (body.FoodMenuID == undefined || body.FoodMenuID == null) {
+        body.FoodMenuID = 0;
+      }
+      if (body.FoodMenuName == undefined || body.FoodMenuName == null) {
+        body.FoodMenuName = "";
+      }
+      if (body.Price == undefined || body.Price == null) {
+        body.Price = 0;
+      }
+      if (body.RefCode == undefined || body.RefCode == null) {
+        body.RefCode = "";
+      }
+      if (body.hasVariant == undefined || body.hasVariant == null) {
+        body.hasVariant = true;
+      }
+      this.DealModelRequest.DealsArray.push(body);
       this.totalAmount = 0;
-      this.requestDealsModel.forEach((element) => {
+      this.DealModelRequest.DealsArray.forEach((element) => {
         if (element.variantID) {
           if (element.variantPrice > 0) {
             this.totalAmount = this.totalAmount + (element.CalPrice * element.Quantity);
@@ -395,13 +380,25 @@ export class DealsComponent implements OnInit {
     }
     else {
       var index = this.ItemsResponseModelReplica.findIndex((x) => x.foodItemID == p.foodItemID);
-      this.ItemsResponseModelReplica[index].Checked = false;
       this.ItemsResponseModelReplica[index].Quantity = 1;
-      var index = this.requestDealsModel.findIndex((x) => x.FoodItemID == p.foodItemID);
-      this.requestDealsModel.splice(index, 1);
+      if (p.variantID) {
+        var ind = this.DealModelRequest.DealsArray.findIndex((x) => x.variantID == p.variantID);
+        this.DealModelRequest.DealsArray.splice(ind, 1);
+      }
+      else {
+        var ind = this.DealModelRequest.DealsArray.findIndex((x) => x.FoodItemID == p.foodItemID);
+        this.DealModelRequest.DealsArray.splice(ind, 1);
+      }
+      var ind = this.DealModelRequest.DealsArray.findIndex((x) => x.FoodItemID == p.foodItemID);
+      if (ind != -1) {
+        this.ItemsResponseModelReplica[index].Checked = true;
+      }
+      else {
+        this.ItemsResponseModelReplica[index].Checked = false;
+      }
 
       this.totalAmount = 0;
-      this.requestDealsModel.forEach((element) => {
+      this.DealModelRequest.DealsArray.forEach((element) => {
         if (element.variantID) {
           if (element.variantPrice > 0) {
             this.totalAmount = this.totalAmount + (element.CalPrice * element.Quantity);
@@ -420,14 +417,19 @@ export class DealsComponent implements OnInit {
         }
       });
     }
-    this.dealArrLength = this.requestDealsModel.length;
+    this.dealArrLength = this.DealModelRequest.DealsArray.length;
   }
   getDeals() {
-    this.API.getdata('/FoodMenu/getDeals?outletID=' + this.outletID).subscribe(c => {
+    this.API.getdata('/FoodMenu/getDeals?outletID=' + this.GV.OutletID).subscribe(c => {
       if (c != null) {
         this.responseDealsModel = [];
-        this.responseDealsModel = c.responseDeals;
-        this.dtTrigger0
+        this.responseDealsModel = c.responseDeal;
+        this.responseDealsModel.forEach((x) => {
+          if (x.itemsDescription != "") {
+            this.itemsArr = x.itemsDescription.split(',').map((item: any) => item.trim());
+            x.itemsDescription = this.itemsArr.join("\n");
+          }
+        })
       }
     },
       error => {
@@ -438,11 +440,8 @@ export class DealsComponent implements OnInit {
       });
   }
   dealMakingDone() {
-    var button: any = document.getElementById("dealsDone");
-    button.click();
-
-    if (this.requestDealsModel.length <= 1) {
-      this.toastr.error('Select atleast two items', 'Error', {
+    if (this.DealModelRequest.DealsArray.length == 0) {
+      this.toastr.error('Select atleast one item', 'Error', {
         timeOut: 3000,
         'progressBar': true,
       });
@@ -450,8 +449,32 @@ export class DealsComponent implements OnInit {
     else {
       var button: any = document.getElementById("dealsDone");
       button.click();
+      this.DealForm.reset();
+      this.DealForm.controls.totalAmountRs.setValue(this.totalAmount);
     }
   }
+
+  fillItemsDescription() {
+    this.itemsDescription = "";
+    this.DealModelRequest.DealsArray.forEach((x) => {
+      if (x.variantName != "") {
+        this.itemsDescription = this.itemsDescription.concat(x.Quantity, ' x ', x.FoodItemName, ' ', '(', x.variantName, ')', ', ');
+      }
+      else {
+        this.itemsDescription = this.itemsDescription.concat(x.Quantity, ' x ', x.FoodItemName, ', ');
+      }
+    })
+    this.itemsDescription = this.itemsDescription.slice(0, -2);
+    this.DealForm.controls.itemsDescription.setValue(this.itemsDescription);
+    this.splitString = this.itemsDescription.split(', ');
+
+    this.itemsArr = this.DealForm.controls.itemsDescription.value.split(',').map((item: any) => item.trim());
+    this.DealForm.controls.itemsDescription.setValue(this.itemsArr.join("\n"));
+    this.itemsArr = [];
+  }
+
+
+
   attachDealImage(file: any) {
     if (!file.target.files)
       return;
@@ -460,13 +483,62 @@ export class DealsComponent implements OnInit {
     var reader = new FileReader();
     reader.onload = (event: any) => {
       this.imageUrl = event.target.result;
+      this.DealModelRequest.DealObject.imageURL = this.imageUrl;
     }
     reader.readAsDataURL(this.fileToUpload);
   }
+
   submitDeal() {
+    this.Dsubmitted = true;
+    if (this.DealForm.valid) {
+      if (this.DealForm.controls.DealID.value == null || this.DealForm.controls.DealID.value == "") {
+        this.DealForm.controls.DealID.setValue(0);
+      }
+      if (this.DealForm.controls.isActive.value == null || this.DealForm.controls.isActive.value == "") {
+        this.DealForm.controls.isActive.setValue(false);
+      }
+      this.DealModelRequest.DealObject = this.DealForm.value;
+      if (this.imageUrl == null || this.imageUrl == "" || this.imageUrl == undefined) {
+        this.imageUrl = ""
+      }
+      else {
+        this.DealModelRequest.DealObject.imageURL = this.imageUrl;
+      }
+      this.DealModelRequest.DealObject.outletID = this.GV.OutletID;
+      this.DealModelRequest.DealObject.OwnerID = this.GV.ownerID;
+      this.API.PostData('/FoodMenu/AddDeal', this.DealModelRequest).subscribe(c => {
+        if (c != null) {
+          if (c.status == "Failed") {
+            this.toastr.error(c.message, 'Error', {
+              timeOut: 3000,
+              'progressBar': true,
+            });
+            return
+          }
+          else {
+            this.toastr.success(c.message, 'Success', {
+              timeOut: 3000,
+              'progressBar': true,
+            });
+            this.isShow = false;
+            this.DealModelRequest.DealsArray = [];
+            this.SearchForm.controls.foodMenuID.setValue(0);
+            this.closeDealsModal["first"].nativeElement.click();
+            this.getDeals();
+          }
+        }
+      },
+        error => {
+          this.toastr.error(error.message, 'Error', {
+            timeOut: 3000,
+            'progressBar': true,
+          });
+        });
+    }
   }
 
   closeVariantViewModal() {
+    this.responseVariant = [];
     this.closeViewVariantModal["first"].nativeElement.click();
   }
 
@@ -474,11 +546,11 @@ export class DealsComponent implements OnInit {
     var index = this.ItemsResponseModelReplica.findIndex((x) => x.foodItemID == p.foodItemID);
     if (this.ItemsResponseModelReplica[index].Quantity > 1) {
       this.ItemsResponseModelReplica[index].Quantity = this.ItemsResponseModelReplica[index].Quantity - 1;
-      var ind = this.requestDealsModel.findIndex((x) => x.FoodItemID == p.foodItemID);
+      var ind = this.DealModelRequest.DealsArray.findIndex((x) => x.FoodItemID == p.foodItemID);
       if (ind != -1) {
-        this.requestDealsModel[ind].Quantity = this.ItemsResponseModelReplica[index].Quantity;
+        this.DealModelRequest.DealsArray[ind].Quantity = this.ItemsResponseModelReplica[index].Quantity;
         this.totalAmount = 0;
-        this.requestDealsModel.forEach((element) => {
+        this.DealModelRequest.DealsArray.forEach((element) => {
           if (element.variantID) {
             if (element.variantPrice > 0) {
               this.totalAmount = this.totalAmount + (element.CalPrice * element.Quantity);
@@ -509,11 +581,11 @@ export class DealsComponent implements OnInit {
   plusQuantity(p: any) {
     var index = this.ItemsResponseModelReplica.findIndex((x) => x.foodItemID == p.foodItemID);
     this.ItemsResponseModelReplica[index].Quantity = this.ItemsResponseModelReplica[index].Quantity + 1;
-    var ind = this.requestDealsModel.findIndex((x) => x.FoodItemID == p.foodItemID);
+    var ind = this.DealModelRequest.DealsArray.findIndex((x) => x.FoodItemID == p.foodItemID);
     if (ind != -1) {
-      this.requestDealsModel[ind].Quantity = this.ItemsResponseModelReplica[index].Quantity;
+      this.DealModelRequest.DealsArray[ind].Quantity = this.ItemsResponseModelReplica[index].Quantity;
       this.totalAmount = 0;
-      this.requestDealsModel.forEach((element) => {
+      this.DealModelRequest.DealsArray.forEach((element) => {
         if (element.variantID) {
           if (element.variantPrice > 0) {
             this.totalAmount = this.totalAmount + (element.CalPrice * element.Quantity);
@@ -542,11 +614,11 @@ export class DealsComponent implements OnInit {
     var index = this.responseVariant.findIndex((x) => x.variantID == p.variantID);
     if (this.responseVariant[index].Quantity > 1) {
       this.responseVariant[index].Quantity = this.responseVariant[index].Quantity - 1;
-      var ind = this.requestDealsModel.findIndex((x) => x.variantID == p.variantID);
+      var ind = this.DealModelRequest.DealsArray.findIndex((x) => x.variantID == p.variantID);
       if (ind != -1) {
-        this.requestDealsModel[ind].Quantity = this.ItemsResponseModelReplica[index].Quantity;
+        this.DealModelRequest.DealsArray[ind].Quantity = this.responseVariant[index].Quantity;
         this.totalAmount = 0;
-        this.requestDealsModel.forEach((element) => {
+        this.DealModelRequest.DealsArray.forEach((element) => {
           if (element.variantID) {
             if (element.variantPrice > 0) {
               this.totalAmount = this.totalAmount + (element.CalPrice * element.Quantity);
@@ -577,11 +649,11 @@ export class DealsComponent implements OnInit {
   plusVQuantity(p: any) {
     var index = this.responseVariant.findIndex((x) => x.variantID == p.variantID);
     this.responseVariant[index].Quantity = this.responseVariant[index].Quantity + 1;
-    var ind = this.requestDealsModel.findIndex((x) => x.variantID == p.variantID);
+    var ind = this.DealModelRequest.DealsArray.findIndex((x) => x.variantID == p.variantID);
     if (ind != -1) {
-      this.requestDealsModel[ind].Quantity = this.ItemsResponseModelReplica[index].Quantity;
+      this.DealModelRequest.DealsArray[ind].Quantity = this.responseVariant[index].Quantity;
       this.totalAmount = 0;
-      this.requestDealsModel.forEach((element) => {
+      this.DealModelRequest.DealsArray.forEach((element) => {
         if (element.variantID) {
           if (element.variantPrice > 0) {
             this.totalAmount = this.totalAmount + (element.CalPrice * element.Quantity);
@@ -604,5 +676,65 @@ export class DealsComponent implements OnInit {
       return
     }
   }
+
+  resetDeals() {
+    this.totalAmount = 0;
+    this.DealForm.reset();
+    this.Dsubmitted = false;
+    this.DealModelRequest = new DealModelRequest();
+    this.ItemsResponseModelReplica.forEach((element) => { element.Quantity = 1 });
+    this.ItemsResponseModelReplica.forEach((element) => { element.Checked = false });
+    this.responseVariant.forEach((element) => { element.Quantity = 1 });
+    this.responseVariant.forEach((element) => { element.Checked = false });
+  }
+
+  activeDeal(p: any, status: any) {
+    if (p.isActive == true && status == 2) {
+      this.toastr.warning('Deal Already Active', '', {
+        timeOut: 3000,
+        'progressBar': true,
+      });
+      return
+    }
+    else if (p.isActive == false && status == 1) {
+      this.toastr.warning('Deal Already In-Active', '', {
+        timeOut: 3000,
+        'progressBar': true,
+      });
+      return
+    }
+    else {
+      this.DealId = p.dealID
+      this.API.getdata('/FoodMenu/removeDeal?dealID=' + this.DealId).subscribe(c => {
+        if (c != null) {
+          this.toastr.success(c.message, 'Success', {
+            timeOut: 3000,
+            'progressBar': true,
+          });
+          this.DealId = null;
+          this.getDeals();
+        }
+      },
+        error => {
+          this.toastr.error(error.message, 'Error', {
+            timeOut: 3000,
+            'progressBar': true,
+          });
+        });
+    }
+  }
+
+  goToDeals() {
+    this.totalAmount = 0;
+    this.DealForm.reset();
+    this.Dsubmitted = false;
+    this.DealModelRequest = new DealModelRequest();
+    this.ItemsResponseModelReplica.forEach((element) => { element.Quantity = 1 });
+    this.ItemsResponseModelReplica.forEach((element) => { element.Checked = false });
+    this.responseVariant.forEach((element) => { element.Quantity = 1 });
+    this.responseVariant.forEach((element) => { element.Checked = false });
+    this.isShow = false;
+  }
+
 }
 

@@ -32,8 +32,8 @@
                     <th>SN</th>
                     <th></th>
                     <th>Item Name</th>
-                    <th>Menu Category</th>
-                    <th style="text-align: right;">Price Rs.</th>
+                    <th style="text-align: center;">Menu Category</th>
+                    <th style="text-align: right;">Price</th>
                     <th>Variant</th>
                     <th>Is Active</th>
                     <th>Actions</th>
@@ -52,11 +52,12 @@
                     </td>
                     <td>{{p.foodItemName}} <span *ngIf="p.refCode" style="font-style: italic;"> - ({{p.refCode}})</span>
                     </td>
-                    <td>{{p.foodMenuName}}</td>
+                    <td style="text-align: center;">{{p.foodMenuName}}</td>
                     <td *ngIf="p.hasVariant == true" style="text-align: right;">-</td>
-                    <td *ngIf="p.discount == 0 && p.hasVariant == false" style="text-align: right;">{{p.price |
+                    <td *ngIf="p.discount == 0 && p.hasVariant == false" style="text-align: right;">{{symbol}} {{p.price
+                        |
                         number}}</td>
-                    <td *ngIf="p.discount != 0 && p.hasVariant == false" style="text-align: right;">{{p.calculatedPrice
+                    <td *ngIf="p.discount != 0 && p.hasVariant == false" style="text-align: right;">{{symbol}} {{p.calculatedPrice
                         | number}} / <del class="text-danger">{{p.price |
                             number}}</del>
                     </td>
@@ -213,14 +214,16 @@
                                     <tr>
                                         <th>SN</th>
                                         <th>Variant Name</th>
-                                        <th style="text-align: right;">Price Rs.</th>
+                                        <th style="text-align: right;">Price</th>
                                         <th style="text-align: right;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr *ngFor="let p of foodMenuItemModel.requestVariants let ndx=index;">
                                         <td>{{ndx+1}}</td>
-                                        <td>{{p.variantName}}</td>
+                                        <td>{{p.variantName}} <span *ngIf="p.RefCode" style="font-style: italic;"> -
+                                                ({{p.RefCode}})</span>
+                                        </td>
                                         <td *ngIf="p.discount == 0" style="text-align: right;">{{p.variantPrice |
                                             number}}</td>
                                         <td *ngIf="p.discount != 0" style="text-align: right;">{{p.calculatedPrice
@@ -261,7 +264,7 @@
             <div class="modal-body">
                 <form [formGroup]="VariantForm" (ngSubmit)="pushVariant()">
                     <div class="row">
-                        <div class="col-sm-12 mb-2 col-md-6">
+                        <div class="col-sm-12 mb-2 col-md-4">
                             <div class="form-group">
                                 <label>Variant Name<span class="required_star">*</span></label>
                                 <input tabindex="1" minlength="3" autocomplete="off" type="text"
@@ -280,6 +283,13 @@
                                         *ngIf="g.variantName.errors.whitespace && !g.variantName.errors.required">Please
                                         enter valid data</small>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 mb-2 col-md-2">
+                            <div class="form-group">
+                                <label>Reference Code</label>
+                                <input tabindex="1" autocomplete="off" type="text" formControlName="RefCode"
+                                    class="form-control" value="" />
                             </div>
                         </div>
                         <div class="col-sm-12 mb-2 col-md-6">
@@ -361,7 +371,7 @@
                                     <th>SN</th>
                                     <th></th>
                                     <th>Variant Name</th>
-                                    <th style="text-align: right;">Price Rs.</th>
+                                    <th style="text-align: right;">Price</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -376,10 +386,12 @@
                                                 style="width: 50px;height: 50px;">
                                         </div>
                                     </td>
-                                    <td>{{p.variantName}}</td>
-                                    <td *ngIf="p.discount == 0" style="text-align: right;">{{p.variantPrice |
+                                    <td>{{p.variantName}} <span *ngIf="p.RefCode" style="font-style: italic;"> -
+                                            ({{p.RefCode}})</span>
+                                    </td>
+                                    <td *ngIf="p.discount == 0" style="text-align: right;">{{symbol}} {{p.variantPrice |
                                         number}}</td>
-                                    <td *ngIf="p.discount != 0" style="text-align: right;">{{p.calculatedPrice
+                                    <td *ngIf="p.discount != 0" style="text-align: right;">{{symbol}} {{p.calculatedPrice
                                         | number}} / <del class="text-danger">{{p.variantPrice |
                                             number}}</del>
                                     </td>

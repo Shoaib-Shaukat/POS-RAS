@@ -33,6 +33,7 @@ export class requestFoodMenuItem {
     calculatedPrice: number;
     imageURl: any;
     refCode: string;
+    outletID: number;
 }
 export class responseFoodMenuItem {
     foodItemID: number;
@@ -48,6 +49,7 @@ export class responseFoodMenuItem {
     imageURl: any;
     foodMenuName: string;
     refCode: string;
+    outletID: number;
 }
 export class requestVariant {
     variantID: number;
@@ -58,6 +60,8 @@ export class requestVariant {
     description: string;
     foodItemID: number;
     imageURL: any;
+    RefCode: string;
+    outletID: number;
 }
 export class responseVariant {
     variantID: number;
@@ -68,4 +72,6 @@ export class responseVariant {
     description: string;
     foodItemID: number;
     imageURL: any;
+    RefCode: string;
+    outletID: number;
 }

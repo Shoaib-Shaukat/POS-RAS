@@ -6,7 +6,7 @@
                 <input type="hidden" class="datatable_name" data-title="Food Menu Categories" data-id_name="datatable">
             </div>
             <div class="col-md-6">
-                <a class="btn_list m-right bg-blue-btn btn" (click)=addNewCompany()>
+                <a *ngIf="GV.canAddEditCompany" class="btn_list m-right bg-blue-btn btn" (click)=addNewCompany()>
                     <i data-feather="plus"></i> Add Company</a>
             </div>
         </div>
@@ -19,7 +19,7 @@
                 <div class="btn_box">
                     <a *ngIf="GV.canAddEditCompany " class="bg-blue-btn btn " (click)="editCompany(p)">
                         <strong>Edit</strong></a>
-                    <a class="bg-blue-btn btn " (click)="enterInCompany(p.companyID)">
+                    <a class="bg-blue-btn btn " (click)="enterInCompany(p)">
                         <strong>Enter</strong></a>
                 </div>
             </div>
@@ -47,7 +47,8 @@
                         <small *ngIf="CompanyForm.controls['companyName'].errors?.minlength" class="text-danger">Company
                             Name must be at
                             least 3 characters long.</small>
-                        <small *ngIf="f.companyName.errors.whitespace">Please enter valid data</small>
+                        <small *ngIf="f.companyName.errors.whitespace && !f.companyName.errors.required">Please enter
+                            valid data</small>
                     </div>
                 </div>
             </div>

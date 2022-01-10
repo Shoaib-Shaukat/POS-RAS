@@ -16,4 +16,6 @@ export class responseTable {
     customerID: number;
     tableID: number;
     description: string;
+    occupied: number;
+    available: number;
 }
