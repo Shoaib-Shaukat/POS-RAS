@@ -1,86 +1,53 @@
 <div class="wrapper">
-    <div id="main_part">
+    <div id="main_part" (keypress)="handleInput($event)" tabindex="1">
         <div class="left_item">
-            <div class="main_left" style="height: 540px;">
+            <!-- <div class="main_left" style="height: 540px;">
                 <div class="holder">
                     <div id="running_order_header">
                         <h3>Orders</h3>
                         <span id="refresh_order" (click)="getAllOrders()"><i class="fas fa-sync-alt"></i></span>
-                        <input type="text" (change)="searchOrder()" name="search_running_orders"
+                        <input type="text" (input)="searchOrder()" name=" search_running_orders"
                             id="search_running_orders" autocomplete="off" class="ir_h15_m_w90"
                             placeholder="Order Number">
                     </div>
                     <div class="anyClassTwo order_details " style="position: relative; height: 30px;">
                         <div class="order_details" id="order_details_holder"
                             style="margin-bottom: 0px; margin-right: 0px;max-height: 278px;">
-                            <!--This variable could not be escaped because this is html content-->
                             <div data-started-cooking="0" data-done-cooking="2" *ngFor="let p of responseOrderReplica"
                                 class="txt_14 single_order fix new_order_22" data-selected="unselected" id="order_22">
                                 <div class="inside_single_order_container" data-toggle="modal"
                                     data-target="#OrderViewModal" (click)="viewOrder(p)">
                                     <div class="single_order_content_holder_inside fix"><span
                                             id="open_orders_order_status_22" class="ir_display_none">2</span>
-                                        <p><span class="running_order_customer_name">Order No: {{p.orderID}}</span>
+                                        <p><span class="running_order_customer_name">Order No: {{p.kotID}}</span>
                                         </p>
-                                        <!-- <ng-container *ngFor="let tb of responseTableReplica">
-                                            <p><span class="running_order_customer_name"
-                                                    *ngIf="tb.orderID == p.orderID">Table: {{tb.tableName}}</span>
-                                            </p>
-                                        </ng-container> -->
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="scroll-element scroll-x scroll-scrolly_visible" style="">
-                            <div class="scroll-element_outer">
-                                <div class="scroll-element_size"></div>
-                                <div class="scroll-element_track"></div>
-                                <div class="scroll-bar" style="width: 0px;"></div>
-                            </div>
-                        </div>
-                        <div class="scroll-element scroll-y scroll-scrolly_visible" style="">
-                            <div class="scroll-element_outer">
-                                <div class="scroll-element_size"></div>
-                                <div class="scroll-element_track"></div>
-                                <div class="scroll-bar" style="height: 0px; top: 6.51365px;"></div>
-                            </div>
-                        </div>
                     </div>
-                    <!-- <div class="ir_pa_b_w100" id="left_side_button_holder_absolute">
-                        <button class="operation_button fix" id="single_order_details"><i
-                                class="fas fa-info-circle"></i> Order
-                            Details</button>
-                        <button [disabled]="POSNewModelRequest.requestKotDetail.length == 0"
-                            class="operation_button fix  btn_tip full-width-for-waiter" id="create_bill_and_close"
-                            data-tippy-content="Print Bill for Customer Before Invoicing" [printStyle]="{h1 : {'color': 'black'}, 
-                            h2 : {'border': 'solid 2px'}, 
-                                th:{'border-bottom': 'solid 1px'}, table:{'border': 'solid 1px'}, 
-                                td:{'border-bottom': 'solid 0.5px', 'border-right': 'solid 0.5px'}}"
-                            printSectionId="KOTPrint" ngxPrint> <i class="fas fa-print"></i>
-                            KOT </button>
-                        <button class="operation_button fix  btn_tip full-width-for-waiter" id="create_bill_and_close"
-                            data-tippy-content="Print Bill for Customer Before Invoicing">
-                            Bill </button>
-                        <button class="operation_button fix" id="print_invoice"><i class="fas fa-file-invoice"></i>
-                            Create Invoice</button>
-                        <button class="operation_button fix" id="close_order_button"><i class="fas fa-times-circle"></i>
-                            Close Order</button>
-                        <button class="operation_button fix" id="kitchen_status_button"><i class="fas fa-spinner"></i>
-                            Kitchen Status</button>
-                    </div> -->
                 </div>
-            </div>
-            <div class="main_middle" style="height: 540px;">
+            </div> -->
+            <div class="main_middle" style="height: 540px; width: 620px;">
                 <div class="main_top fix">
                     <!-- Top Btns -->
                     <div class="button_holder no-need-for-waiter">
-                        <button class="selected__btn_c" data-selected="" id="dine_in_button" (click)="orderType(1)">
+                        <button type="button" class="w-100 btn bg-blue-btn" data-toggle="modal"
+                            data-target="#OrdersModal" (click)="getAllOrders()">Orders</button>
+                        <button type="button" class="w-100 btn bg-blue-btn" data-toggle="modal"
+                            data-target="#TablesModal" (click)="showTables()">Tables</button>
+                        <button class="selected__btn_c"
+                            [ngStyle]="{'background-color': orderTypeValue == 'Dine In' ? '#82C0CF ' : '#64e1ff' }"
+                            data-selected="" id="dine_in_button" (click)="orderType(1)">
                             <i class="fal fa-table"></i> Dine In </button>
-                        <button class="selected__btn_c" id="take_away_button" (click)="orderType(2)"><i
-                                class="fal fa-shopping-bag"></i>
+                        <button class="selected__btn_c"
+                            [ngStyle]="{'background-color': orderTypeValue == 'Take Away' ? '#82C0CF ' : '#64e1ff' }"
+                            id="take_away_button" (click)="orderType(2)"><i class="fal fa-shopping-bag"></i>
                             Take Away</button>
-                        <button class="selected__btn_c" id="delivery_button" data-toggle="modal"
-                            data-target="#DeliveryModal" (click)="orderType(3)"><i class="fal fa-truck"></i>
+                        <button class="selected__btn_c"
+                            [ngStyle]="{'background-color': orderTypeValue == 'Delivery' ? '#82C0CF ' : '#64e1ff' }"
+                            id="delivery_button" data-toggle="modal" data-target="#DeliveryModal"
+                            (click)="orderType(3)"><i class="fal fa-truck"></i>
                             Delivery</button>
                         <!-- <button id="table_button"><i class="fal fa-table"></i> Table</button> -->
                     </div>
@@ -88,7 +55,7 @@
                     <div class="waiter_customer">
                         <form [formGroup]="SearchForm">
                             <div class="row">
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Select Table</label>
                                         <ng-multiselect-dropdown [placeholder]="'Select Table'" [data]="responseTable"
@@ -100,9 +67,7 @@
                                         </ng-multiselect-dropdown>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row" style="margin-bottom: -25px;">
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Search Customer</label>
                                         <input type="text" (change)="searchCustomer()"
@@ -113,43 +78,22 @@
                                                 class="fa fa-search"></i></button>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Customer Name</label>
                                         <input type="text" style="margin-left: 18px;" formControlName="CustomerName"
                                             readonly autocomplete="off" class="form-control">
                                     </div>
                                 </div>
-                                <div class="col-md-2">
-                                    <div class="float-end">
-                                        <label class="mt-5"></label>
-                                        <button [disabled]="!customerFound" class="tags" gloss="View Customer Detail"
-                                            title="View Customer Detail" data-toggle="modal"
-                                            data-target="#addCustomerModal" (click)="viewCustomer()"><i
-                                                class="fa fa-eye"></i></button>
-                                    </div>
-                                    <!-- <div class="separator float-end">
-                                        <label></label>
-                                        <a href="javascript:void(0)" id="plus_button" class="header_menu_icon"
-                                            data-tippy-content="Add Customer" data-toggle="modal"
-                                            data-target="#addCustomerModal" (click)="addCustomer()">
-                                            <i class="fal fa-plus"></i>
-                                        </a>
-                                        <label></label>
-                                        <a href="javascript:void(0)" id="plus_button" class="header_menu_icon"
-                                            data-tippy-content="Add Customer" data-toggle="modal"
-                                            data-target="#addCustomerModal" (click)="addCustomer()">
-                                            <i class="fal fa-plus"></i>
-                                        </a>
-                                    </div> -->
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="float-end">
-                                        <label class="mt-5"></label>
-                                        <button class="tags" gloss="Add Customer" title="Add Customer"
-                                            data-toggle="modal" data-target="#addCustomerModal"
-                                            (click)="addCustomer()"><i class="fal fa-plus"></i></button>
-                                    </div>
+                                <div class="col-md-3">
+                                    <label class="mt-5"></label>
+                                    <button [disabled]="!customerFound" class="tags" gloss="View Customer Detail"
+                                        title="View Customer Detail" data-toggle="modal" data-target="#addCustomerModal"
+                                        (click)="viewCustomer()"><i class="fa fa-eye"></i></button>
+                                    <label class="mt-5"></label>
+                                    <button class="tags" style="margin-left: 60px;" gloss="Add Customer"
+                                        title="Add Customer" data-toggle="modal" data-target="#addCustomerModal"
+                                        (click)="addCustomer()"><i class="fal fa-plus"></i></button>
                                 </div>
                             </div>
                         </form>
@@ -159,13 +103,13 @@
                 <div class="table-box anyClassFour">
                     <div class="table-responsive">
                         <table id="datatable" class="table table-striped">
-                            <thead>
+                            <thead style="background-color: #ff6060">
                                 <tr>
                                     <th></th>
                                     <th>Items</th>
-                                    <th>Price</th>
+                                    <th style="text-align: right;">Price</th>
                                     <th>Qty</th>
-                                    <th title="Discount">Dis</th>
+                                    <th title="Discount">Discount</th>
                                     <th style="text-align: right;">Total</th>
                                 </tr>
                             </thead>
@@ -200,36 +144,36 @@
                                     <td>
                                         <button class="btn btn-success color text-white btn-sm" (click)="decrement(p)">
                                             <i class="fa fa-minus" aria-hidden="true"></i></button>
-                                        {{p.Quantity}}
+                                        {{p.quantity}}
                                         <button class="btn btn-success color text-white btn-sm" (click)="increment(p)">
                                             <i class="fa fa-plus" aria-hidden="true"></i></button>
                                     </td>
 
                                     <td *ngIf="p.discount == 0">0</td>
-                                    <td *ngIf="p.variantID && !p.dealID && p.discount != 0">{{ p.Quantity *
+                                    <td *ngIf="p.variantID && !p.dealID && p.discount != 0">{{ p.quantity *
                                         (p.variantPrice - p.calculatedPrice)}}</td>
-                                    <td *ngIf="!p.variantID && !p.dealID && p.discount != 0">{{ p.Quantity *
+                                    <td *ngIf="!p.variantID && !p.dealID && p.discount != 0">{{ p.quantity *
                                         (p.price - p.calculatedPrice)}}</td>
-                                    <td *ngIf="!p.variantID && p.dealID && p.discount != 0">{{ p.Quantity *
+                                    <td *ngIf="!p.variantID && p.dealID && p.discount != 0">{{ p.quantity *
                                         (p.dealPrice - p.calculatedPrice)}}</td>
 
                                     <td *ngIf="!p.variantID && !p.dealID && p.discount == 0" style="text-align: right;">
-                                        {{GV.Currency}} {{p.Quantity * p.price
+                                        {{GV.Currency}} {{p.quantity * p.price
                                         |
                                         number}}</td>
                                     <td *ngIf="!p.variantID && !p.dealID && p.discount != 0" style="text-align: right;">
-                                        {{GV.Currency}} {{p.Quantity *
+                                        {{GV.Currency}} {{p.quantity *
                                         p.calculatedPrice |
                                         number}}</td>
                                     <td *ngIf="p.variantID && !p.dealID && p.discount == 0" style="text-align: right;">
-                                        {{GV.Currency}} {{p.Quantity *
+                                        {{GV.Currency}} {{p.quantity *
                                         p.variantPrice |
                                         number}}</td>
                                     <td *ngIf="p.variantID && !p.dealID && p.discount != 0" style="text-align: right;">
-                                        {{GV.Currency}} {{p.Quantity *
+                                        {{GV.Currency}} {{p.quantity *
                                         p.calculatedPrice
                                         | number}}</td>
-                                    <td *ngIf="p.dealID" style="text-align: right;">{{GV.Currency}} {{p.Quantity *
+                                    <td *ngIf="p.dealID" style="text-align: right;">{{GV.Currency}} {{p.quantity *
                                         p.dealPrice |
                                         number}}</td>
                                 </tr>
@@ -238,6 +182,7 @@
                     </div>
                 </div>
                 <div id="bottom_absolute">
+                    <hr>
                     <div class="bottom__info">
                         <div class="footer__content">
                             <div class="item">
@@ -279,14 +224,20 @@
                             <div class="button_group">
                                 <button id="cancel_button" (click)="resetOrder()"><i class="fas fa-times"></i>
                                     Cancel</button>
-                                <button id="direct_invoice" class="no-need-for-waiter" [printStyle]="{h1 : {'color': 'black'}, 
+                                <button id="cancel_button" data-toggle="modal"
+                                    [disabled]="POSNewModelRequest.requestKotDetail.length == 0"
+                                    data-target="#addRemarksModal"><i class="fas fa-comment"></i>
+                                    Remarks</button>
+                                <button id="direct_invoice" [disabled]="POSNewModelRequest.requestKotDetail.length == 0"
+                                    class="no-need-for-waiter" [printStyle]="{h1 : {'color': 'black'}, 
                                 h2 : {'border': 'solid 2px'}, 
                                     th:{'border-bottom': 'solid 1px'}, table:{'border': 'solid 1px'}, 
                                     td:{'border-bottom': 'solid 0.5px', 'border-right': 'solid 0.5px'}}"
                                     printSectionId="InvoicePrint" ngxPrint><i class="fas fa-file-invoice"></i>
-                                    <span id="place_edit_order_direct_invoice">Quick Invoice</span></button>
-                                <button class="placeOrderSound" id="place_order_operation" (click)="submitOrder()"><i
-                                        class="fas fa-utensils"></i> <span id="place_edit_order">Place
+                                    <span id="place_edit_order_direct_invoice"> Quick Invoice</span></button>
+                                <button title="Shift+P" [disabled]="POSNewModelRequest.requestKotDetail.length == 0"
+                                    class="placeOrderSound" id="place_order_operation" (click)="submitOrder()"><i
+                                        class="fas fa-utensils"></i> <span id="place_edit_order"> Place
                                         Order</span></button>
                             </div>
                         </div>
@@ -333,20 +284,6 @@
                                                 id="button_category_1">{{ p.newStr}}</a>
                                         </li>
                                     </ul>
-                                    <div class="scroll-element scroll-x scroll-scrolly_visible" style="">
-                                        <div class="scroll-element_outer">
-                                            <div class="scroll-element_size"></div>
-                                            <div class="scroll-element_track"></div>
-                                            <div class="scroll-bar" style="width: 0px;"></div>
-                                        </div>
-                                    </div>
-                                    <div class="scroll-element scroll-y scroll-scrolly_visible" style="">
-                                        <div class="scroll-element_outer">
-                                            <div class="scroll-element_size"></div>
-                                            <div class="scroll-element_track"></div>
-                                            <div class="scroll-bar" style="height: 86px; top: 30.8859px;"></div>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-9 anyClass" [hidden]="isShow == false">
@@ -431,359 +368,16 @@
                             </div>
                         </div>
                     </div>
-
-
-                    <div class="scroll-element scroll-x scroll-scrolly_visible" style="">
-                        <div class="scroll-element_outer">
-                            <div class="scroll-element_size"></div>
-                            <div class="scroll-element_track"></div>
-                            <div class="scroll-bar" style="width: 0px;"></div>
-                        </div>
-                    </div>
-                    <div class="scroll-element scroll-y scroll-scrolly_visible" style="">
-                        <div class="scroll-element_outer">
-                            <div class="scroll-element_size"></div>
-                            <div class="scroll-element_track"></div>
-                            <div class="scroll-bar" style="height: 28px; top: 0px;"></div>
-                        </div>
-                    </div>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<!-- <div class="col-md-12 anyClass">
-    <section class="main-content-wrapper">
-        <div class="box-wrapper">
-            <form [formGroup]="SearchForm">
-                <div class="row">
-                    <div class="col-md-1 col-sm-3 anyClass">
-                        <div class="sidenav">
-                            <button
-                                [ngStyle]="{'background-color':SearchForm.controls['foodMenuID'].value == 0 ? '#c90000 ' : '#5a5a5a' }"
-                                class="w-100 btn newButton mb-3" (click)="filterCategories(0)">
-                                ALL
-                            </button>
-                            <ng-container *ngFor="let p of FoodCatResponseModel">
-                                <button
-                                    [ngStyle]="{'background-color':SearchForm.controls['foodMenuID'].value == p.foodMenuID ? '#c90000 ' : '#5a5a5a' }"
-                                    title="{{p.foodMenuName}}" class="w-100 btn newButton mb-3"
-                                    (click)="filterCategories(p)">
-                                    {{ p.newStr}}
-                                </button>
-                            </ng-container>
-                        </div>
-                    </div>
-                    <div class="col-md-11 col-sm-9 anyClass">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="row">
-                                    <div class="col-md-3 mt-2">
-                                        <div class="form-group">
-                                            <label> </label>
-                                            <button
-                                                [ngStyle]="{'background-color':isShow == true ? '#c90000 ' : '#f15a29' }"
-                                                type="button" class="w-100 btn bg-blue-btn"
-                                                (click)="showOrHide(1)">Items</button>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3 mt-2">
-                                        <div class="form-group">
-                                            <label> </label>
-                                            <button
-                                                [ngStyle]="{'background-color':isShow == false ? '#c90000 ' : '#f15a29' }"
-                                                type="button" class="w-100 btn bg-blue-btn"
-                                                (click)="showOrHide(2)">Deals</button>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3 mt-2">
-                                        <div class="form-group">
-                                            <label>Select Table</label>
-                                            <ng-multiselect-dropdown [placeholder]="'Select Table'"
-                                                [data]="responseTable" [(ngModel)]="selectedTables"
-                                                [settings]="dropdownSettings" (onSelect)="onTableSelect($event)"
-                                                (onSelectAll)="onSelectAll($event)"
-                                                (onDeSelect)="onItemDeSelect($event)"
-                                                (onDeSelectAll)="onItemDeSelectAll($event)"
-                                                [ngModelOptions]="{standalone: true}">
-                                            </ng-multiselect-dropdown>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3 mt-2">
-                                        <div class="form-group">
-                                            <label>Category</label>
-                                            <select tabindex="2" class="form-control select2" id="default_waiter">
-                                                <option value="">Dine In</option>
-                                                <option value="">Take Away</option>
-                                                <option value="">Delivery</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label>Search By Ref Code </label>
-                                            <input type="text" class="inputField" formControlName="searchByRefCode"
-                                                placeholder="Search.." (change)="searchByRC()">
-                                            <button type="submit" class="searchButton" (click)="searchByRC()"><i
-                                                    class="fa fa-search"></i></button>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3 mt-2">
-                                        <div class="form-group">
-                                            <label>Customer Code</label>
-                                            <input style="border-radius: 4px !important; border: 1px solid #d8d6de;"
-                                                type="text" class="inputFieldTwo" formControlName="searchCustomerByCode"
-                                                placeholder="Search.." (change)="searchCustomer()">
-                                            <button style="border-radius: 4px !important; " type="submit"
-                                                class="searchButtonTwo" (click)="searchCustomer()"><i
-                                                    class="fa fa-search"></i></button>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3 mt-2">
-                                        <div class="form-group">
-                                            <label>Customer Name</label>
-                                            <input type="text" class="form-control" formControlName="CustomerName"
-                                                readonly>
-                                        </div>
-                                    </div>
-                                </div>
-                                <hr />
-                                <div class="row mt-3" [hidden]="isShow==false">
-                                    <ng-container *ngFor="let p of ItemsResponseModelReplica">
-                                        <ng-container *ngIf="p.hasVariant == false">
-                                            <div style="cursor: pointer;" class="col-sm-4 mb-3 col-md-3 "
-                                                (click)="pushItem(p)">
-                                                <div class="outlet-box text-center">
-                                                    <p class="outlet_code mb-1" title="{{p.foodItemName}}"
-                                                        style="font-weight: 600">
-                                                        {{p.newStr}}
-                                                    </p>
-                                                    <p class="outlet_code mb-1"
-                                                        *ngIf="p.discount == 0 && p.hasVariant == false">
-                                                        {{symbol}}
-                                                        {{p.price |
-                                                        number}}</p>
-                                                    <p class="outlet_code mb-1"
-                                                        *ngIf="p.discount != 0 && p.hasVariant == false">
-                                                        {{symbol}}
-                                                        {{p.calculatedPrice | number}} / <del
-                                                            style="color: black;">{{p.price
-                                                            |
-                                                            number}}</del></p>
-                                                </div>
-                                            </div>
-                                        </ng-container>
-                                        <ng-container *ngIf="p.hasVariant == true">
-                                            <div style="cursor: pointer;" class="col-sm-4 mb-3 col-md-3 "
-                                                data-toggle="modal" data-target="#VariantModal"
-                                                (click)="getVariants(p)">
-                                                <div class="outlet-box text-center">
-                                                    <p class="outlet_code mb-1" title="{{p.foodItemName}}"
-                                                        style="font-weight: 600">
-                                                        {{p.newStr}}
-                                                    </p>
-                                                    <p class="outlet_code mb-1">(V)</p>
-                                                </div>
-                                            </div>
-                                        </ng-container>
-                                    </ng-container>
-                                </div>
-                                <div class="row mt-3" [hidden]="isShow==true">
-                                    <ng-container *ngFor="let p of responseDealsModel">
-                                        <div style="cursor: pointer;" title="{{p.itemsDescription}}"
-                                            class="col-sm-4 mb-3 col-md-3 " (click)="pushItem(p)">
-                                            <div class="outlet-box text-center">
-                                                <p class="outlet_code mb-1" style="font-weight: 600">
-                                                    {{p.dealName}}
-                                                </p>
-                                                <p class="outlet_code mb-1">{{symbol}} {{p.dealPrice | number}}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </ng-container>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="row anyClassTwo">
-                                    <div class="col-md-12 col-sm-6 mb-3">
-                                        <div class="form-group">
-                                            <label>Orders List</label>
-                                            <div class="table-box">
-                                                <div class="table-responsive">
-                                                    <table id="datatable" class="table table-striped">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>SN</th>
-                                                                <th>Order No</th>
-                                                                <th>Action</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr *ngFor="let p of responseOrder let ndx=index;">
-                                                                <td>{{ndx+1}}</td>
-                                                                <td>{{p.orderID}}</td>
-                                                                <td>
-                                                                    <button
-                                                                        class="btn btn-success color text-white btn-sm m-1"
-                                                                        title="Edit" (click)="editOrder(p)">
-                                                                        <i class="fa fa-pencil"
-                                                                            aria-hidden="true"></i></button>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <hr />
-                                <div class="row">
-                                    <div class="col-md-7">
-                                        <label style="margin-top: 20px;"><b>Your Order </b></label>
-                                    </div>
-                                    <div class="col-md-5">
-                                        <button style="height: 30px; width: 30px; margin-top: 20px;"
-                                            class="btn btn-primary color text-white btn-sm float-end"
-                                            title="Reset Order" (click)="resetOrder()"> <i class="fa fa-redo"
-                                                aria-hidden="true"></i></button>
-                                    </div>
-                                </div>
-                                <div class="table-box anyClassThree">
-                                    <div class="table-responsive">
-                                        <table id="datatable" class="table table-striped">
-                                            <thead>
-                                                <tr>
-                                                    <th></th>
-                                                    <th class="ir_w_30">Name</th>
-                                                    <th>Qty</th>
-                                                    <th style="text-align: right;">Price</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr *ngFor="let p of POSNewModelRequest.requestKotDetail let ndx=index;">
-                                                    <td class="ir_w_1 ir_txt_center"><button
-                                                            class="btn btn-danger color text-white btn-sm m-1"
-                                                            (click)="removeItem(p)" title="Remove">
-                                                            <i class="fa fa-trash" aria-hidden="true"></i></button>
-                                                    </td>
-                                                    <td class="ir_w_30" *ngIf="!p.variantID && !p.dealID">
-                                                        {{p.foodItemName}}</td>
-                                                    <td class="ir_w_30" *ngIf="p.variantID && !p.dealID">
-                                                        {{p.foodItemName}} ({{p.variantName}})
-                                                    </td>
-                                                    <td class="ir_w_30" *ngIf="p.dealID">{{p.dealName}}</td>
-                                                    <td>
-                                                        <button class="btn btn-success color text-white btn-sm"
-                                                            (click)="decrement(p)"> <i class="fa fa-minus"
-                                                                aria-hidden="true"></i></button>
-                                                        {{p.Quantity}}
-                                                        <button class="btn btn-success color text-white btn-sm"
-                                                            (click)="increment(p)"> <i class="fa fa-plus"
-                                                                aria-hidden="true"></i></button>
-                                                    </td>
-                                                    <td *ngIf="!p.variantID && !p.dealID && p.discount == 0"
-                                                        style="text-align: right;">
-                                                        {{GV.Currency}} {{p.price | number}}
-                                                    </td>
-                                                    <td *ngIf="!p.variantID && !p.dealID && p.discount != 0"
-                                                        style="text-align: right;">
-                                                        {{GV.Currency}} {{p.calculatedPrice | number}}
-                                                    </td>
-                                                    <td *ngIf="p.variantID && !p.dealID && p.discount == 0"
-                                                        style="text-align: right;">
-                                                        {{GV.Currency}} {{p.variantPrice | number}}
-                                                    </td>
-                                                    <td *ngIf="p.variantID && !p.dealID && p.discount != 0"
-                                                        style="text-align: right;">
-                                                        {{GV.Currency}} {{p.calculatedPrice | number}}
-                                                    </td>
-                                                    <td *ngIf="p.dealID" style="text-align: right;">
-                                                        {{GV.Currency}} {{p.dealPrice | number}}
-                                                    </td>
-                                                </tr>
-                                                <tr *ngIf="POSNewModelRequest.requestKotDetail.length > 0">
-                                                    <td>SubTotal</td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td style="text-align: right;" *ngIf="subTotal == 0">-
-                                                    </td>
-                                                    <td class="ir_w_50" style="text-align: right;" *ngIf="subTotal > 0">
-                                                        {{GV.Currency}}
-                                                        {{subTotal | number}}
-                                                    </td>
-                                                </tr>
-                                                <tr *ngIf="POSNewModelRequest.requestKotDetail.length > 0">
-                                                    <td>Sales Tax</td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td style="text-align: right;" *ngIf="salesTax == 0">-</td>
-                                                    <td style="text-align: right;" *ngIf="salesTax > 0">
-                                                        {{GV.Currency}}
-                                                        {{salesTax |
-                                                        number}}</td>
-                                                </tr>
-                                                <tr *ngIf="POSNewModelRequest.requestKotDetail.length > 0">
-                                                    <td>Discount {{GV.Currency}}</td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td style="text-align: right;" *ngIf="discount == 0">-</td>
-                                                    <td style="text-align: right;" *ngIf="discount > 0">
-                                                        {{GV.Currency}}
-                                                        {{discount |
-                                                        number}}</td>
-                                                </tr>
-                                                <tr *ngIf="POSNewModelRequest.requestKotDetail.length > 0">
-                                                    <td><b>Total</b></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td style="text-align: right;" *ngIf="total == 0"><b>-</b></td>
-                                                    <td style="text-align: right;" *ngIf="total > 0">
-                                                        <b>{{GV.Currency}}
-                                                            {{total |
-                                                            number}}</b>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                <div class="row" *ngIf="POSNewModelRequest.requestKotDetail.length > 0">
-                                    <div class="col-md-6">
-                                        <button type="button" class="w-100 btn bg-grey-btn" [printStyle]="{h1 : {'color': 'black'}, 
-                                        h2 : {'border': 'solid 2px'}, 
-                                            th:{'border-bottom': 'solid 1px'}, table:{'border': 'solid 1px'}, 
-                                            td:{'border-bottom': 'solid 0.5px', 'border-right': 'solid 0.5px'}}"
-                                            printSectionId="print-section" ngxPrint>
-                                            Print Invoice
-                                        </button>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <button *ngIf="editMode == false" type="button" class="w-100 btn bg-blue-btn"
-                                            (click)="submitOrder()">Confirm
-                                            Order
-                                        </button>
-                                        <button *ngIf="editMode == true" type="button" class="w-100 btn bg-blue-btn"
-                                            (click)="submitOrder()">Update
-                                            Order
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </section>
-</div> -->
+<!-- ..........................................POPUP................................................. -->
 
-
-<div class="modal fade  come-from-modal left" id="OrderViewModal" tabindex="-1" role="dialog"
-    aria-labelledby="myModalLabel">
+<div class="modal fade  come-from-modal left" id="OrderViewModal" tabindex="-1" role="dialog" data-backdrop="static"
+    data-keyboard="false" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -792,13 +386,14 @@
                 <h4 class="modal-title" id="myModalLabel">Order Detail</h4>
             </div>
             <div class="modal-body">
-                <h5>Order No: {{POSModelResponse.responseOrder.orderID}}</h5>
+                <h5>Order No: {{POSNewModelRequest.requestKot.kotID}}</h5>
+                <h5>KOT NO: {{POSNewModelRequest.requestKot.kotNO}}</h5>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>Customer Ref Code</label>
-                            <textarea class="form-control" style="height: 40px;"
-                                readonly>{{POSModelResponse.responseCustomer.refCode}}</textarea>
+                            <label>Customer Name</label>
+                            <textarea class="form-control" style="height: 40px;" [(ngModel)]="customerName"
+                                readonly></textarea>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -816,13 +411,13 @@
                                 <table id="datatable" class="table table-striped">
                                     <thead>
                                         <tr>
-                                            <th>Name</th>
-                                            <th>Qty</th>
-                                            <th style="text-align: right;">Price</th>
+                                            <th style="color: black;">Name</th>
+                                            <th style="color: black;">Qty</th>
+                                            <th style="text-align: right; color: black;">Price</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr *ngFor="let p of POSModelResponse.responseReceiptArr let ndx=index;">
+                                        <tr *ngFor="let p of POSNewModelRequest.requestKotDetail let ndx=index;">
                                             <td *ngIf="!p.variantID && !p.dealID">
                                                 {{p.foodItemName}}</td>
                                             <td *ngIf="p.variantID && !p.dealID">
@@ -854,48 +449,98 @@
                                         </tr>
                                     </tbody>
                                 </table>
+                                <div class="form-group">
+                                    <label><b>Remarks</b></label>
+                                    <textarea class="form-control" style="height: 70px;"
+                                        readonly>{{POSNewModelRequest.requestKot.remarks}}</textarea>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" data-dismiss="modal"
-                    (click)="editOrder(POSModelResponse.responseOrder)" [printStyle]="{h1 : {'color': 'black'}, 
+                <button type="button" class="btn btn-success" data-dismiss="modal" (click)="editOrder()" [printStyle]="{h1 : {'color': 'black'}, 
                 h2 : {'border': 'solid 2px'}, 
-                    th:{'border-bottom': 'solid 1px'}, table:{'border': 'solid 1px'}, 
+                    th:{'border-bottom': 'solid 1px'}, table:{'border': 'solid 1px'},
                     td:{'border-bottom': 'solid 0.5px', 'border-right': 'solid 0.5px'}}" printSectionId="KOTPrint"
                     ngxPrint>Print KOT</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" (click)="editOrder(POSModelResponse.responseOrder)">Edit
+                <button type="button" class="btn btn-default" data-dismiss="modal" (click)="resetOrder()">Close</button>
+                <button type="button" class="btn btn-primary" (click)="editOrder()">Edit
                     Order</button>
             </div>
         </div>
     </div>
 </div>
 
-<div class="modal fade  come-from-modal right" id="DeliveryModal" tabindex="-1" role="dialog"
-    aria-labelledby="myModalLabel">
+<div class="modal fade come-from-modal right" id="DeliveryModal" tabindex="-1" role="dialog"
+    aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                <h4 class="modal-title" id="myModalLabel">Delivery</h4>
             </div>
             <div class="modal-body">
-                ...
+                <form [formGroup]="DeliveryForm" (ngSubmit)="saveDelivery()">
+                    <div class="row">
+                        <div class="col-sm-12 mb-2 col-md-6">
+                            <div class="form-group">
+                                <label>Customer Name<span class="required_star">*</span></label>
+                                <input tabindex="1" minlength="3" autocomplete="off" type="text"
+                                    formControlName="customerName" class="form-control" placeholder="Customer Name"
+                                    value="" [ngClass]="{ 'is-invalid': submitted && d.customerName.errors }" />
+                                <div *ngIf="submitted && d.customerName.errors" class="invalid-feedback">
+                                    <div *ngIf="d.customerName.errors.required">Customer Name is required</div>
+                                    <small
+                                        *ngIf="DeliveryForm.controls['customerName'].errors?.minlength && !d.customerName.errors.whitespace"
+                                        class="text-danger">Customer
+                                        Name must be at
+                                        least 3 characters long.</small>
+                                    <small
+                                        *ngIf="d.customerName.errors.whitespace && !d.customerName.errors.required">Please
+                                        enter valid
+                                        data</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 mb-2 col-md-6">
+                            <div class="form-group">
+                                <label>Mobile No. <span class="required_star">*</span></label>
+                                <input type="text" class="form-control" mask='0000-0000000' placeholder="Mobile No."
+                                    formControlName="mobileNO"
+                                    [ngClass]="{ 'is-invalid': submitted && d.mobileNO.errors }">
+                                <div *ngIf="submitted && d.mobileNO.errors" class="invalid-feedback">
+                                    <div *ngIf="d.mobileNO.errors.required">Mobile number is required</div>
+                                    <small *ngIf="d.mobileNO.errors.pattern">Mobile number format not correct.</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 mb-2 col-md-12">
+                            <div class="form-group">
+                                <label>Address <span class="required_star">*</span></label>
+                                <textarea formControlName="Address" maxlength="250" class="form-control" tabindex="3"
+                                    autocomplete="off"
+                                    [ngClass]="{ 'is-invalid': submitted && d.Address.errors }"></textarea>
+                                <div *ngIf="submitted && d.Address.errors" class="invalid-feedback">
+                                    <div *ngIf="d.Address.errors.required">Address is required</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-primary" (click)="saveDelivery()">Save</button>
             </div>
         </div>
     </div>
 </div>
 
-<div class="modal fade come-from-modal right" id="VariantModal" tabindex="-1" role="dialog"
-    aria-labelledby="myModalLabel">
+<div class="modal fade half-modal right" id="VariantModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+    data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -905,24 +550,32 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <ng-container *ngFor="let p of responseVariant">
-                        <div style="cursor: pointer;" class="col-sm-6 mb-3 col-md-6 " (dblclick)="pushItem(p)">
-                            <div class="outlet-box text-center">
-                                <p class="outlet_code mb-1" style="font-weight: 600">
-                                    {{p.variantName}}
-                                </p>
-                                <p class="outlet_code mb-1" *ngIf="p.discount == 0 ">
-                                    {{symbol}}
-                                    {{p.variantPrice |
-                                    number}}</p>
-                                <p class="outlet_code mb-1" *ngIf="p.discount != 0 ">
-                                    {{symbol}}
-                                    {{p.calculatedPrice | number}} / <del style="color: black;">{{p.variantPrice
-                                        |
-                                        number}}</del></p>
-                            </div>
+                    <div class="col-md-4 card main_partOne" *ngFor="let p of responseVariant">
+                        <div class="category_items" (dblclick)="pushItem(p)">
+                            <ng-container>
+                                <div class="single_item animate__animated all_item_custom" id="item_25">
+                                    <ng-container *ngIf="p.imageURL == null">
+                                        <img src="assets/img/image_thumb.png">
+                                    </ng-container>
+                                    <ng-container *ngIf="p.imageURL != null">
+                                        <img src="{{p.imageURL}}" alt="" width="141">
+                                    </ng-container>
+                                    <p class="item_name" style="font-weight: 600">
+                                        {{p.variantName}}
+                                    </p>
+                                    <p class="item_price" *ngIf="p.discount == 0 ">
+                                        {{symbol}}
+                                        {{p.variantPrice |
+                                        number}}</p>
+                                    <p class="item_price" *ngIf="p.discount != 0 ">
+                                        {{symbol}}
+                                        {{p.calculatedPrice | number}} / <del style="color: black;">{{p.variantPrice
+                                            |
+                                            number}}</del></p>
+                                </div>
+                            </ng-container>
                         </div>
-                    </ng-container>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -932,8 +585,8 @@
     </div>
 </div>
 
-<div class="modal fade half-modal right" id="addCustomerModal" tabindex="-1" role="dialog"
-    aria-labelledby="myModalLabel">
+<div class="modal fade half-modal right" id="addCustomerModal" tabindex="-1" role="dialog" data-backdrop="static"
+    data-keyboard="false" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -1006,7 +659,7 @@
                                     autocomplete="off"></textarea>
                             </div>
                         </div>
-                        <div class="col-sm-12 mb-2 col-md-12">
+                        <div class="col-sm-12 mb-2 col-md-12" *ngIf="viewMode == true">
                             <div class="form-group">
                                 <label>Favourites</label>
                                 <textarea style="height: 100px;" formControlName="favDescription" maxlength="250"
@@ -1024,7 +677,10 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"
                     (click)="addCustomer()">Cancel</button>
-                <button type="button" class="btn btn-primary" (click)="saveCustomer()">Add Customer</button>
+                <button type="button" *ngIf="viewMode == false" class="btn btn-primary"
+                    (click)="saveCustomer()">Save</button>
+                <button type="button" *ngIf="viewMode == true" class="btn btn-primary"
+                    (click)="saveCustomer()">Update</button>
             </div>
         </div>
     </div>
@@ -1033,7 +689,7 @@
 
 <!-- .......................................KOT Receipt............................................. -->
 
-<div class="invoice" id="KOTPrint" [hidden]="true">
+<div class="invoice" id="KOTPrint" [hidden]="true" data-backdrop="static" data-keyboard="false">
     <h3 class="text-center">KOT NO:
         KOT-{{POSNewModelRequest.requestKot.kotNO}}-{{POSNewModelRequest.requestKotSR.kotDate}}-{{POSNewModelRequest.requestKot.outletID}}
     </h3>
@@ -1044,12 +700,9 @@
             Order No: {{POSNewModelRequest.requestOrder.orderID}}</ng-container>
         <ng-container *ngIf="POSNewModelRequest.requestOrder.orderID == 0">
             Order No: Payment Pending</ng-container> -->
-        <br>
-        Date: {{date}}
-        <br>
         Waiter: abc
         <br>
-        Customer: {{POSNewModelRequest.requestCustomerDetail.customerID}}
+        Customer: {{customerName}}
         <br>
         <!-- Order Type: {{POSNewModelRequest.requestKot.orderType}} -->
         <br>
@@ -1061,7 +714,6 @@
                     <tr>
                         <th class="ir_w_30">Name</th>
                         <th>Qty</th>
-                        <th>Remarks</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -1073,33 +725,31 @@
                         </td>
                         <td class="ir_w_30" *ngIf="p.dealID">{{p.dealName}}</td>
                         <td>
-                            {{p.Quantity}}
-                        </td>
-                        <td>
-                            abc
-                            <!-- abc{{p.remarks}} -->
+                            {{p.quantity}}
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
+    <p class="centered">
+        Remarks: {{POSNewModelRequest.requestKot.remarks}}
+    </p>
 </div>
 
 
 
 <!-- .......................................INVOICE Receipt............................................. -->
 
-<div class="invoice" id="InvoicePrint" [hidden]="true">
+<div class="invoice" id="InvoicePrint" [hidden]="true" data-backdrop="static" data-keyboard="false">
     <h3 class="text-center">{{GV.companyName}}</h3>
-    <p class="centered">Outlet: {{GV.OutletName}}
-        <br>
-        <!-- <ng-container *ngIf="POSNewModelRequest.requestOrder.orderID > 0">
+    <p class="centered">
+        Outlet: {{GV.OutletName}}
+        <!-- <br>
+        <ng-container *ngIf="POSNewModelRequest.requestOrder.orderID > 0">
             Order No: {{POSNewModelRequest.requestOrder.orderID}}</ng-container>
         <ng-container *ngIf="POSNewModelRequest.requestOrder.orderID == 0">
             Order No: Payment Pending</ng-container> -->
-        <br>
-        Date: {{date}}
     </p>
     <div class="table-box">
         <div class="table-responsive">
@@ -1123,7 +773,7 @@
                         </td>
                         <td class="ir_w_30" *ngIf="p.dealID">{{p.dealName}}</td>
                         <td>
-                            {{p.Quantity}}
+                            {{p.quantity}}
                         </td>
                         <td *ngIf="!p.variantID && !p.dealID && p.discount == 0" style="text-align: right;">
                             {{GV.Currency}} {{p.price | number}}
@@ -1190,4 +840,135 @@
     <p class="centered">Thank You!
         <br>Powered By: POS Plus
     </p>
+</div>
+
+<div class="modal fade" id="addRemarksModal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog"
+    aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Remarks</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" #closeAddRemarksModal>
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12 mb-2 col-md-12">
+                        <div class="form-group">
+                            <label>Remarks</label>
+                            <textarea style="height: 100px;" [(ngModel)]="orderRemarks" maxlength="250"
+                                class="form-control" tabindex="3" autocomplete="off"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" (click)="saveRemarks()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade come-from-modal left" id="TablesModal" tabindex="-1" role="dialog" data-backdrop="static"
+    data-keyboard="false" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" #closeTablesModal><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Total:
+                    {{totalTables}} Free: {{tablesFree}} Occupied: {{tablesOccupied}} </h4>
+                <h4 class="modal-title" id="myModalLabel">Tables</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-6 mb-3 col-md-3 " *ngFor="let p of tablesResponse">
+                        <div class="tables-box text-center"
+                            [ngStyle]="{'background-color': p.statusID == 1 ? 'rgb(233 25 25)' :  'rgb(15 157 15)'}">
+                            <h3 class="title" style="color: white;">{{p.tableName}}</h3>
+                            <p *ngIf="p.statusID == 1" class="outlet_code mb-0">Status: Occupied</p>
+                            <p *ngIf="p.statusID == 2" class="outlet_code mb-0">Status: Free</p>
+                            <div class="btn_box">
+                                <div class="row mt-4">
+                                    <div class="col-md-6">
+                                        <button
+                                            [ngStyle]="{'background-color': p.statusID == 1 ? '#006800' :  '#d70000'}"
+                                            [disabled]="p.statusID == 2" type="button" class="w-100 btn bg-blue-btn"
+                                            (click)="editOrder(); viewOrder(p);" [printStyle]="{h1 : {'color': 'black'}, 
+                                            h2 : {'border': 'solid 2px'}, 
+                                                th:{'border-bottom': 'solid 1px'}, table:{'border': 'solid 1px'},
+                                                td:{'border-bottom': 'solid 0.5px', 'border-right': 'solid 0.5px'}}"
+                                            printSectionId="KOTPrint" ngxPrint>KOT</button>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <button
+                                            [ngStyle]="{'background-color': p.statusID == 1 ? '#006800' :  '#d70000'}"
+                                            [disabled]="p.statusID == 2" type="button" class="w-100 btn bg-blue-btn"
+                                            (click)="viewOrder(p)" data-toggle="modal"
+                                            data-target="#OrderViewModal">VIEW</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade come-from-modal left" id="OrdersModal" tabindex="-1" role="dialog" data-backdrop="static"
+    data-keyboard="false" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" #closeOrdersModal><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Orders</h4>
+            </div>
+            <div class="modal-body">
+                <div class="box-wrapper" [hidden]="responseOrder.length == 0">
+                    <table datatable [dtOptions]="dtOptions4" [dtTrigger]="dtTrigger4" class="row-border hover">
+                        <thead>
+                            <tr>
+                                <th style="color: black;">SR</th>
+                                <th style="color: black;">KOT NO</th>
+                                <th style="color: black;">STATUS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let p of responseOrder let ndx=index;">
+                                <td>{{ndx+1}}</td>
+                                <td>{{p.kotNO}}</td>
+                                <td *ngIf="p.statusID == 3" style="color: green;">
+                                    NEW_ORDER
+                                </td>
+                                <td *ngIf="p.statusID == 4" style="color: rgb(242, 255, 0);">
+                                    IN_QUEUE
+                                </td>
+                                <td *ngIf="p.statusID == 5" style="color: #f15a29">
+                                    ORDER_READY
+                                </td>
+                                <td *ngIf="p.statusID == 6" style="color: rgb(12, 0, 242);">
+                                    PAYMENT_MADE
+                                </td>
+                                <td *ngIf="p.statusID == 7" style="color: red;">
+                                    ORDER_CANCELED
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
 </div>

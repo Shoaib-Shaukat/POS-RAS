@@ -47,11 +47,15 @@ export class OrdersComponent implements OnInit {
     };
   }
   getAllOrders() {
+    this.responseOrder = [];
     this.API.getdata('/Generic/getOrderByOutletID?outletID=' + this.GV.OutletID).subscribe(c => {
       if (c != null) {
-        this.responseOrder = c.responseOrder;
+        this.responseOrder = c.responseKot;
         this.dtTrigger.next();
-        this.responseOrder.sort((a, b) => a.orderID < b.orderID ? 1 : a.orderID > b.orderID ? -1 : 0);
+        this.responseOrder.sort((a, b) => a.kotID < b.kotID ? 1 : a.kotID > b.kotID ? -1 : 0);
+        //.......................
+        // this.responseTableReplica = c.responseTable;
+        // this.responseOrder.sort((a, b) => a.orderID < b.orderID ? 1 : a.orderID > b.orderID ? -1 : 0);
       }
     },
       error => {

@@ -7,7 +7,7 @@ import { ApiService } from 'src/app/Services/API/api.service';
 import { GvarService } from 'src/app/Services/Globel/gvar.service';
 import { responseDealsModel } from '../../Master/Deals/dealsModel';
 import { MenuItemsModel, responseVariant } from '../../Master/FoodItems/ItemsModel';
-import { allVariantsResponse, customerFavResponse, FoodCatResponseModel, POSModelResponse, POSNewModelRequest, requestCustomer, responseCustomer, responseFoodMenuItem, responseOrder, responseTable } from './posModel';
+import { allVariantsResponse, customerFavResponse, FoodCatResponseModel, POSNewModelRequest, requestCustomer, requestCustomerTable, responseCustomer, responseFoodMenuItem, responseOrder, responseTable, tablesResponse } from './posModel';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 
 @Component({
@@ -16,8 +16,16 @@ import { IDropdownSettings } from 'ng-multiselect-dropdown';
   styleUrls: ['./pos.component.css']
 })
 export class PosComponent implements OnInit {
+  tablesResponse: tablesResponse[];
   POSNewModelRequest: POSNewModelRequest;
-
+  orderRemarks: string = "";
+  viewMode: boolean = false;
+  customerName: string = "";
+  totalTables: number = 0;
+  tablesOccupied: number = 0;
+  tablesFree: number = 0;
+  dtOptions4: DataTables.Settings = {};
+  dtTrigger4: Subject<any> = new Subject<any>();
   //........................................
   orderTypeValue: any = "Dine In";
   favDescription: any = "";
@@ -27,8 +35,8 @@ export class PosComponent implements OnInit {
   date: string = "";
   tableList: string = "";
   customerFavList: any = [];
-  POSModelResponse: POSModelResponse;
-  selectedTables = [];
+  // POSModelResponse: POSModelResponse;
+  selectedTables: requestCustomerTable[];
   editMode: boolean = false;
   responseOrderReplica: responseOrder[];
   responseOrder: responseOrder[];
@@ -39,6 +47,8 @@ export class PosComponent implements OnInit {
   @ViewChildren("closeVariantsModal") closeVariantsModal: any;
   @ViewChildren("closeOrderViewModal") closeOrderViewModal: any;
   @ViewChildren("closeAddCustomerModal") closeAddCustomerModal: any;
+  @ViewChildren("closeAddRemarksModal") closeAddRemarksModal: any;
+  @ViewChildren("closeTablesModal") closeTablesModal: any;
 
   SelectClicked: boolean = false;
   allVariantsResponse: allVariantsResponse[];
@@ -80,6 +90,7 @@ export class PosComponent implements OnInit {
   VariantForm: FormGroup;
   SearchForm: FormGroup;
   CustomerForm: FormGroup;
+  DeliveryForm: FormGroup;
   isShow: boolean = true;
   showDiscount: boolean = false;
   showVDiscount: boolean = false;
@@ -90,12 +101,13 @@ export class PosComponent implements OnInit {
     public toastr: ToastrService,
     private route: ActivatedRoute,
     private router: Router) {
+    this.tablesResponse = [];
     this.POSNewModelRequest = new POSNewModelRequest();
     //............................................
     this.customerFavResponse = [];
     this.date = new Date().toLocaleString().slice(0, 17);
     this.requestCustomer = new requestCustomer();
-    this.POSModelResponse = new POSModelResponse();
+    // this.POSModelResponse = new POSModelResponse();
     this.selectedTables = [];
     this.responseOrderReplica = [];
     this.responseOrder = [];
@@ -129,6 +141,10 @@ export class PosComponent implements OnInit {
       pagingType: 'full_numbers',
       pageLength: 10,
     };
+    this.dtOptions4 = {
+      pagingType: 'full_numbers',
+      pageLength: 10,
+    };
     this.SearchForm.controls['foodMenuID'].enable();
     this.SearchForm.controls['searchByRefCode'].enable();
   }
@@ -136,6 +152,7 @@ export class PosComponent implements OnInit {
   get f() { return this.MenuItemsForm.controls; }
   get g() { return this.VariantForm.controls; }
   get h() { return this.CustomerForm.controls; }
+  get d() { return this.DeliveryForm.controls; }
 
   public noWhitespaceValidator(control: FormControl) {
     const isWhitespace = (control.value || '').trim().length === 0;
@@ -192,6 +209,13 @@ export class PosComponent implements OnInit {
       OwnerID: new FormControl(""),
       customerID: new FormControl(""),
       favDescription: new FormControl(""),
+    });
+    this.DeliveryForm = new FormGroup({
+      customerName: new FormControl("", [Validators.required, this.noWhitespaceValidator]),
+      mobileNO: new FormControl("", [
+        Validators.required,
+        Validators.pattern(".{11,11}")]),
+      Address: new FormControl("", [Validators.required]),
     });
   }
 
@@ -295,17 +319,17 @@ export class PosComponent implements OnInit {
           });
         });
       //........................................................
-      this.API.getdata('/FoodMenu/getVariantandFoodItemAgainstOutletID?OutletID=' + this.GV.OutletID).subscribe(c => {
-        if (c != null) {
-          this.allVariantsResponse = c.responseVariantandFoodItem;
-        }
-      },
-        error => {
-          this.toastr.error(error.statusText, 'Error', {
-            timeOut: 3000,
-            'progressBar': true,
-          });
-        });
+      // this.API.getdata('/FoodMenu/getVariantandFoodItemAgainstOutletID?OutletID=' + this.GV.OutletID).subscribe(c => {
+      //   if (c != null) {
+      //     this.allVariantsResponse = c.responseVariantandFoodItem;
+      //   }
+      // },
+      //   error => {
+      //     this.toastr.error(error.statusText, 'Error', {
+      //       timeOut: 3000,
+      //       'progressBar': true,
+      //     });
+      //   });
     }
 
   }
@@ -342,9 +366,8 @@ export class PosComponent implements OnInit {
   }
 
   pushItem(p: any) {
-    debugger
     let body = {
-      Quantity: 0,
+      quantity: 0,
       calculatedPrice: p.calculatedPrice,
       discount: p.discount,
       foodItemID: p.foodItemID,
@@ -367,34 +390,37 @@ export class PosComponent implements OnInit {
       dealPrice: p.dealPrice,
       kotID: 0,
     }
+    if (body.discount == undefined) {
+      body.discount = 0;
+    }
     if (body.variantID) {
       var index = this.POSNewModelRequest.requestKotDetail.findIndex((x) => x.variantID == body.variantID);
       if (index == -1) {
-        body.Quantity = 1;
+        body.quantity = 1;
         this.POSNewModelRequest.requestKotDetail.push(body);
       }
       else {
-        this.POSNewModelRequest.requestKotDetail[index].Quantity += 1;
+        this.POSNewModelRequest.requestKotDetail[index].quantity += 1;
       }
     }
     else if (body.foodItemID) {
       var index = this.POSNewModelRequest.requestKotDetail.findIndex((x) => x.foodItemID == body.foodItemID);
       if (index == -1) {
-        body.Quantity = 1;
+        body.quantity = 1;
         this.POSNewModelRequest.requestKotDetail.push(body);
       }
       else {
-        this.POSNewModelRequest.requestKotDetail[index].Quantity += 1;
+        this.POSNewModelRequest.requestKotDetail[index].quantity += 1;
       }
     }
     else if (body.dealID) {
       var index = this.POSNewModelRequest.requestKotDetail.findIndex((x) => x.dealID == body.dealID);
       if (index == -1) {
-        body.Quantity = 1;
+        body.quantity = 1;
         this.POSNewModelRequest.requestKotDetail.push(body);
       }
       else {
-        this.POSNewModelRequest.requestKotDetail[index].Quantity += 1;
+        this.POSNewModelRequest.requestKotDetail[index].quantity += 1;
       }
     }
     this.calculateTotals();
@@ -409,24 +435,24 @@ export class PosComponent implements OnInit {
     this.POSNewModelRequest.requestKotDetail.forEach((x) => {
       if (x.variantID) {
         if (x.discount == 0) {
-          this.subTotal += x.variantPrice * x.Quantity;
+          this.subTotal += x.variantPrice * x.quantity;
         }
         else {
-          this.discount += (x.variantPrice - x.calculatedPrice) * x.Quantity;
-          this.subTotal += x.calculatedPrice * x.Quantity;
+          this.discount += (x.variantPrice - x.calculatedPrice) * x.quantity;
+          this.subTotal += x.calculatedPrice * x.quantity;
         }
       }
       else if (x.foodItemID) {
         if (x.discount == 0) {
-          this.subTotal += x.price * x.Quantity;
+          this.subTotal += x.price * x.quantity;
         }
         else {
-          this.discount += (x.price - x.calculatedPrice) * x.Quantity;
-          this.subTotal += x.calculatedPrice * x.Quantity;
+          this.discount += (x.price - x.calculatedPrice) * x.quantity;
+          this.subTotal += x.calculatedPrice * x.quantity;
         }
       }
       else if (x.dealID) {
-        this.subTotal += x.dealPrice * x.Quantity;
+        this.subTotal += x.dealPrice * x.quantity;
       }
     })
     this.total = this.subTotal + this.salesTax + this.discount;
@@ -440,8 +466,8 @@ export class PosComponent implements OnInit {
   decrement(p: any) {
     if (p.variantID) {
       var index = this.POSNewModelRequest.requestKotDetail.findIndex((x) => x.variantID == p.variantID);
-      if (this.POSNewModelRequest.requestKotDetail[index].Quantity > 1) {
-        this.POSNewModelRequest.requestKotDetail[index].Quantity -= 1;
+      if (this.POSNewModelRequest.requestKotDetail[index].quantity > 1) {
+        this.POSNewModelRequest.requestKotDetail[index].quantity -= 1;
       }
       else {
         return
@@ -449,8 +475,8 @@ export class PosComponent implements OnInit {
     }
     else if (p.foodItemID) {
       var index = this.POSNewModelRequest.requestKotDetail.findIndex((x) => x.foodItemID == p.foodItemID);
-      if (this.POSNewModelRequest.requestKotDetail[index].Quantity > 1) {
-        this.POSNewModelRequest.requestKotDetail[index].Quantity -= 1;
+      if (this.POSNewModelRequest.requestKotDetail[index].quantity > 1) {
+        this.POSNewModelRequest.requestKotDetail[index].quantity -= 1;
       }
       else {
         return
@@ -458,8 +484,8 @@ export class PosComponent implements OnInit {
     }
     else if (p.dealID) {
       var index = this.POSNewModelRequest.requestKotDetail.findIndex((x) => x.dealID == p.dealID);
-      if (this.POSNewModelRequest.requestKotDetail[index].Quantity > 1) {
-        this.POSNewModelRequest.requestKotDetail[index].Quantity -= 1;
+      if (this.POSNewModelRequest.requestKotDetail[index].quantity > 1) {
+        this.POSNewModelRequest.requestKotDetail[index].quantity -= 1;
       }
       else {
         return
@@ -470,15 +496,15 @@ export class PosComponent implements OnInit {
   increment(p: any) {
     if (p.variantID) {
       var index = this.POSNewModelRequest.requestKotDetail.findIndex((x) => x.variantID == p.variantID);
-      this.POSNewModelRequest.requestKotDetail[index].Quantity += 1;
+      this.POSNewModelRequest.requestKotDetail[index].quantity += 1;
     }
     else if (p.foodItemID) {
       var index = this.POSNewModelRequest.requestKotDetail.findIndex((x) => x.foodItemID == p.foodItemID);
-      this.POSNewModelRequest.requestKotDetail[index].Quantity += 1;
+      this.POSNewModelRequest.requestKotDetail[index].quantity += 1;
     }
     else if (p.dealID) {
       var index = this.POSNewModelRequest.requestKotDetail.findIndex((x) => x.dealID == p.dealID);
-      this.POSNewModelRequest.requestKotDetail[index].Quantity += 1;
+      this.POSNewModelRequest.requestKotDetail[index].quantity += 1;
     }
     this.calculateTotals();
   }
@@ -486,17 +512,17 @@ export class PosComponent implements OnInit {
   removeItem(p: any) {
     if (p.variantID) {
       var index = this.POSNewModelRequest.requestKotDetail.findIndex((x) => x.variantID == p.variantID);
-      this.POSNewModelRequest.requestKotDetail[index].Quantity = 0;
+      this.POSNewModelRequest.requestKotDetail[index].quantity = 0;
       this.POSNewModelRequest.requestKotDetail.splice(index, 1);
     }
     else if (p.foodItemID) {
       var index = this.POSNewModelRequest.requestKotDetail.findIndex((x) => x.foodItemID == p.foodItemID);
-      this.POSNewModelRequest.requestKotDetail[index].Quantity = 0;
+      this.POSNewModelRequest.requestKotDetail[index].quantity = 0;
       this.POSNewModelRequest.requestKotDetail.splice(index, 1);
     }
     else if (p.dealID) {
       var index = this.POSNewModelRequest.requestKotDetail.findIndex((x) => x.dealID == p.dealID);
-      this.POSNewModelRequest.requestKotDetail[index].Quantity = 0;
+      this.POSNewModelRequest.requestKotDetail[index].quantity = 0;
       this.POSNewModelRequest.requestKotDetail.splice(index, 1);
     }
     this.calculateTotals();
@@ -542,19 +568,15 @@ export class PosComponent implements OnInit {
 
 
   onItemSelect(item: any) {
-    debugger
   }
   onItemDeSelect(item: any) {
-    debugger
     var index = this.POSNewModelRequest.requestCustomerTable.findIndex((x) => x.tableID == item.tableID);
     this.POSNewModelRequest.requestCustomerTable.splice(index, 1);
   }
   onItemDeSelectAll(item: any) {
-    debugger
     this.POSNewModelRequest.requestCustomerTable = [];
   }
   onSelectAll(items: any) {
-    debugger
     this.POSNewModelRequest.requestCustomerTable = [];
     this.responseTable.forEach((x) => {
       let body = {
@@ -566,7 +588,6 @@ export class PosComponent implements OnInit {
     })
   }
   onTableSelect(event: any) {
-    debugger
     var tableInfo: any = this.responseTable.find((x) => x.tableID == event.tableID);
     let body = {
       customerTableID: 0,
@@ -617,6 +638,8 @@ export class PosComponent implements OnInit {
   }
 
   resetOrder() {
+    this.customerName = "";
+    this.orderRemarks = "";
     this.subTotal = 0;
     this.salesTax = 0;
     this.discount = 0;
@@ -636,35 +659,9 @@ export class PosComponent implements OnInit {
       });
       return
     }
-    debugger
     this.POSNewModelRequest.requestKot.OwnerID = this.GV.ownerID;
     this.POSNewModelRequest.requestKot.outletID = this.GV.OutletID;
     this.POSNewModelRequest.requestKotSR.outletID = this.GV.OutletID;
-    if (this.POSNewModelRequest.requestKot.kotID > 0) {
-      this.POSNewModelRequest.requestKotDetail.forEach((x) => x.kotID = this.POSNewModelRequest.requestKot.kotID);
-      this.POSNewModelRequest.requestCustomerTable.forEach((x) => x.kotID = this.POSNewModelRequest.requestKot.kotID);
-      this.POSNewModelRequest.requestCustomerDetail.kotID = this.POSNewModelRequest.requestKot.kotID;
-    }
-    // if (this.POSNewModelRequest.requestOrder.orderID == 0) {
-    //   this.POSNewModelRequest.requestKotDetail.forEach((x) => x.orderID = 0);
-    //   this.POSNewModelRequest.requestTable.forEach((x) => x.orderID = 0);
-    //   this.POSNewModelRequest.requestCustomer.orderID = 0;
-    //   this.POSNewModelRequest.requestCustomer.OwnerID = this.GV.ownerID;
-    //   this.POSNewModelRequest.requestOrder.orderID = 0;
-    //   this.POSNewModelRequest.requestOrder.outletID = this.GV.OutletID;
-    //   this.POSNewModelRequest.requestOrder.orderType = this.orderTypeValue;
-    // }
-    // else {
-    //   this.POSNewModelRequest.requestKotDetail.forEach((x) => x.orderID = this.POSNewModelRequest.requestOrder.orderID);
-    //   this.POSNewModelRequest.requestTable.forEach((x) => x.orderID = this.POSNewModelRequest.requestOrder.orderID);
-    //   this.POSNewModelRequest.requestCustomer.orderID = this.POSNewModelRequest.requestOrder.orderID;
-    //   this.POSNewModelRequest.requestCustomer.OwnerID = this.GV.ownerID;
-    //   this.POSNewModelRequest.requestOrder.orderID = this.POSNewModelRequest.requestOrder.orderID;
-    //   this.POSNewModelRequest.requestOrder.outletID = this.GV.OutletID;
-    //   this.POSNewModelRequest.requestOrder.orderType = this.orderTypeValue;
-    // }
-
-    debugger
     this.API.PostData('/Generic/AddEditKot', this.POSNewModelRequest).subscribe(c => {
       if (c != null) {
         this.toastr.success(c.message, 'Success', {
@@ -687,10 +684,9 @@ export class PosComponent implements OnInit {
     this.responseOrder = [];
     this.API.getdata('/Generic/getOrderByOutletID?outletID=' + this.GV.OutletID).subscribe(c => {
       if (c != null) {
-        this.responseOrder = c.responseOrder;
-        this.responseOrderReplica = c.responseOrder;
-        this.responseTableReplica = c.responseTable;
-        this.responseOrder.sort((a, b) => a.orderID < b.orderID ? 1 : a.orderID > b.orderID ? -1 : 0);
+        this.responseOrder = c.responseKot;
+        this.dtTrigger4.next();
+        this.responseOrder.sort((a, b) => a.kotID < b.kotID ? 1 : a.kotID > b.kotID ? -1 : 0);
       }
     },
       error => {
@@ -701,52 +697,10 @@ export class PosComponent implements OnInit {
       });
   }
 
-  editOrder(p: any) {
+  editOrder() {
     this.closeOrderViewModal["first"].nativeElement.click();
-    this.resetOrder();
-    this.API.getdata('/Generic/getOrder?OrderID=' + p.orderID).subscribe(c => {
-      if (c != null) {
-        if (c.message == "Data not found") {
-          this.toastr.error(c.message, 'Error', {
-            timeOut: 3000,
-            'progressBar': true,
-          });
-          this.editMode = false;
-          this.resetOrder();
-          return;
-        }
-        else {
-          this.editMode = true;
-          this.POSNewModelRequest.requestCustomerDetail = c.responseCustomer;
-          this.POSNewModelRequest.requestKotDetail = c.responseReceiptArr;
-          this.POSNewModelRequest.requestCustomerTable = c.responseTable;
-          this.selectedTables = c.responseTable;
-          this.POSNewModelRequest.requestKotSR.kotDate = this.POSNewModelRequest.requestKotSR.kotDate.substring(0, this.POSNewModelRequest.requestKotSR.kotDate.length - 8);
-          // var date = this.POSNewModelRequest.requestOrder.kotDate.substring(0, this.POSNewModelRequest.requestOrder.kotDate.length - 17);
-          // var time = this.POSNewModelRequest.requestOrder.kotDate.substring(11, this.POSNewModelRequest.requestOrder.kotDate.length - 8);
-          // var dateTime = date.concat(time.toString());
-          // this.POSNewModelRequest.requestOrder.kotDate = dateTime;
-          this.calculateTotals();
-          if (c.responseCustomer.refCode == null || c.responseCustomer.refCode == "") {
-            return
-          }
-          else {
-            this.customerFound = false;
-            this.SearchForm.controls.searchCustomerByCode.setValue(c.responseCustomer.refCode);
-            this.SearchForm.controls.CustomerName.setValue(c.responseCustomer.customerName);
-            this.searchCustomer();
-          }
-        }
-      }
-    },
-      error => {
-        this.editMode = false;
-        this.resetOrder();
-        this.toastr.error(error.statusText, 'Error', {
-          timeOut: 3000,
-          'progressBar': true,
-        });
-      });
+    this.closeTablesModal["first"].nativeElement.click();
+    return
   }
   searchOrder() {
     var searchOrder: any = document.getElementById("search_running_orders");
@@ -755,7 +709,7 @@ export class PosComponent implements OnInit {
       return
     }
     else {
-      this.responseOrderReplica = this.responseOrder.filter((c) => c.orderID == searchOrder.value);
+      this.responseOrderReplica = this.responseOrder.filter((c) => c.kotID == searchOrder.value);
       if (this.responseOrderReplica.length == 0) {
         this.responseOrderReplica = this.responseOrder;
         this.toastr.error('Order Not Found', '', {
@@ -770,7 +724,8 @@ export class PosComponent implements OnInit {
   }
 
   viewOrder(p: any) {
-    this.API.getdata('/Generic/getOrder?OrderID=' + p.orderID).subscribe(c => {
+    this.resetOrder();
+    this.API.getdata('/Generic/getKOTBykotID?kotID=' + p.kotID).subscribe(c => {
       if (c != null) {
         if (c.message == "Data not found") {
           this.toastr.error(c.message, 'Error', {
@@ -780,14 +735,44 @@ export class PosComponent implements OnInit {
           return;
         }
         else {
-          this.POSModelResponse = c;
-          this.tableList = "";
-          this.POSModelResponse.responseTable.forEach((x) => {
-            if (this.POSModelResponse.responseTable.length > 0) {
-              this.tableList = this.tableList.concat(x.tableName, ', ');
+          if (c.responseCustomerDetail == null) {
+            this.POSNewModelRequest.requestCustomerDetail.customerID = 0;
+            this.POSNewModelRequest.requestCustomerDetail.customerDetailID = 0;
+            this.POSNewModelRequest.requestCustomerDetail.kotID = 0;
+          }
+          else {
+            this.POSNewModelRequest.requestCustomerDetail = c.responseCustomerDetail;
+            if (this.POSNewModelRequest.requestCustomerDetail.customerID > 0) {
+              var index = this.responseCustomer.findIndex((c) => c.customerID == this.POSNewModelRequest.requestCustomerDetail.customerID);
+              this.customerName = this.responseCustomer[index].customerName;
             }
+          }
+          this.POSNewModelRequest.requestCustomerTable = c.responseCustomerTable;
+          this.POSNewModelRequest.requestKot = c.responseKot;
+          this.orderRemarks = this.POSNewModelRequest.requestKot.remarks;
+          this.POSNewModelRequest.requestKotDetail = c.responseKotDetail;
+          this.selectedTables = c.responseCustomerTable;
+          if (this.POSNewModelRequest.requestCustomerDetail.customerID > 0) {
+            var index = this.responseCustomer.findIndex((c) => c.customerID == this.POSNewModelRequest.requestCustomerDetail.customerID);
+            this.customerName = this.responseCustomer[index].customerName;
+            this.SearchForm.controls.searchCustomerByCode.setValue(this.responseCustomer[index].refCode);
+            this.searchCustomer();
+          }
+          else {
+            this.customerName = "";
+            this.SearchForm.controls.searchCustomerByCode.setValue("");
+            this.searchCustomer();
+          }
+          this.tableList = "";
+          this.POSNewModelRequest.requestCustomerTable.forEach((x) => {
+            this.responseTable.forEach((c) => {
+              if (c.tableID == x.tableID) {
+                this.tableList = this.tableList.concat(c.tableName, ', ');
+              }
+            })
           })
           this.tableList = this.tableList.slice(0, -2);
+          this.closeTablesModal["first"].nativeElement.click();
         }
       }
     },
@@ -800,22 +785,72 @@ export class PosComponent implements OnInit {
   }
   orderType(val: any) {
     if (val == 1) {
-      this.orderTypeValue = "Dine In"
+      this.orderTypeValue = "Dine In";
     }
     else if (val == 2) {
-      this.orderTypeValue = "Take Away"
+      this.orderTypeValue = "Take Away";
     }
     else {
-      this.orderTypeValue = "Delivery"
+      this.submitted = false;
+      this.orderTypeValue = "Delivery";
+      if (this.SearchForm.controls.CustomerName.value == null || this.SearchForm.controls.CustomerName.value == "") {
+        this.DeliveryForm.reset();
+      }
+      else {
+        var customer: any = this.responseCustomer.find((x) => x.refCode == this.SearchForm.controls.searchCustomerByCode.value);
+        this.DeliveryForm.controls.customerName.setValue(customer.customerName);
+        this.DeliveryForm.controls.mobileNO.setValue(customer.mobileNO);
+        this.DeliveryForm.controls.Address.setValue(customer.address);
+      }
     }
+  }
+  saveDelivery() {
+    this.submitted = true;
+  }
+  saveRemarks() {
+    if (this.orderRemarks == "") {
+      this.POSNewModelRequest.requestKot.remarks = "";
+    }
+    else {
+      this.POSNewModelRequest.requestKot.remarks = this.orderRemarks;
+    }
+    this.closeAddRemarksModal["first"].nativeElement.click();
+  }
+
+  showTables() {
+    this.totalTables = 0;
+    this.tablesOccupied = 0;
+    this.tablesFree = 0;
+    this.API.getdata('/Generic/getTableStatus').subscribe(c => {
+      if (c != null) {
+        this.tablesResponse = c.getTableStatus;
+        this.totalTables = this.tablesResponse.length;
+        this.tablesResponse.forEach((x) => {
+          if (x.statusID == 1) {
+            this.tablesOccupied++;
+          }
+          else {
+            this.tablesFree++;
+          }
+        })
+      }
+    },
+      error => {
+        this.toastr.error(error.statusText, 'Error', {
+          timeOut: 3000,
+          'progressBar': true,
+        });
+      });
   }
   //..........................Add Customer....................................................
   addCustomer() {
+    this.viewMode = false;
     this.submitted = false;
     this.CustomerForm.reset();
   }
 
   viewCustomer() {
+    this.viewMode = true;
     this.CustomerForm.controls.favDescription.setValue("");
     this.favDescription = "";
     this.customerFavResponse = [];
@@ -994,6 +1029,7 @@ export class PosComponent implements OnInit {
             'progressBar': true,
           });
           this.getCustomers();
+          this.viewMode = false;
           this.closeAddCustomerModal["first"].nativeElement.click();
         }
       },
@@ -1017,5 +1053,11 @@ export class PosComponent implements OnInit {
           'progressBar': true,
         });
       });
+  }
+
+  handleInput(event: any) {
+    if (event.shiftKey == true && event.key == 'P') {
+      this.submitOrder();
+    }
   }
 }

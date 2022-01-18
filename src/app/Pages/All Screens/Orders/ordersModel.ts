@@ -1,6 +1,8 @@
 export class responseOrder {
-    orderID: number;
-    outletID: number;
+    kotID: number = 0;
+    kotNO: number = 0;
+    outletID: number = 0;
+    ownerID: number = 0;
 }
 export class responseReceiptArr {
     calculatedPrice: number;

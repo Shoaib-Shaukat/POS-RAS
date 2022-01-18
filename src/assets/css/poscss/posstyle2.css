@@ -412,17 +412,19 @@
     text-align: center;
     display: block;
     padding: 5px;
-    color: #333;
+    color: white;
     text-decoration: none;
-    background-color: #f7f7f7;
+    background-color: #ff6060;
     border-radius: 0.25rem;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    cursor: pointer;
 }
 
 #main_part .main_right #main_item_holder .category-list li a:focus {
-    background-color: #e2e2e2;
+    background-color: #ff9393;
+    color: black;
 }
 
 #main_part .main_right #main_item_holder .single_item {

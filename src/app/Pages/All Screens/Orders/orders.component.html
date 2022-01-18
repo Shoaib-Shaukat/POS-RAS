@@ -23,7 +23,7 @@
             <tbody>
                 <tr *ngFor="let p of responseOrder let ndx=index;">
                     <td>{{ndx+1}}</td>
-                    <td>{{p.orderID}}</td>
+                    <td>{{p.kotID}}</td>
                     <td>
                         <button class="btn btn-primary color text-white btn-sm m-1" (click)="viewOrder(p)"
                             title="View Order" data-toggle="modal" data-target=".viewOrderModal">
@@ -48,7 +48,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <h5>Order No: {{POSModelRequest.responseOrder.orderID}}</h5>
+                <h5>Order No: {{POSModelRequest.responseOrder.kotID}}</h5>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">

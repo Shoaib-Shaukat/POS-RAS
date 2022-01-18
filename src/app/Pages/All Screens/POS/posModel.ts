@@ -133,11 +133,11 @@ export class POSModelRequest {
 }
 
 export class responseOrder {
-    orderID: number = 0;
-    outletID: number;
-    kotNO: number;
-    kotDate: string;
-    orderType: string;
+    kotID: number = 0;
+    kotNO: number = 0;
+    outletID: number = 0;
+    ownerID: number = 0;
+    statusID: number = 0;
 }
 
 
@@ -165,18 +165,18 @@ export class responseReceiptArr {
     orderID: number = 0;
     remarks: string;
 }
-export class POSModelResponse {
-    responseOrder: responseOrder;
-    responseReceiptArr: responseReceiptArr[];
-    responseTable: responseTable[];
-    responseCustomer: responseCustomer;
-    constructor() {
-        this.responseReceiptArr = [];
-        this.responseTable = [];
-        this.responseCustomer = new responseCustomer();
-        this.responseOrder = new responseOrder();
-    }
-}
+// export class POSModelResponse {
+//     responseOrder: responseOrder;
+//     responseReceiptArr: responseReceiptArr[];
+//     responseTable: responseTable[];
+//     responseCustomer: responseCustomer;
+//     constructor() {
+//         this.responseReceiptArr = [];
+//         this.responseTable = [];
+//         this.responseCustomer = new responseCustomer();
+//         this.responseOrder = new responseOrder();
+//     }
+// }
 
 
 export class customerFavResponse {
@@ -207,7 +207,18 @@ export class customerFavResponse {
     variantPrice: number;
     occurrence: number;
 }
-//.............................KOT Models................................
+
+export class tablesResponse {
+    tableID: number;
+    statusID: number;
+    description: string;
+    isActive: boolean;
+    outletID: number;
+    seatCapacity: number;
+    tableName: string;
+    kotID: number;
+}
+//.............................KOT Requests Models................................
 export class POSNewModelRequest {
     requestKotSR: requestKotSR;
     requestKot: requestKot;
@@ -234,10 +245,11 @@ export class requestKot {
     outletID: number = 0;
     OwnerID: number = 0;
     kotID: number = 0;
+    remarks: string;
 }
 
 export class requestKotDetail {
-    Quantity: number = 0;
+    quantity: number = 0;
     calculatedPrice: number = 0;
     discount: number = 0;
     foodItemID: number = 0;
@@ -268,6 +280,67 @@ export class requestCustomerTable {
 }
 
 export class requestCustomerDetail {
+    customerDetailID: number = 0;
+    kotID: number = 0;
+    customerID: number = 0;
+}
+
+//.............................KOT Responses Models................................
+
+export class POSNewModelResponse {
+    responseCustomerDetail: responseCustomerDetail;
+    responseCustomerTable: responseCustomerTable[];
+    responseKot: responseKot;
+    responseKotDetail: responseKotDetail[];
+
+    constructor() {
+        this.responseCustomerDetail = new responseCustomerDetail();
+        this.responseKotDetail = [];
+        this.responseCustomerTable = [];
+        this.responseKot = new responseKot();
+    }
+}
+
+export class responseKot {
+    kotNO: string;
+    outletID: number = 0;
+    OwnerID: number = 0;
+    kotID: number = 0;
+    remarks: string;
+}
+
+export class responseKotDetail {
+    quantity: number = 0;
+    calculatedPrice: number = 0;
+    discount: number = 0;
+    foodItemID: number = 0;
+    foodMenuID: number = 0;
+    description: string;
+    foodItemName: string;
+    foodMenuName: string;
+    hasVariant: boolean;
+    isActive: boolean;
+    newStr: string;
+    price: number = 0;
+    outletID: number = 0;
+    refCode: string;
+    variantID: number = 0;
+    variantName: string;
+    variantPrice: number = 0;
+    dealID: number = 0;
+    dealName: string;
+    itemsDescription: string;
+    dealPrice: number = 0;
+    kotID: number = 0;
+}
+
+export class responseCustomerTable {
+    customerTableID: number = 0;
+    kotID: number = 0;
+    tableID: number = 0;
+}
+
+export class responseCustomerDetail {
     customerDetailID: number = 0;
     kotID: number = 0;
     customerID: number = 0;
