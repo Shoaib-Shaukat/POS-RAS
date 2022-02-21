@@ -6,12 +6,12 @@
                 <input type="hidden" class="datatable_name" data-title="Tables" data-id_name="datatable">
             </div>
             <div class="col-md-6">
-                <div class="top_menu_right me-2 btn bg-blue-btn">
+                <div class="top_menu_right me-2 btn bg-blue-btn" title="Refresh Orders">
                     <p class="m-0" (click)="getAllOrders()">
                         <i class="fas fa-sync-alt ir_mouse_pointer" id="refresh_orders_button"></i>
                     </p>
                 </div>
-                <div class="top_menu_right me-2 btn bg-blue-btn">
+                <div class="top_menu_right me-2 btn bg-blue-btn" title="Notifications">
                     <p class="m-0">
                         <i class="fas fa-bell "></i>
                     </p>
@@ -20,182 +20,118 @@
         </div>
     </section>
     <div class="row">
-        <div class="col-sm-6 mb-3 col-md-4 " *ngFor="let p of responseOrder">
-            <div class="outlet-box text-center" *ngIf="p.statusID > 1 && p.statusID<5"
-                [ngStyle]="{'background-color': p.statusID == 1 ? '#ffe043' :  'rgb(75 180 255)'}">
-                <h3 class="title">{{p.kotNO}}</h3>
-                <h5 class="title" *ngIf="p.statusID == 3">Status: NEW_ORDER</h5>
-                <h5 class="title" *ngIf="p.statusID == 4">Status: IN_QUEUE</h5>
-                <div class="btn_box">
-                    <div class="row mt-4">
-                        <div class="col-md-3">
-                            <button type="button" class="w-100 btn bg-blue-btn" (click)="cancelOrderNotConfirm(p)"
-                                style="background-color: rgb(72, 216, 0); color: white;">Cancel</button>
-                        </div>
-                        <div class="col-md-3">
-                            <button type="button" class="w-100 btn bg-blue-btn"
-                                style="background-color: rgb(237, 0, 0);" (click)="viewOrder(p)" data-toggle="modal"
-                                data-target="#OrderViewModal">View</button>
-                        </div>
-                        <div class="col-md-3">
-                            <button type="button" class="w-100 btn bg-blue-btn" style="background-color: blueviolet;"
-                                [disabled]="p.statusID != 3" (click)="changeStatus(p)">Start</button>
-                        </div>
-                        <div class="col-md-3">
-                            <button type="button" class="w-100 btn bg-blue-btn"
-                                style="background-color: rgb(255, 225, 0);" [disabled]="p.statusID != 4"
-                                (click)="changeStatus(p)">Ready</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- <div class="fix main_bottom" [hidden]="responseOrder.length == 0" *ngFor="let p of responseOrder">
-        <div class="fix order_holder mt-2" id="order_holder">
-            <div class="fix floatleft single_order" data-order-type="Take Away" data-selected="unselected"
-                id="single_order_100">
-                <div class="header_portion light-blue-background fix">
-                    <div class="fix floatleft half">
-                        <p class="order_number">KOT NO: {{p.kotNO}}</p>
-                        <p class="order_number">Table: Room 221</p>
-                    </div>
-                    <div class="fix floatleft half">
-                        <p class="order_duration dark-blue-background"><span id="bar_time_minute_100">38</span>:<span
-                                id="bar_time_second_100">41</span></p>
-                    </div>
-                </div>
-                <div class="slimScrollDiv"
-                    style="position: relative; overflow: hidden; width: auto; height: 199px; background: rgb(255, 255, 255); border: 0px solid rgb(24, 64, 85);">
-                    <div class="fix items_holder" style="overflow: hidden; width: auto; height: 199px;">
-                        <div data-selected="unselected" class="fix single_item " data-order-id="100" data-item-id="245"
-                            id="detail_item_id_245" data-cooking-status="null">
-                            <div class="single_item_left_side fix">
-                                <div class="fix floatleft item_quantity">
-                                    <p class="order_number">KOT NO: {{p.kotNO}}</p>
+        <ng-container *ngFor="let p of responseOrder">
+            <ng-container *ngIf="p.statusID != 6 && p.statusID != 7 && p.statusID != 8">
+                <div class="col-md-3" style="padding-right: 10px;">
+                    <div class="card mb-3">
+                        <div class="card-body"
+                            [ngClass]="{'newOrderClass':p.statusID == 3, 'inQueueClass': p.statusID == 4, 'readyClass':p.statusID == 5}">
+                            <div class="row">
+                                <div class="col-md-7">
+                                    <p class="card-title" *ngIf="p.statusID == 3">NEW_ORDER</p>
+                                    <p class="card-title" *ngIf="p.statusID == 4">IN_QUEUE</p>
+                                    <p class="card-title" *ngIf="p.statusID == 5">READY</p>
                                 </div>
-                                <div class="fix floatleft item_detail">
-                                    <p class="item_name" style="">Pepsi 250ml</p>
-                                    <p class="item_qty" style="font-weight:bold; ">Qty: 1</p>
+                                <div class="col-md-5">
+                                    <p class="card-title float-end"><i class="fas fa-stopwatch"></i>
+                                        {{p.minute.minutes}}:{{p.minute.seconds}}</p>
                                 </div>
                             </div>
-                            <div class="single_item_right_side fix">
-                                <p class="order_number">KOT NO: {{p.kotNO}}</p>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Order Type: {{p.orderType}}</li>
+                            <ng-container *ngIf="p.tableDetail.length > 0">
+                                <ng-container *ngFor="let table of p.tableDetail">
+                                    <li class="list-group-item">Table: {{table.tableName}}</li>
+                                </ng-container>
+                            </ng-container>
+                            <ng-container *ngIf="p.tableDetail.length == 0">
+                                <li class="list-group-item">Table: </li>
+                            </ng-container>
+                            <li class="list-group-item">Order No: {{p.kotNO}}</li>
+                        </ul>
+                        <div class="card-body" style="padding-top: 0px;">
+                            <div class="row mt-4">
+                                <div class="col-md-3">
+                                    <button type="button" class="w-100 btn bg-blue-btn"
+                                        style="background-color: rgb(255 177 0);" (click)="viewOrder(p)"
+                                        data-toggle="modal" data-target="#OrderViewModal">View</button>
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="button" class="w-100 btn bg-blue-btn"
+                                        style="background-color:  rgb(72, 216, 0);" [disabled]="p.statusID != 3"
+                                        (click)="changeStatus(p)">Start</button>
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="button" class="w-100 btn bg-blue-btn"
+                                        style="background-color: rgb(23 161 175);" [disabled]="p.statusID != 4"
+                                        (click)="changeStatus(p)">Ready</button>
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="button" class="w-100 btn bg-blue-btn" (click)="changeStatus(p)"
+                                        [disabled]="p.statusID != 5"
+                                        style="background-color: #f15a29; color: white;">Collected</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="slimScrollBar"
-                        style="background: rgb(0, 0, 0); width: 7px; position: absolute; top: 0px; opacity: 0.4; display: none; border-radius: 7px; z-index: 99; right: 1px; height: 199px;">
-                    </div>
-                    <div class="slimScrollRail"
-                        style="width: 7px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51); opacity: 0.2; z-index: 90; right: 1px;">
-                    </div>
-                </div>
-                <div class="single_order_button_holder" id="single_order_button_holder_100">
-                    <button class="select_all_of_an_order" id="select_all_of_an_order_100"
-                        *ngIf="p.statusID == 3">Start</button>
-                    <button class="select_all_of_an_order" id="select_all_of_an_order_100"
-                        *ngIf="p.statusID == 4">Ready</button>
-                    <button class="unselect_all_of_an_order" id="unselect_all_of_an_order_100">Reject</button>
-                </div>
-            </div>
-        </div>
-    </div> -->
-</section>
 
-<!-- //.......................................................................................
-<div class="wrapper fix">
-    <div class="main_top">
-        <div class="row">
-            <div class="top_header col-sm-12 col-md-4">
-                <h1>Kitchen Panel</h1>
-            </div>
-            <div class="top_menu col-sm-12 col-md-8 d-flex align-items-center justify-content-end">
-                <form id="language" method="post" accept-charset="utf-8">
-                    <select tabindex="-1" class="form-control select2 ir_w_100 select2-hidden-accessible"
-                        name="language" onchange="this.form.submit()" aria-hidden="true">
-                        <option value="english" selected="">English</option>
-                        <option value="spanish">Spanish</option>
-                        <option value="french">French</option>
-                        <option value="arabic">Arabic</option>
-                    </select><span class="select2 select2-container select2-container--default" dir="ltr"
-                        style="width: 189.062px;"><span class="selection"><span
-                                class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true"
-                                aria-expanded="false" tabindex="2" aria-labelledby="select2-language-j3-container"><span
-                                    class="select2-selection__rendered" id="select2-language-j3-container"
-                                    title="English">English</span>
-                                <span class="select2-selection__arrow" role="presentation"><b
-                                        role="presentation"></b></span>
-                            </span>
-                        </span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
-                </form>
-                <a class="btn bg-blue-btn me-2" id="logout_button"><i class="fas fas-caret-square-left"></i>Back</a>
-                <div class="top_menu_right me-2 btn bg-blue-btn">
-                    <p class="m-0">
-                        <i class="fas fa-sync-alt ir_mouse_pointer" id="refresh_orders_button"></i>
-                    </p>
-                </div>
-                <div class="top_menu_right me-2 btn bg-blue-btn">
-                    <p class="m-0">
-                        <i class="fas fa-bell "></i>
-                    </p>
-                </div>
-                <button id="help_button" data-bs-toggle="modal" data-bs-target="#help_modal"
-                    class="me-2 btn bg-blue-btn"><i class="fas me-2 fa-question-circle"></i> Help</button>
-                <a class="btn bg-blue-btn me-2 d-flex align-items-center" id="logout_button" routerLink="/login"><i
-                        class="fas me-2 fa-sign-out-alt"></i> Logout</a>
-            </div>
-        </div>
-    </div>
-    <div class="fix main_bottom" *ngFor="let p of responseOrder">
-        <div class="fix order_holder mt-2" id="order_holder">
-            <div class="fix floatleft single_order" data-order-type="Take Away" data-selected="unselected"
-                id="single_order_100">
-                <div class="header_portion light-blue-background fix">
-                    <div class="fix floatleft half">
-                        <p class="order_number">Invoice: B 000100</p>
-                        <p class="order_number">Table: Room 221</p>
-                    </div>
-                    <div class="fix floatleft half">
-                        <p class="order_duration dark-blue-background"><span id="bar_time_minute_100">38</span>:<span
-                                id="bar_time_second_100">41</span></p>
-                    </div>
-                </div>
-                <div class="slimScrollDiv"
-                    style="position: relative; overflow: hidden; width: auto; height: 199px; background: rgb(255, 255, 255); border: 0px solid rgb(24, 64, 85);">
-                    <div class="fix items_holder" style="overflow: hidden; width: auto; height: 199px;">
-                        <div data-selected="unselected" class="fix single_item " data-order-id="100" data-item-id="245"
-                            id="detail_item_id_245" data-cooking-status="null">
-                            <div class="single_item_left_side fix">
-                                <div class="fix floatleft item_quantity">
-                                    <p class="item_quanity_text" style="">1</p>
+                    <!-- <div class="card mb-3"
+                        [ngStyle]="{'background-color': p.statusID == 3 ? 'rgb(66 161 66)' : 'rgb(23 161 175)'}">
+                        <div class="card-body">
+                            <div class="row mb-2" style="color: black;"
+                                [ngStyle]="{'background-color': p.statusID == 3 ? 'rgb(155 255 155)' : 'rgb(163 246 255)'}">
+                                <div class="col-md-6">
+                                    <p class="card-text">{{p.orderType}}</p>
                                 </div>
-                                <div class="fix floatleft item_detail">
-                                    <p class="item_name" style="">Pepsi 250ml</p>
-                                    <p class="item_qty" style="font-weight:bold; ">Qty: 1</p>
+                                <div class="col-md-6">
+                                    <p class="card-text float-end" *ngIf="p.statusID == 3">NEW_ORDER</p>
+                                    <p class="card-text float-end" *ngIf="p.statusID == 4">IN_QUEUE</p>
                                 </div>
                             </div>
-                            <div class="single_item_right_side fix">
-                                <p class="single_item_cooking_status" style=""></p>
+                            <div class="row mb-2" style="color: black;"
+                                [ngStyle]="{'background-color': p.statusID == 3 ? 'rgb(155 255 155)' : 'rgb(163 246 255)'}">
+                                <div class="col-md-4">
+                                    <ng-container *ngFor="let table of p.tableDetail">
+                                        <p class="card-text">{{table.tableName}}</p>
+                                    </ng-container>
+                                </div>
+                                <div class="col-md-8">
+                                    <p class="card-text float-end">#{{p.kotNO}}</p>
+                                </div>
+                            </div>
+
+                            <div class="btn_box">
+                                <div class="row mt-4">
+                                    <div class="col-md-3">
+                                        <button type="button" class="w-100 btn bg-blue-btn"
+                                            (click)="cancelOrderNotConfirm(p)"
+                                            style="background-color: rgb(237, 0, 0); color: white;">Cancel</button>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button type="button" class="w-100 btn bg-blue-btn"
+                                            style="background-color: rgb(255, 225, 0);" (click)="viewOrder(p)"
+                                            data-toggle="modal" data-target="#OrderViewModal">View</button>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button type="button" class="w-100 btn bg-blue-btn"
+                                            style="background-color: blueviolet;" [disabled]="p.statusID != 3"
+                                            (click)="changeStatus(p)">Start</button>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button type="button" class="w-100 btn bg-blue-btn"
+                                            style="background-color: rgb(72, 216, 0);" [disabled]="p.statusID != 4"
+                                            (click)="changeStatus(p)">Ready</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="slimScrollBar"
-                        style="background: rgb(0, 0, 0); width: 7px; position: absolute; top: 0px; opacity: 0.4; display: none; border-radius: 7px; z-index: 99; right: 1px; height: 199px;">
-                    </div>
-                    <div class="slimScrollRail"
-                        style="width: 7px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51); opacity: 0.2; z-index: 90; right: 1px;">
-                    </div>
+                    </div> -->
                 </div>
-                <div class="single_order_button_holder" id="single_order_button_holder_100">
-                    <button class="select_all_of_an_order" id="select_all_of_an_order_100">Start</button>
-                    <button class="select_all_of_an_order" id="select_all_of_an_order_100">Ready</button>
-                    <button class="unselect_all_of_an_order" id="unselect_all_of_an_order_100">Reject</button>
-                </div>
-            </div>
-        </div>
+            </ng-container>
+        </ng-container>
     </div>
-</div> -->
+</section>
 
 
 <div class="modal fade  come-from-modal left" id="OrderViewModal" tabindex="-1" role="dialog" data-backdrop="static"
@@ -208,18 +144,15 @@
                 <h4 class="modal-title" id="myModalLabel">Order Detail</h4>
             </div>
             <div class="modal-body">
-                <h5>KOT NO: {{POSNewModelRequest.requestKot.kotNO}}</h5>
                 <div class="row">
                     <div class="form-group">
-                        <label><b>Items</b></label>
                         <div class="table-box anyClassThree">
                             <div class="table-responsive">
                                 <table id="datatable" class="table table-striped">
                                     <thead>
                                         <tr>
-                                            <th>Name</th>
+                                            <th>Item Name</th>
                                             <th>Qty</th>
-                                            <th style="text-align: right;">Price</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -233,30 +166,11 @@
                                             <td>
                                                 {{p.quantity}}
                                             </td>
-                                            <td *ngIf="p.variantID && !p.dealID && p.discount == 0"
-                                                style="text-align: right;">
-                                                {{GV.Currency}} {{p.variantPrice | number}}
-                                            </td>
-                                            <td *ngIf="p.variantID && !p.dealID && p.discount != 0"
-                                                style="text-align: right;">
-                                                {{GV.Currency}} {{p.calculatedPrice | number}}
-                                            </td>
-                                            <td *ngIf="!p.variantID && !p.dealID && p.discount == 0"
-                                                style="text-align: right;">
-                                                {{GV.Currency}} {{p.price | number}}
-                                            </td>
-                                            <td *ngIf="!p.variantID && !p.dealID && p.discount != 0"
-                                                style="text-align: right;">
-                                                {{GV.Currency}} {{p.calculatedPrice | number}}
-                                            </td>
-                                            <td *ngIf="p.dealID" style="text-align: right;">
-                                                {{GV.Currency}} {{p.dealPrice | number}}
-                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
                                 <div class="form-group">
-                                    <label><b>Remarks</b></label>
+                                    <label>Remarks</label>
                                     <textarea class="form-control" style="height: 70px;"
                                         readonly>{{POSNewModelRequest.requestKot.remarks}}</textarea>
                                 </div>

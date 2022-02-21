@@ -29,23 +29,30 @@
         <div>
             <!-- sidebar menu: : style can be found in sidebar.less -->
             <ul class="sidebar-menu ps ps--active-y tree" data-widget="tree">
-                <li *ngIf="GV.canGetOwner" class="menu_assign_class menu__cid4" data-menu__cid="4"
+                <li *ngIf="GV.canGetOwner" class="menu_assign_class menu__cid6" data-menu__cid="6"
                     [routerLinkActive]="['active']">
                     <!--This variable could not be escaped because this is base url content-->
-                    <a routerLink="/Users">
-                        <i class="fas fa-users"></i>
-                        <span>Users</span>
+                    <a routerLink="/Dashboard">
+                        <i class="fa fa-th"></i>
+                        <span>Dashboard</span>
                     </a>
                 </li>
-                <li *ngIf="GV.canGetCompany && (GV.ownerID != 0)" class="menu_assign_class menu__cid4"
-                    data-menu__cid="4" [routerLinkActive]="['active']">
+                <!-- <li class="menu_assign_class menu__cid4" data-menu__cid="4"
+                    [routerLinkActive]="['active']">
+                    <a routerLink="/Register">
+                        <i class="fas fa-users"></i>
+                        <span>Registration</span>
+                    </a>
+                </li> -->
+                <li *ngIf="(GV.canGetCompany) && (showCompanies) && (GV.userID != 0)"
+                    class="menu_assign_class menu__cid4" data-menu__cid="4" [routerLinkActive]="['active']">
                     <!--This variable could not be escaped because this is base url content-->
                     <a routerLink="/Companies">
                         <i class="fa fa-building"></i>
                         <span>Companies</span>
                     </a>
                 </li>
-                <li *ngIf="GV.companyID != 0 && GV.canGetOutlets && (GV.ownerID != 0)"
+                <li *ngIf="(GV.canGetOutlets) && (GV.companyID != 0) && (GV.userID != 0)"
                     class="menu_assign_class menu__cid4" data-menu__cid="4" [routerLinkActive]="['active']">
                     <!--This variable could not be escaped because this is base url content-->
                     <a routerLink="/Outlet">
@@ -53,87 +60,91 @@
                         <span>Outlets</span>
                     </a>
                 </li>
-                <li *ngIf="GV.ownerID != 0 && GV.companyID != 0" class="menu_assign_class menu__cid4" data-menu__cid="4"
-                    [routerLinkActive]="['active']">
+                <li *ngIf="GV.companyID != 0 && GV.canGetOutlets && (GV.userID != 0) && (showStaff)"
+                    class="menu_assign_class menu__cid4" data-menu__cid="4" [routerLinkActive]="['active']">
+                    <!--This variable could not be escaped because this is base url content-->
+                    <a routerLink="/Users">
+                        <i class="fas fa-users"></i>
+                        <span>Users</span>
+                    </a>
+                </li>
+                <li *ngIf="GV.userID != 0 && GV.companyID != 0 && showCurrencies" class="menu_assign_class menu__cid4"
+                    data-menu__cid="4" [routerLinkActive]="['active']">
                     <!--This variable could not be escaped because this is base url content-->
                     <a routerLink="/Currency">
                         <i class="fas fa-store"></i>
                         <span>Currencies</span>
                     </a>
                 </li>
-                <li *ngIf="GV.companyID != 0 && GV.OutletID != 0 && (GV.ownerID != 0)"
-                    class="menu_assign_class menu__cid6" data-menu__cid="6" [routerLinkActive]="['active']">
-                    <!--This variable could not be escaped because this is base url content-->
-                    <a routerLink="/Dashboard">
-                        <i class="fa fa-th"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-                <li *ngIf="GV.companyID != 0 && GV.OutletID != 0 && (GV.ownerID != 0)" class="treeview menu__cid5">
+                <li *ngIf="GV.companyID != 0 && GV.OutletID != 0" class="treeview menu__cid5">
                     <a [routerLinkActive]="['active']">
                         <i class="fa fa-sitemap"></i>
                         <span>Master</span>
                     </a>
                     <ul class="treeview-menu">
                         <!--This variable could not be escaped because this is base url content-->
-                        <li class="menu_assign_class" data-menu__cid="5"><a [routerLinkActive]="['active']"
-                                routerLink="/Master/FoodMenuCat">
-                                Menu Categories</a></li>
-                        <li class="menu_assign_class" data-menu__cid="5"><a routerLink="/Master/Items"
-                                [routerLinkActive]="['active']">
-                                Menu Items</a></li>
-                        <!--This variable could not be escaped because this is base url content-->
-                        <li class="menu_assign_class" data-menu__cid="5"><a routerLink="/Master/Customer"
-                                [routerLinkActive]="['active']">
+                        <li *ngIf="showCustomers" class="menu_assign_class" data-menu__cid="5"><a
+                                routerLink="/Master/Customer" [routerLinkActive]="['active']">
                                 Customer</a></li>
                         <!--This variable could not be escaped because this is base url content-->
-                        <li class="menu_assign_class" data-menu__cid="5"><a routerLink="/Master/Table"
+                        <li *ngIf="showStaff" class="menu_assign_class" data-menu__cid="5"><a routerLink="/Master/Staff"
                                 [routerLinkActive]="['active']">
+                                Staff</a></li>
+                        <!--This variable could not be escaped because this is base url content-->
+                        <li *ngIf="showMenuCategories" class="menu_assign_class" data-menu__cid="5"><a
+                                routerLink="/Master/FoodMenuCat" [routerLinkActive]="['active']">
+                                Menu Categories</a></li>
+                        <li *ngIf="showMenuItems" class="menu_assign_class" data-menu__cid="5"><a
+                                routerLink="/Master/Items" [routerLinkActive]="['active']">
+                                Menu Items</a></li>
+                        <!--This variable could not be escaped because this is base url content-->
+                        <li *ngIf="showTables" class="menu_assign_class" data-menu__cid="5"><a
+                                routerLink="/Master/Table" [routerLinkActive]="['active']">
                                 Tables</a></li>
                         <!--This variable could not be escaped because this is base url content-->
-                        <li class="menu_assign_class" data-menu__cid="5"><a routerLink="/Master/PaymentMethod"
-                                [routerLinkActive]="['active']">
+                        <li *ngIf="showPaymentMethods" class="menu_assign_class" data-menu__cid="5"><a
+                                routerLink="/Master/PaymentMethod" [routerLinkActive]="['active']">
                                 Payment Methods</a></li>
                         <!--This variable could not be escaped because this is base url content-->
-                        <li class="menu_assign_class" data-menu__cid="5"><a routerLink="/Master/Deals"
+                        <li *ngIf="showDeals" class="menu_assign_class" data-menu__cid="5"><a routerLink="/Master/Deals"
                                 [routerLinkActive]="['active']">
                                 Deals</a></li>
                         <!--This variable could not be escaped because this is base url content-->
-                        <li class="menu_assign_class" data-menu__cid="5"><a routerLink="/Master/Categories"
-                                [routerLinkActive]="['active']">
+                        <li *ngIf="showIngredients" class="menu_assign_class" data-menu__cid="5"><a
+                                routerLink="/Master/IngCategories" [routerLinkActive]="['active']">
                                 Ingredient Categories</a></li>
                         <!--This variable could not be escaped because this is base url content-->
-                        <li class="menu_assign_class" data-menu__cid="5"><a routerLink="/Master/Units"
-                                [routerLinkActive]="['active']">
+                        <li *ngIf="showIngredients" class="menu_assign_class" data-menu__cid="5"><a
+                                routerLink="/Master/IngredientSubCat" [routerLinkActive]="['active']">
+                                Ingredient Sub Categories</a></li>
+                        <!--This variable could not be escaped because this is base url content-->
+                        <li *ngIf="showIngredients" class="menu_assign_class" data-menu__cid="5"><a
+                                routerLink="/Master/Units" [routerLinkActive]="['active']">
                                 Ingredient Units</a></li>
                         <!--This variable could not be escaped because this is base url content-->
-                        <li class="menu_assign_class" data-menu__cid="5"><a routerLink="/Master/Ingredient"
-                                [routerLinkActive]="['active']">
-                                Ingredients</a></li>
-                        <!--This variable could not be escaped because this is base url content-->
-                        <li class="menu_assign_class" data-menu__cid="5"><a routerLink="/Master/Expense"
-                                [routerLinkActive]="['active']">
-                                Expense Items</a></li>
+                        <li *ngIf="showIngredients" class="menu_assign_class" data-menu__cid="5"><a
+                                routerLink="/Master/Ingredientcompanies" [routerLinkActive]="['active']">
+                                Ingredient Companies</a></li>
                     </ul>
                 </li>
-                <li *ngIf="GV.companyID != 0 && GV.OutletID != 0 && (GV.ownerID != 0)" class="treeview menu__cid5">
+                <li *ngIf="GV.companyID != 0 && GV.OutletID != 0" class="treeview menu__cid5">
                     <a [routerLinkActive]="['active']">
                         <i class="fas fa-desktop"></i>
                         <span>All Screens</span>
                     </a>
                     <ul class="treeview-menu">
                         <!--This variable could not be escaped because this is base url content-->
-                        <li class="menu_assign_class" data-menu__cid="5"><a routerLink="/AllScreen/Pos"
+                        <li *ngIf="showPOS" class="menu_assign_class" data-menu__cid="5"><a routerLink="/AllScreen/Pos"
                                 [routerLinkActive]="['active']">
                                 POS</a></li>
                         <!--This variable could not be escaped because this is base url content-->
-                        <li class="menu_assign_class" data-menu__cid="5"><a routerLink="/AllScreen/Orders">
+                        <li *ngIf="showOrders" class="menu_assign_class" data-menu__cid="5"><a
+                                routerLink="/AllScreen/Orders" [routerLinkActive]="['active']">
                                 Orders</a></li>
                         <!--This variable could not be escaped because this is base url content-->
-                        <li class="menu_assign_class" data-menu__cid="5"><a routerLink="/AllScreen/Kitchen">
+                        <li *ngIf="showKitchen" class="menu_assign_class" data-menu__cid="5"><a
+                                routerLink="/AllScreen/Kitchen" [routerLinkActive]="['active']">
                                 Kitchen</a></li>
-                        <li class="menu_assign_class" data-menu__cid="5"><a routerLink="/AllScreen/Waiter">
-                                Waiter</a></li>
                     </ul>
                 </li>
                 <li *ngIf="GV.companyID != 0 && GV.OutletID != 0 && (GV.ownerID != 0)"

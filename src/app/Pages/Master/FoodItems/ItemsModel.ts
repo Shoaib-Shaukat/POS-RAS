@@ -28,7 +28,7 @@ export class requestFoodMenuItem {
     isActive: boolean;
     hasVariant: boolean;
     foodMenuID: number;
-    OwnerID: number;
+    UserID: number;
     discount: number;
     calculatedPrice: number;
     imageURl: any;
@@ -43,7 +43,7 @@ export class responseFoodMenuItem {
     isActive: boolean;
     hasVariant: boolean;
     foodMenuID: number;
-    OwnerID: number;
+    UserID: number;
     discount: number;
     calculatedPrice: number;
     imageURl: any;

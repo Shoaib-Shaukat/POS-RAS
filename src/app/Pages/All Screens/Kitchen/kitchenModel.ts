@@ -4,6 +4,10 @@ export class responseOrder {
     outletID: number = 0;
     ownerID: number = 0;
     statusID: number = 0;
+    remarks: string = "";
+    orderType: string = "";
+    tableDetail: any = [];
+    minute: any = {};
 }
 export class tablesResponse {
     tableID: number;
@@ -58,6 +62,8 @@ export class requestKot {
     OwnerID: number = 0;
     kotID: number = 0;
     remarks: string;
+    orderType: string;
+    timer: string;
 }
 
 export class requestKotDetail {

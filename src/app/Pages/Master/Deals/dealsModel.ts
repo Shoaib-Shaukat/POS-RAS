@@ -6,7 +6,7 @@ export class DealsModel {
     isActive: boolean;
     imageURL: any;
     outletID: number;
-    OwnerID: number;
+    UserID: number;
     itemsDescription: string;
 }
 export class requestDealsModel {
@@ -43,7 +43,7 @@ export class responseFoodMenuItem {
     isActive: boolean;
     hasVariant: boolean;
     foodMenuID: number;
-    OwnerID: number;
+    UserID: number;
     discount: number;
     calculatedPrice: number;
     imageURl: any;

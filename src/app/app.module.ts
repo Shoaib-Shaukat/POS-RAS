@@ -16,7 +16,6 @@ import { AllscreenComponent } from './Pages/All Screens/allscreen.component';
 import { PosComponent } from './Pages/All Screens/POS/pos.component';
 import { BarComponent } from './Pages/All Screens/Bar/bar.component';
 import { KitchenComponent } from './Pages/All Screens/Kitchen/kitchen.component';
-import { WaiterComponent } from './Pages/All Screens/Waiter/waiter.component';
 import { SaleComponent } from './Pages/Sale/sale.component';
 import { HttpClientModule } from '@angular/common/http';
 import { RegisterComponent } from './Pages/Register/register.component';
@@ -33,6 +32,7 @@ import { CurrencyComponent } from './Pages/Master/Currency/currency.component';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { NgxPrintModule } from 'ngx-print';
 import { OrdersComponent } from './Pages/All Screens/Orders/orders.component';
+import { UsersComponent } from './Pages/Users/users.component';
 const maskConfig: Partial<IConfig> = {
   validation: false,
 };
@@ -52,13 +52,13 @@ const maskConfig: Partial<IConfig> = {
     PosComponent,
     BarComponent,
     KitchenComponent,
-    WaiterComponent,
     SaleComponent,
     RegisterComponent,
     CompaniesComponent,
     CurrencyComponent,
     TwoDigitDecimalNumberDirective,
     OrdersComponent,
+    UsersComponent,
   ],
   imports: [
     BrowserModule,

@@ -4,11 +4,13 @@ export class FoodCatRequestModel {
         this.foodMenuName = "";
         this.isActive = false;
         this.outletID = 0;
+        this.UserID = 0;
     }
     foodMenuID: number;
     foodMenuName: string;
     isActive: boolean;
     outletID: number;
+    UserID: number;
 }
 
 export class FoodCatResponseModel {
@@ -17,9 +19,11 @@ export class FoodCatResponseModel {
         this.foodMenuName = "";
         this.isActive = false;
         this.outletID = 0;
+        this.UserID = 0;
     }
     foodMenuID: number;
     foodMenuName: string;
     isActive: boolean;
     outletID: number;
+    UserID: number;
 }

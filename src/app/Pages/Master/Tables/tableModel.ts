@@ -3,7 +3,7 @@ export class requestTable {
     seatCapacity: number;
     isActive: string;
     outletID: number;
-    OwnerID: number;
+    UserID: number;
     tableID: number;
     description: string;
 }
@@ -12,7 +12,7 @@ export class responseTable {
     seatCapacity: number;
     isActive: string;
     outletID: number;
-    OwnerID: number;
+    UserID: number;
     customerID: number;
     tableID: number;
     description: string;

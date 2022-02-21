@@ -3,7 +3,7 @@ import { FormGroup, FormControl, ReactiveFormsModule, Validators } from '@angula
 import { ToastrService } from 'ngx-toastr';
 import { ApiService } from 'src/app/Services/API/api.service';
 import { GvarService } from './../../Services/Globel/gvar.service'
-import { OutletRequestModel, OutletResponseModel } from './Outlet.Model';
+import { getOutletRequest, OutletRequestModel, OutletResponseModel } from './Outlet.Model';
 import { Router } from '@angular/router';
 import { CurrencyModelResponse } from '../Master/Currency/currencyModel';
 
@@ -13,6 +13,7 @@ import { CurrencyModelResponse } from '../Master/Currency/currencyModel';
   styleUrls: ['./outlet.component.css'],
 })
 export class OutletComponent implements OnInit {
+  getOutletRequest: getOutletRequest;
   OutletRequestModel: OutletRequestModel;
   OutletResponseModel: OutletResponseModel[];
   CurrencyModelResponse: CurrencyModelResponse[];
@@ -23,12 +24,17 @@ export class OutletComponent implements OnInit {
   constructor(public GV: GvarService, public API: ApiService, private toastr: ToastrService, private router: Router) {
     this.OutletForm = new FormGroup({});
     this.OutletRequestModel = new OutletRequestModel();
+    this.getOutletRequest = new getOutletRequest();
     this.OutletResponseModel = [];
     this.CurrencyModelResponse = [];
   }
 
   ngOnInit(): void {
+    Number(localStorage.setItem('outletID', '0'));
     this.GV.OutletID = 0;
+    this.GV.companyID = Number(localStorage.getItem('companyID'));
+    this.GV.isOwner = Number(localStorage.getItem('isOwner'));
+    this.GV.userID = Number(localStorage.getItem('userID'));
     this.GV.OutletName = "";
     this.submitted = false;
     this.IntializeForm();
@@ -40,19 +46,15 @@ export class OutletComponent implements OnInit {
     this.OutletForm = new FormGroup({
       outletID: new FormControl(""),
       outletName: new FormControl("", [Validators.required, this.noWhitespaceValidator]),
-      phone: new FormControl("", [Validators.required]),
-      email: new FormControl("", [Validators.required]),
+      phone: new FormControl("", [Validators.required, Validators.pattern(".{10,10}")]),
+      email: new FormControl("", [Validators.required,
+      Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")]),
       address: new FormControl("", [Validators.required]),
-      defaultWaiter: new FormControl(""),
       hasKitchen: new FormControl(""),
-      Active: new FormControl(""),
-      createdBy: new FormControl(""),
-      modifiedDate: new FormControl(""),
-      modifiedBy: new FormControl(""),
-      isDeleted: new FormControl(""),
+      isActive: new FormControl(""),
       companyID: new FormControl(""),
-      ownerID: new FormControl(""),
-      symbol: new FormControl("", [Validators.required]),
+      UserID: new FormControl(""),
+      currencyID: new FormControl("", [Validators.required]),
     });
   }
 
@@ -78,9 +80,12 @@ export class OutletComponent implements OnInit {
       });
       return;
     }
-    this.API.getdata('/Outlet/getOutlet?companyID=' + this.GV.companyID).subscribe(c => {
+    this.getOutletRequest.CompanyID = this.GV.companyID;
+    this.getOutletRequest.UserID = this.GV.userID;
+    this.API.PostData('/Outlet/getOutlet', this.getOutletRequest).subscribe(c => {
       if (c != null) {
         this.OutletResponseModel = c.responseOutlet;
+        //this.OutletResponseModel = this.OutletResponseModel.filter(f => this.AllOutlets.some((item: any) => item.outletID === f.outletID));
       }
     },
       error => {
@@ -94,14 +99,18 @@ export class OutletComponent implements OnInit {
   onOutletsubmit() {
     this.submitted = true;
     if (this.OutletForm.valid) {
-      if (this.OutletForm.controls.Active.value == "" || this.OutletForm.controls.Active.value == null) {
-        this.OutletForm.controls.Active.setValue(false);
+      if (this.OutletForm.controls.isActive.value == "" || this.OutletForm.controls.isActive.value == null) {
+        this.OutletForm.controls.isActive.setValue(false);
+      }
+      if (this.OutletForm.controls.hasKitchen.value == "" || this.OutletForm.controls.hasKitchen.value == null) {
+        this.OutletForm.controls.hasKitchen.setValue(false);
       }
       if (this.OutletForm.controls.outletID.value == null) {
         this.OutletForm.controls.outletID.setValue(0);
       }
-      this.OutletForm.controls.ownerID.setValue(Number(localStorage.getItem('ownerID')));
-      this.OutletForm.controls.companyID.setValue(this.GV.companyID);
+      this.OutletForm.controls.UserID.setValue(this.GV.userID);
+      this.OutletForm.controls.companyID.setValue((Number(localStorage.getItem('companyID'))));
+      this.OutletForm.controls.currencyID.setValue((Number(this.OutletForm.controls.currencyID.value)));
       this.OutletRequestModel = this.OutletForm.value;
       this.API.PostData('/Outlet/AddEditOutlet', this.OutletRequestModel).subscribe(c => {
         if (c != null) {
@@ -131,15 +140,23 @@ export class OutletComponent implements OnInit {
 
   isActiveCheck(check: boolean) {
     if (check == true) {
-      this.OutletForm.controls.Active.setValue(true);
+      this.OutletForm.controls.isActive.setValue(true);
     } else {
-      this.OutletForm.controls.Active.setValue(false);
+      this.OutletForm.controls.isActive.setValue(false);
+    }
+  }
+  hasKitchenChange(kitchen: boolean) {
+    if (kitchen == true) {
+      this.OutletForm.controls.hasKitchen.setValue(true);
+    } else {
+      this.OutletForm.controls.hasKitchen.setValue(false);
     }
   }
 
   enterInOutlet(p: any) {
+    localStorage.setItem('outletID', p.outletID);
     this.GV.OutletID = p.outletID;
-    this.GV.Currency = p.symbol;
+    this.GV.Currency = p.currencyID;
     this.GV.OutletName = p.outletName;
     this.GV.OutletAddress = p.address;
     if (p.outletID == undefined) {
@@ -157,7 +174,7 @@ export class OutletComponent implements OnInit {
   }
 
   getCurrencies() {
-    this.API.getdata('/Generic/getCurrency?OwnerID=' + this.GV.ownerID).subscribe(c => {
+    this.API.getdata('/Generic/getCurrency?userID=' + this.GV.userID).subscribe(c => {
       if (c != null) {
         this.CurrencyModelResponse = c.responseCurrencies;
       }

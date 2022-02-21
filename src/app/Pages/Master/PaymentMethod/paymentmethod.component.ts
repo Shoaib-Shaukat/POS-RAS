@@ -43,7 +43,7 @@ export class PaymentmethodComponent implements OnInit {
       paymentName: new FormControl("", [Validators.required, this.noWhitespaceValidator]),
       isActive: new FormControl(""),
       outletID: new FormControl(""),
-      OwnerID: new FormControl(""),
+      UserID: new FormControl(""),
       paymentID: new FormControl(""),
       description: new FormControl(""),
       taxPercentage: new FormControl("", [Validators.max(100), Validators.min(0)]),
@@ -51,6 +51,7 @@ export class PaymentmethodComponent implements OnInit {
     });
   }
   ngOnInit(): void {
+    this.GV.userID = Number(localStorage.getItem('userID'));
     this.outletID = this.GV.OutletID;
     this.InitializeForm();
     this.getPayments();
@@ -78,7 +79,7 @@ export class PaymentmethodComponent implements OnInit {
     }
     else {
       this.PaymentForm.controls.outletID.setValue(this.GV.OutletID);
-      this.PaymentForm.controls.OwnerID.setValue(this.GV.ownerID);
+      this.PaymentForm.controls.UserID.setValue(this.GV.userID);
     }
     this.submitted = true;
     if (this.PaymentForm.valid) {

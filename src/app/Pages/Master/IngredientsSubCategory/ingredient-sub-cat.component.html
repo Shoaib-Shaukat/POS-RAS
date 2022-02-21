@@ -1,0 +1,103 @@
+<section class="main-content-wrapper" [hidden]="isShow==true">
+    <section class="content-header">
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="top-left-header">Ingredient Sub Categories</h2>
+                <input type="hidden" class="datatable_name" data-title="Tables" data-id_name="datatable">
+            </div>
+            <div class="col-md-6">
+                <a class="btn_list m-right bg-blue-btn btn" (click)=addSubCategory()>
+                    <i data-feather="plus"></i> Add Sub Category</a>
+            </div>
+        </div>
+    </section>
+    <div class="box-wrapper" [hidden]="SubCategoryResponse.length == 0">
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+            <thead>
+                <tr>
+                    <th>SN</th>
+                    <th>Sub Category Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let p of SubCategoryResponse let ndx=index;">
+                    <td>{{ndx+1}}</td>
+                    <td>{{p.oName}}</td>
+                    <td>
+                        <button class="btn btn-success color text-white btn-sm m-1" title="Edit"
+                            (click)="editSubCatInfo(p)">
+                            <i class="fa fa-pencil" aria-hidden="true"></i></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="main-content-wrapper" [hidden]="isShow==false">
+    <section class="content-header">
+        <h3 *ngIf="addMode == false" class="top-left-header">
+            Add Sub Category </h3>
+        <h3 *ngIf="addMode == true" class="top-left-header">
+            Edit Sub Category </h3>
+    </section>
+
+    <form [formGroup]="SubCategoryForm" (ngSubmit)="saveSubCatInfo()">
+        <div class="row">
+            <div class="col-sm-12 mb-2 col-md-6">
+                <div class="form-group">
+                    <label>Sub Category Name<span class="required_star">*</span></label>
+                    <input minlength="2" autocomplete="off" type="text" formControlName="Name"
+                        class="form-control" placeholder="Sub Category Name" value=""
+                        [ngClass]="{ 'is-invalid': submitted && f.Name.errors }" />
+                    <div *ngIf="submitted && f.Name.errors" class="invalid-feedback">
+                        <div *ngIf="f.Name.errors.required">Sub Category Name is required</div>
+                        <small *ngIf="SubCategoryForm.controls['Name'].errors?.minlength && !f.Name.errors.whitespace"
+                            class="text-danger">Sub Category Name must be at
+                            least 2 characters long.</small>
+                        <small *ngIf="f.Name.errors.whitespace && !f.Name.errors.required">Please
+                            enter valid data</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 mb-2 col-md-6">
+                <div class="form-group">
+                    <label>Ingredient Category<span class="required_star">*</span></label>
+                    <select class="form-control" formControlName="IngredientID"
+                        [ngClass]="{ 'is-invalid': submitted && f.IngredientID.errors }">
+                        <option *ngFor="let c of IngredientResponse" [value]="c.ingredientID">
+                            {{ c.name }}
+                        </option>
+                    </select>
+                    <div *ngIf="submitted && f.IngredientID.errors" class="invalid-feedback">
+                        <div *ngIf="f.IngredientID.errors.required">Ingredient Category is required!</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 mb-2 col-md-6">
+                <div class="form-group float-start">
+                    <label class="col-sm-12">Is Active?</label>
+                    <div class="col-sm-6">
+                        <input type="checkbox" class="form-control " formControlName="isActive"
+                            (click)="isActiveCheck(IsActive.checked)" #IsActive />
+                    </div>
+                </div>
+            </div>
+            <div class="row my-3">
+                <div class="col-sm-12 col-md-2">
+                    <button *ngIf="addMode == true" type="submit" name="submit" value="submit"
+                        class="w-100 btn bg-blue-btn">
+                        Submit </button>
+                    <button *ngIf="addMode == false" type="submit" name="submit" value="submit"
+                        class="w-100 btn bg-blue-btn">
+                        Update </button>
+                </div>
+                <div class="col-sm-12 col-md-2">
+                    <button type="button" class="w-100 btn bg-blue-btn" (click)="addSubCategory()">
+                        Back </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>

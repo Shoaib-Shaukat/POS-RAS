@@ -6,30 +6,35 @@ import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { ApiService } from 'src/app/Services/API/api.service';
 import { GvarService } from 'src/app/Services/Globel/gvar.service';
-import { requestCustomer, responseCustomer } from './customerModel';
+import { customerModel, responseCustomer } from './customerModel';
 @Component({
   selector: 'app-customer',
   templateUrl: './customer.component.html',
   styleUrls: ['./customer.component.css'],
 })
 export class CustomerComponent implements OnInit {
-  requestCustomer: requestCustomer;
+  customerModel: customerModel;
   responseCustomer: responseCustomer[];
-  dtOptions: DataTables.Settings = {};
-  dtTrigger: Subject<any> = new Subject<any>();
   addMode: boolean = false;
   submitted: boolean = false;
   CustomerForm: FormGroup;
   isShow: boolean = false;
   companyID: number;
+  @ViewChildren(DataTableDirective)
+  datatableElement: QueryList<DataTableDirective>;
+  dtOptions: DataTables.Settings = {};
+  dtTrigger: Subject<any> = new Subject<any>();
   constructor(private API: ApiService,
     private GV: GvarService,
     public toastr: ToastrService,
     private route: ActivatedRoute,
     private router: Router) {
     this.responseCustomer = [];
-    this.requestCustomer = new requestCustomer();
-
+    this.customerModel = new customerModel();
+    this.dtOptions = {
+      pagingType: 'full_numbers',
+      pageLength: 10
+    };
   }
   addCustomer() {
     this.submitted = false;
@@ -47,18 +52,16 @@ export class CustomerComponent implements OnInit {
       Address: new FormControl(""),
       isActive: new FormControl(""),
       companyID: new FormControl(""),
-      OwnerID: new FormControl(""),
+      UserID: new FormControl(""),
       customerID: new FormControl(""),
     });
   }
   ngOnInit(): void {
+    this.GV.userID = Number(localStorage.getItem('userID'));
+    this.GV.companyID = Number(localStorage.getItem('companyID'));
     this.companyID = this.GV.companyID;
     this.InitializeForm();
     this.getCustomers();
-    this.dtOptions = {
-      pagingType: 'full_numbers',
-      pageLength: 10
-    };
   }
 
   public noWhitespaceValidator(control: FormControl) {
@@ -79,7 +82,7 @@ export class CustomerComponent implements OnInit {
     }
     else {
       this.CustomerForm.controls.companyID.setValue(this.GV.companyID);
-      this.CustomerForm.controls.OwnerID.setValue(this.GV.ownerID);
+      this.CustomerForm.controls.UserID.setValue(this.GV.userID);
     }
     this.submitted = true;
     if (this.CustomerForm.valid) {
@@ -89,8 +92,8 @@ export class CustomerComponent implements OnInit {
       if (this.CustomerForm.controls.customerID.value == "" || this.CustomerForm.controls.customerID.value == null) {
         this.CustomerForm.controls.customerID.setValue(0);
       }
-      this.requestCustomer = this.CustomerForm.value;
-      this.API.PostData('/FoodMenu/AddEditCustomer', this.requestCustomer).subscribe(c => {
+      this.customerModel.requestCustomer = this.CustomerForm.value;
+      this.API.PostData('/FoodMenu/AddEditCustomer', this.customerModel).subscribe(c => {
         if (c != null) {
           if (c.status == "Failed") {
             this.toastr.error(c.message, 'Error', {
@@ -126,8 +129,10 @@ export class CustomerComponent implements OnInit {
     }
     this.API.getdata('/FoodMenu/getCustomer?companyID=' + this.companyID).subscribe(c => {
       if (c != null) {
-        this.responseCustomer = c.responseCustomers;
-        this.dtTrigger.next();
+        this.destroyDT(0, false).then(destroyed => {
+          this.responseCustomer = c.responseCustomers;
+          this.dtTrigger.next();
+        });
       }
     },
       error => {
@@ -151,4 +156,66 @@ export class CustomerComponent implements OnInit {
     this.isShow = !this.isShow;
     this.CustomerForm.patchValue(p);
   }
+  destroyDT = (tableIndex: any, clearData: any): Promise<boolean> => {
+    return new Promise((resolve) => {
+      if (this.datatableElement)
+        this.datatableElement.forEach((dtElement: DataTableDirective, index) => {
+
+          if (index == tableIndex) {
+            if (dtElement.dtInstance) {
+
+              if (tableIndex == 0) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+              }
+              else if (tableIndex == 1) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+
+              } else if (tableIndex == 2) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+              }
+              else if (tableIndex == 3) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+
+              }
+              else if (tableIndex == 4) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+              }
+            }
+            else {
+              resolve(true);
+            }
+          }
+        });
+    });
+  };
 }

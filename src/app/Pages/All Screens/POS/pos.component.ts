@@ -7,8 +7,9 @@ import { ApiService } from 'src/app/Services/API/api.service';
 import { GvarService } from 'src/app/Services/Globel/gvar.service';
 import { responseDealsModel } from '../../Master/Deals/dealsModel';
 import { MenuItemsModel, responseVariant } from '../../Master/FoodItems/ItemsModel';
-import { allVariantsResponse, customerFavResponse, FoodCatResponseModel, POSNewModelRequest, requestCustomer, requestCustomerTable, responseCustomer, responseFoodMenuItem, responseOrder, responseTable, tablesResponse } from './posModel';
+import { allVariantsResponse, changeOrderStatus, customerFavResponse, customerModel, FoodCatResponseModel, POSNewModelRequest, requestCustomer, requestCustomerTable, responseAddress, responseCustomer, responseFoodMenuItem, responseOrder, responseTable, tablesResponse } from './posModel';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-pos',
@@ -16,6 +17,11 @@ import { IDropdownSettings } from 'ng-multiselect-dropdown';
   styleUrls: ['./pos.component.css']
 })
 export class PosComponent implements OnInit {
+  @ViewChild('scrollMe') private myScrollContainer: ElementRef;
+  changeOrderStatus: changeOrderStatus;
+  responseAddress: responseAddress[];
+  addMoborAdd: boolean = false;
+  customerModel: customerModel;
   tablesResponse: tablesResponse[];
   POSNewModelRequest: POSNewModelRequest;
   orderRemarks: string = "";
@@ -49,6 +55,7 @@ export class PosComponent implements OnInit {
   @ViewChildren("closeAddCustomerModal") closeAddCustomerModal: any;
   @ViewChildren("closeAddRemarksModal") closeAddRemarksModal: any;
   @ViewChildren("closeTablesModal") closeTablesModal: any;
+  @ViewChildren("closeOrdersModal") closeOrdersModal: any;
 
   SelectClicked: boolean = false;
   allVariantsResponse: allVariantsResponse[];
@@ -103,6 +110,9 @@ export class PosComponent implements OnInit {
     private router: Router) {
     this.tablesResponse = [];
     this.POSNewModelRequest = new POSNewModelRequest();
+    this.customerModel = new customerModel();
+    this.responseAddress = [];
+    this.changeOrderStatus = new changeOrderStatus();
     //............................................
     this.customerFavResponse = [];
     this.date = new Date().toLocaleString().slice(0, 17);
@@ -131,8 +141,9 @@ export class PosComponent implements OnInit {
     }
   }
   ngOnInit(): void {
+    this.GV.userID = Number(localStorage.getItem('userID'));
+
     this.getAllData();
-    this.getAllOrders();
     this.symbol = this.GV.Currency;
     this.responseFoodMenuItem = [];
     this.ItemsResponseModelReplica = [];
@@ -170,7 +181,7 @@ export class PosComponent implements OnInit {
       isActive: new FormControl(),
       hasVariant: new FormControl(),
       foodMenuID: new FormControl("", [Validators.required]),
-      OwnerID: new FormControl(),
+      UserID: new FormControl(),
       discount: new FormControl(),
       calculatedPrice: new FormControl(),
       discountPercentage: new FormControl(),
@@ -206,7 +217,7 @@ export class PosComponent implements OnInit {
       Address: new FormControl(""),
       isActive: new FormControl(""),
       companyID: new FormControl(""),
-      OwnerID: new FormControl(""),
+      UserID: new FormControl(""),
       customerID: new FormControl(""),
       favDescription: new FormControl(""),
     });
@@ -337,6 +348,20 @@ export class PosComponent implements OnInit {
   ngOnDestroy(): void {
     // Do not forget to unsubscribe the event
     this.dtTrigger.unsubscribe();
+  }
+  getAllTables() {
+    this.responseTable = [];
+    this.API.getdata('/FoodMenu/getTable?outletID=' + this.GV.OutletID).subscribe(c => {
+      if (c != null) {
+        this.responseTable = c.responseTables;
+      }
+    },
+      error => {
+        this.toastr.error(error.statusText, 'Error', {
+          timeOut: 3000,
+          'progressBar': true,
+        });
+      });
   }
   getVariants(p: any) {
     this.API.getdata('/FoodMenu/getVariant?foodItemID=' + p.foodItemID).subscribe(c => {
@@ -636,8 +661,13 @@ export class PosComponent implements OnInit {
       });
     }
   }
-
+  resetForm() {
+    this.CustomerForm.reset();
+    this.responseAddress = [];
+  }
   resetOrder() {
+    this.orderTypeValue = "Dine In";
+    this.addMoborAdd = false;
     this.customerName = "";
     this.orderRemarks = "";
     this.subTotal = 0;
@@ -648,6 +678,8 @@ export class PosComponent implements OnInit {
     this.editMode = false;
     this.selectedTables = [];
     this.SearchForm.reset();
+    this.CustomerForm.reset();
+    this.changeOrderStatus = new changeOrderStatus();
     this.POSNewModelRequest = new POSNewModelRequest();
   }
 
@@ -659,17 +691,17 @@ export class PosComponent implements OnInit {
       });
       return
     }
-    this.POSNewModelRequest.requestKot.OwnerID = this.GV.ownerID;
+    this.POSNewModelRequest.requestKot.UserID = this.GV.userID;
     this.POSNewModelRequest.requestKot.outletID = this.GV.OutletID;
+    this.POSNewModelRequest.requestKot.orderType = this.orderTypeValue;
     this.POSNewModelRequest.requestKotSR.outletID = this.GV.OutletID;
-    this.API.PostData('/Generic/AddEditKot', this.POSNewModelRequest).subscribe(c => {
+    this.API.PostData('/Pos/AddEditKot', this.POSNewModelRequest).subscribe(c => {
       if (c != null) {
+        this.getKOTReciept(c.kotID);
         this.toastr.success(c.message, 'Success', {
           timeOut: 3000,
           'progressBar': true,
         });
-        this.resetOrder();
-        this.getAllOrders();
       }
     },
       error => {
@@ -680,9 +712,137 @@ export class PosComponent implements OnInit {
       });
   }
 
+  getKOTReciept(kotID: any) {
+    this.POSNewModelRequest = new POSNewModelRequest();
+    this.API.getdata('/Pos/getKOTBykotID?kotID=' + kotID).subscribe(c => {
+      if (c != null) {
+        if (c.message == "Data not found") {
+          this.toastr.error(c.message, 'Error', {
+            timeOut: 3000,
+            'progressBar': true,
+          });
+          return;
+        }
+        else {
+          if (c.responseCustomerDetail == null) {
+            this.POSNewModelRequest.requestCustomerDetail.customerID = 0;
+            this.POSNewModelRequest.requestCustomerDetail.customerDetailID = 0;
+            this.POSNewModelRequest.requestCustomerDetail.kotID = 0;
+          }
+          else {
+            this.POSNewModelRequest.requestCustomerDetail = c.responseCustomerDetail;
+            if (this.POSNewModelRequest.requestCustomerDetail.customerID > 0) {
+              var index = this.responseCustomer.findIndex((c) => c.customerID == this.POSNewModelRequest.requestCustomerDetail.customerID);
+              this.customerName = this.responseCustomer[index].customerName;
+            }
+          }
+          this.POSNewModelRequest.requestCustomerTable = c.responseCustomerTable;
+          this.POSNewModelRequest.requestKot = c.responseKot;
+          this.orderRemarks = this.POSNewModelRequest.requestKot.remarks;
+          this.POSNewModelRequest.requestKotDetail = c.responseKotDetail;
+          this.selectedTables = c.responseCustomerTable;
+          if (this.POSNewModelRequest.requestCustomerDetail.customerID > 0) {
+            var index = this.responseCustomer.findIndex((c) => c.customerID == this.POSNewModelRequest.requestCustomerDetail.customerID);
+            this.customerName = this.responseCustomer[index].customerName;
+            this.SearchForm.controls.searchCustomerByCode.setValue(this.responseCustomer[index].refCode);
+            this.searchCustomer();
+          }
+          else {
+            this.customerName = "";
+            this.SearchForm.controls.searchCustomerByCode.setValue("");
+            this.searchCustomer();
+          }
+          this.tableList = "";
+          this.POSNewModelRequest.requestCustomerTable.forEach((x) => {
+            this.responseTable.forEach((c) => {
+              if (c.tableID == x.tableID) {
+                this.tableList = this.tableList.concat(c.tableName, ', ');
+              }
+            })
+          })
+          this.tableList = this.tableList.slice(0, -2);
+          this.closeTablesModal["first"].nativeElement.click();
+          var button: any = document.getElementById("KOTReciept");
+          setTimeout(() => { button.click() }, 1000);
+          setTimeout(() => { this.resetOrder(); }, 2000);
+        }
+      }
+    },
+      error => {
+        this.toastr.error(error.statusText, 'Error', {
+          timeOut: 3000,
+          'progressBar': true,
+        });
+      });
+  }
+  getInvoiceReciept(kotID: any) {
+    this.POSNewModelRequest = new POSNewModelRequest();
+    this.API.getdata('/Pos/getKOTBykotID?kotID=' + kotID).subscribe(c => {
+      if (c != null) {
+        if (c.message == "Data not found") {
+          this.toastr.error(c.message, 'Error', {
+            timeOut: 3000,
+            'progressBar': true,
+          });
+          return;
+        }
+        else {
+          if (c.responseCustomerDetail == null) {
+            this.POSNewModelRequest.requestCustomerDetail.customerID = 0;
+            this.POSNewModelRequest.requestCustomerDetail.customerDetailID = 0;
+            this.POSNewModelRequest.requestCustomerDetail.kotID = 0;
+          }
+          else {
+            this.POSNewModelRequest.requestCustomerDetail = c.responseCustomerDetail;
+            if (this.POSNewModelRequest.requestCustomerDetail.customerID > 0) {
+              var index = this.responseCustomer.findIndex((c) => c.customerID == this.POSNewModelRequest.requestCustomerDetail.customerID);
+              this.customerName = this.responseCustomer[index].customerName;
+            }
+          }
+          this.POSNewModelRequest.requestCustomerTable = c.responseCustomerTable;
+          this.POSNewModelRequest.requestKot = c.responseKot;
+          this.orderRemarks = this.POSNewModelRequest.requestKot.remarks;
+          this.POSNewModelRequest.requestKotDetail = c.responseKotDetail;
+          this.selectedTables = c.responseCustomerTable;
+          if (this.POSNewModelRequest.requestCustomerDetail.customerID > 0) {
+            var index = this.responseCustomer.findIndex((c) => c.customerID == this.POSNewModelRequest.requestCustomerDetail.customerID);
+            this.customerName = this.responseCustomer[index].customerName;
+            this.SearchForm.controls.searchCustomerByCode.setValue(this.responseCustomer[index].refCode);
+            this.searchCustomer();
+          }
+          else {
+            this.customerName = "";
+            this.SearchForm.controls.searchCustomerByCode.setValue("");
+            this.searchCustomer();
+          }
+          this.tableList = "";
+          this.POSNewModelRequest.requestCustomerTable.forEach((x) => {
+            this.responseTable.forEach((c) => {
+              if (c.tableID == x.tableID) {
+                this.tableList = this.tableList.concat(c.tableName, ', ');
+              }
+            })
+          })
+          this.tableList = this.tableList.slice(0, -2);
+          this.closeTablesModal["first"].nativeElement.click();
+          this.closeOrdersModal["first"].nativeElement.click();
+          this.calculateTotals();
+          var button: any = document.getElementById("InvoiceReciept");
+          setTimeout(() => { button.click() }, 1000);
+          setTimeout(() => { this.resetOrder(); }, 2000);
+        }
+      }
+    },
+      error => {
+        this.toastr.error(error.statusText, 'Error', {
+          timeOut: 3000,
+          'progressBar': true,
+        });
+      });
+  }
   getAllOrders() {
     this.responseOrder = [];
-    this.API.getdata('/Generic/getOrderByOutletID?outletID=' + this.GV.OutletID).subscribe(c => {
+    this.API.getdata('/Pos/getOrderByOutletID?outletID=' + this.GV.OutletID).subscribe(c => {
       if (c != null) {
         this.responseOrder = c.responseKot;
         this.dtTrigger4.next();
@@ -722,10 +882,79 @@ export class PosComponent implements OnInit {
       }
     }
   }
+  paymentMade(p: any) {
+    this.changeOrderStatus.statusID = p.statusID;
+    this.changeOrderStatus.kotID = p.kotID;
+    this.API.PostData("/Pos/changeOrderStatus", this.changeOrderStatus).subscribe(c => {
+      if (c != null) {
+        this.toastr.success(c.message, 'Success', {
+          timeOut: 3000,
+          'progressBar': true,
+        });
+        this.resetOrder();
+        this.getAllOrders();
+        this.showTables();
+        this.getAllTables();
+      }
+    },
+      error => {
+        this.toastr.error(error.statusText, 'Error', {
+          timeOut: 3000,
+          'progressBar': true,
+        });
+      });
+  }
 
+  cancelOrderConfirm(p: any) {
+    this.changeOrderStatus.statusID = p.statusID;
+    this.changeOrderStatus.kotID = p.kotID;
+    this.API.PostData("/Pos/changeOrderStatus", this.changeOrderStatus).subscribe(c => {
+      if (c != null) {
+        this.toastr.success(c.message, 'Success', {
+          timeOut: 3000,
+          'progressBar': true,
+        });
+        this.resetOrder();
+        this.getAllOrders();
+      }
+    },
+      error => {
+        this.toastr.error(error.statusText, 'Error', {
+          timeOut: 3000,
+          'progressBar': true,
+        });
+      });
+  }
+
+  cancelOrderNotConfirm(p: any) {
+    Swal.fire({
+      text: 'Are you sure you want to cancel ' + p.kotNO + '?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirm',
+    }).then((result: any) => {
+      if (result.isConfirmed) {
+        let body = {
+          statusID: 7,
+          kotID: p.kotID
+        }
+        this.cancelOrderConfirm(body);
+      }
+    })
+  }
   viewOrder(p: any) {
+    if (p.kotID == 0) {
+      this.toastr.info('No order against selected table', '', {
+        timeOut: 3000,
+        'progressBar': true,
+      });
+      return
+    }
+    this.closeOrdersModal["first"].nativeElement.click();
     this.resetOrder();
-    this.API.getdata('/Generic/getKOTBykotID?kotID=' + p.kotID).subscribe(c => {
+    this.API.getdata('/Pos/getKOTBykotID?kotID=' + p.kotID).subscribe(c => {
       if (c != null) {
         if (c.message == "Data not found") {
           this.toastr.error(c.message, 'Error', {
@@ -783,6 +1012,7 @@ export class PosComponent implements OnInit {
         });
       });
   }
+
   orderType(val: any) {
     if (val == 1) {
       this.orderTypeValue = "Dine In";
@@ -793,19 +1023,49 @@ export class PosComponent implements OnInit {
     else {
       this.submitted = false;
       this.orderTypeValue = "Delivery";
-      if (this.SearchForm.controls.CustomerName.value == null || this.SearchForm.controls.CustomerName.value == "") {
-        this.DeliveryForm.reset();
-      }
-      else {
-        var customer: any = this.responseCustomer.find((x) => x.refCode == this.SearchForm.controls.searchCustomerByCode.value);
-        this.DeliveryForm.controls.customerName.setValue(customer.customerName);
-        this.DeliveryForm.controls.mobileNO.setValue(customer.mobileNO);
-        this.DeliveryForm.controls.Address.setValue(customer.address);
+      var customer: any = this.responseCustomer.find((x) => x.refCode == this.SearchForm.controls.searchCustomerByCode.value);
+      if (customer != undefined) {
+        this.CustomerForm.controls.customerName.setValue(customer.customerName);
+        this.CustomerForm.controls.mobileNO.setValue(customer.mobileNO);
+        this.CustomerForm.controls.Address.setValue(customer.address);
+        this.CustomerForm.controls.companyID.setValue(customer.companyID);
+        this.CustomerForm.controls.customerID.setValue(customer.customerID);
+        this.CustomerForm.controls.isActive.setValue(customer.isActive);
+        this.CustomerForm.controls.UserID.setValue(customer.UserID);
+        this.CustomerForm.controls.refCode.setValue(customer.refCode);
+        this.responseAddress = [];
+        this.API.getdata('/FoodMenu/getCustomerAddress?customerID=' + customer.customerID).subscribe(c => {
+          if (c != null) {
+            this.responseAddress = c.responseAddress;
+          }
+        },
+          error => {
+            this.toastr.error(error.message, 'Error', {
+              timeOut: 3000,
+              'progressBar': true,
+            });
+          });
       }
     }
   }
-  saveDelivery() {
-    this.submitted = true;
+  checkAddress(status: any, p: any) {
+    if (status == true) {
+      this.responseAddress.forEach((x) => {
+        if (x.customerInfoID == p.customerInfoID) {
+          x.checked = true;
+          this.CustomerForm.controls.Address.setValue(x.adress);
+        }
+        else {
+          x.checked = false;
+        }
+      })
+    }
+    else {
+      this.CustomerForm.controls.Address.setValue("");
+      var index = this.responseAddress.findIndex((x) => x.customerInfoID == p.customerInfoID);
+      this.responseAddress[index].checked = false;
+    }
+
   }
   saveRemarks() {
     if (this.orderRemarks == "") {
@@ -818,10 +1078,11 @@ export class PosComponent implements OnInit {
   }
 
   showTables() {
+    this.tablesResponse = [];
     this.totalTables = 0;
     this.tablesOccupied = 0;
     this.tablesFree = 0;
-    this.API.getdata('/Generic/getTableStatus').subscribe(c => {
+    this.API.getdata('/Pos/getTableStatus?outletID=' + this.GV.OutletID).subscribe(c => {
       if (c != null) {
         this.tablesResponse = c.getTableStatus;
         this.totalTables = this.tablesResponse.length;
@@ -863,12 +1124,12 @@ export class PosComponent implements OnInit {
       this.CustomerForm.controls.Address.setValue(customer.address);
       this.CustomerForm.controls.isActive.setValue(customer.isActive);
       this.CustomerForm.controls.companyID.setValue(customer.companyID);
-      this.CustomerForm.controls.OwnerID.setValue(customer.ownerID);
+      this.CustomerForm.controls.UserID.setValue(customer.UserID);
       this.CustomerForm.controls.customerID.setValue(customer.customerID);
 
-      this.API.getdata('/Generic/getOrderByCustomer?refCode=' + this.CustomerForm.controls.refCode.value).subscribe(c => {
+      this.API.getdata('/FoodMenu/getOrderByCustomer?mobileNO=' + this.CustomerForm.controls.mobileNO.value).subscribe(c => {
         if (c != null) {
-          this.customerFavResponse = c.responseReceiptArr;
+          this.customerFavResponse = c.responseCustomerOrder;
           let key = "foodItemID"
           this.customerFavResponse.forEach((x) => {
             if (this.customerFavList.some((val: any) => { return val[key] == x.foodItemID })) {
@@ -927,11 +1188,11 @@ export class PosComponent implements OnInit {
       this.CustomerForm.controls.Address.setValue(customer.address);
       this.CustomerForm.controls.isActive.setValue(customer.isActive);
       this.CustomerForm.controls.companyID.setValue(customer.companyID);
-      this.CustomerForm.controls.OwnerID.setValue(customer.ownerID);
+      this.CustomerForm.controls.UserID.setValue(customer.UserID);
       this.CustomerForm.controls.customerID.setValue(customer.customerID);
-      this.API.getdata('/Generic/getOrderByCustomer?refCode=' + this.CustomerForm.controls.refCode.value).subscribe(c => {
+      this.API.getdata('/FoodMenu/getOrderByCustomer?mobileNO=' + this.CustomerForm.controls.mobileNO.value).subscribe(c => {
         if (c != null) {
-          this.customerFavResponse = c.responseReceiptArr;
+          this.customerFavResponse = c.responseCustomerOrder;
           //find duplicate and push into new array
           let key = "foodItemID"
           this.customerFavResponse.forEach((x) => {
@@ -987,6 +1248,28 @@ export class PosComponent implements OnInit {
     }
   }
 
+  freeTable(p: any) {
+    let body = {
+      kotID: p.kotID,
+      tableID: p.tableID
+    }
+    this.API.PostData('/Pos/changeTableStatus', body).subscribe(c => {
+      if (c != null) {
+        this.toastr.success(c.message, 'Success', {
+          timeOut: 3000,
+          'progressBar': true,
+        });
+        this.showTables();
+      }
+    },
+      error => {
+        this.toastr.error(error.message, 'Error', {
+          timeOut: 3000,
+          'progressBar': true,
+        });
+      });
+  }
+
   isActiveCheck(check: boolean) {
     if (check == true) {
       this.CustomerForm.controls.isActive.setValue(true);
@@ -1004,7 +1287,7 @@ export class PosComponent implements OnInit {
     }
     else {
       this.CustomerForm.controls.companyID.setValue(this.GV.companyID);
-      this.CustomerForm.controls.OwnerID.setValue(this.GV.ownerID);
+      this.CustomerForm.controls.UserID.setValue(this.GV.userID);
     }
     this.submitted = true;
     if (this.CustomerForm.valid) {
@@ -1014,8 +1297,20 @@ export class PosComponent implements OnInit {
       if (this.CustomerForm.controls.customerID.value == "" || this.CustomerForm.controls.customerID.value == null) {
         this.CustomerForm.controls.customerID.setValue(0);
       }
-      this.requestCustomer = this.CustomerForm.value;
-      this.API.PostData('/FoodMenu/AddEditCustomer', this.requestCustomer).subscribe(c => {
+      this.customerModel.requestCustomer = this.CustomerForm.value;
+      if (this.addMoborAdd == true) {
+        this.customerModel.requestCustomerInfo.customerID = this.customerModel.requestCustomer.customerID;
+        this.customerModel.requestCustomerInfo.UserID = this.GV.userID;
+      }
+      else {
+        this.customerModel.requestCustomerInfo.Adress = "";
+        this.customerModel.requestCustomerInfo.UserID = 0;
+        this.customerModel.requestCustomerInfo.Phone = "";
+        this.customerModel.requestCustomerInfo.customerID = 0;
+        this.customerModel.requestCustomerInfo.customerInfoID = 0;
+      }
+      this.POSNewModelRequest.requestCustomerDetail.customerID = this.customerModel.requestCustomer.customerID;
+      this.API.PostData('/FoodMenu/AddEditCustomer', this.customerModel).subscribe(c => {
         if (c != null) {
           if (c.status == "Failed") {
             this.toastr.error(c.message, 'Error', {
@@ -1059,5 +1354,18 @@ export class PosComponent implements OnInit {
     if (event.shiftKey == true && event.key == 'P') {
       this.submitOrder();
     }
+  }
+
+
+  //....................................................................................
+  addMobAdd() {
+    this.addMoborAdd = !this.addMoborAdd;
+  }
+
+  setMobile(newMob: any) {
+    this.customerModel.requestCustomerInfo.Phone = newMob.value;
+  }
+  setAddress(newAdd: any) {
+    this.customerModel.requestCustomerInfo.Adress = newAdd.value;
   }
 }

@@ -60,8 +60,6 @@ export class DealsComponent implements OnInit {
   showVDiscount: boolean = false;
   dealArrLength: number = -1;
   totalAmount: number = 0;
-  outletID: number;
-  OwnerID: number;
   imageUrl: string;
   imageUrlV: string;
   Image: any;
@@ -81,12 +79,11 @@ export class DealsComponent implements OnInit {
     this.DealModelRequest = new DealModelRequest();
   }
   ngOnInit(): void {
+    this.GV.userID = Number(localStorage.getItem('userID'));
     this.symbol = this.GV.Currency;
     this.getDeals();
     this.responseFoodMenuItem = [];
     this.ItemsResponseModelReplica = [];
-    this.outletID = this.GV.OutletID;
-    this.OwnerID = this.GV.ownerID;
     this.InitializeForm();
     this.getAllItems();
     this.GetFoodMenuCategory();
@@ -95,6 +92,8 @@ export class DealsComponent implements OnInit {
       pageLength: 10,
     };
     this.Dsubmitted = false;
+    this.GV.OutletID = Number(localStorage.getItem('outletID'));
+    this.GV.companyID = Number(localStorage.getItem('companyID'));
   }
 
   get f() { return this.MenuItemsForm.controls; }
@@ -117,7 +116,7 @@ export class DealsComponent implements OnInit {
       isActive: new FormControl(),
       hasVariant: new FormControl(),
       foodMenuID: new FormControl("", [Validators.required]),
-      OwnerID: new FormControl(),
+      UserID: new FormControl(),
       discount: new FormControl(),
       calculatedPrice: new FormControl(),
       discountPercentage: new FormControl(),
@@ -166,7 +165,7 @@ export class DealsComponent implements OnInit {
       });
       return;
     }
-    this.API.getdata('/FoodMenu/getfoodMenu?OutletID=' + this.outletID).subscribe(c => {
+    this.API.getdata('/FoodMenu/getfoodMenu?OutletID=' + this.GV.OutletID).subscribe(c => {
       if (c != null) {
         this.FoodCatResponseModel = c.foodMenuResponses;
         this.defaultFoodCat.foodMenuID = 0;
@@ -204,7 +203,7 @@ export class DealsComponent implements OnInit {
       });
       return;
     }
-    this.API.getdata('/FoodMenu/getfoodItemAgainstOutletID?outletID=' + this.outletID).subscribe(c => {
+    this.API.getdata('/FoodMenu/getfoodItemAgainstOutletID?outletID=' + this.GV.OutletID).subscribe(c => {
       if (c != null) {
         this.responseFoodMenuItem = c.responseFoodMenuItems;
         this.ItemsResponseModelReplica = c.responseFoodMenuItems;
@@ -505,7 +504,7 @@ export class DealsComponent implements OnInit {
         this.DealModelRequest.DealObject.imageURL = this.imageUrl;
       }
       this.DealModelRequest.DealObject.outletID = this.GV.OutletID;
-      this.DealModelRequest.DealObject.OwnerID = this.GV.ownerID;
+      this.DealModelRequest.DealObject.UserID = this.GV.userID;
       this.API.PostData('/FoodMenu/AddDeal', this.DealModelRequest).subscribe(c => {
         if (c != null) {
           if (c.status == "Failed") {

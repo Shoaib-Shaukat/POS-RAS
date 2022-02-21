@@ -45,6 +45,12 @@
                 <i data-feather="info"></i> <span class="hidden-xs">Register Details</span>
               </a>
             </li>
+            <li class="dropdown user user-menu">
+              <i class="fas fa-expand fa-lg" style="cursor: pointer;" (click)="openFullscreen()"
+                *ngIf="fullMode == false"></i>
+              <i class="fas fa-compress fa-lg" style="cursor: pointer;" (click)="closeFullscreen()"
+                *ngIf="fullMode == true"></i>
+            </li>
             <li class="dropdown user user-menu ir_display_none" id="close_register_button">
               <a href="#" id="register_close">
                 <i data-feather="x-circle"></i> <span class="hidden-xs">Close Register</span>
@@ -53,7 +59,6 @@
           </ul>
         </div>
         <div class="navbar-custom-menu">
-
           <ul class="menu-list">
             <!-- <li class="lang-dropdown">
               <button class="show-drop-result"><a href="#"><i class="currency-flag currency-flag-usd"></i>

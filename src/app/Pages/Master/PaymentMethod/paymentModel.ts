@@ -2,7 +2,7 @@ export class requestPaymentModel {
     paymentName: string;
     isActive: string;
     outletID: number;
-    OwnerID: number;
+    UserID: number;
     paymentID: number;
     description: string;
     taxPercentage: number;
@@ -12,7 +12,7 @@ export class responsePaymentModel {
     paymentName: string;
     isActive: string;
     outletID: number;
-    OwnerID: number;
+    UserID: number;
     paymentID: number;
     description: string;
     taxPercentage: number;

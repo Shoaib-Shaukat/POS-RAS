@@ -6,7 +6,7 @@ export class responseFoodMenuItem {
     isActive: boolean;
     hasVariant: boolean;
     foodMenuID: number;
-    OwnerID: number;
+    UserID: number;
     discount: number;
     calculatedPrice: number;
     imageURl: any;
@@ -22,7 +22,7 @@ export class responseCustomer {
     address: string;
     isActive: string;
     companyID: number;
-    OwnerID: number;
+    UserID: number;
     customerID: number;
     orderID: number;
 }
@@ -31,7 +31,7 @@ export class responseTable {
     seatCapacity: number;
     isActive: string;
     outletID: number;
-    OwnerID: number;
+    UserID: number;
     customerID: number;
     tableID: number;
     description: string;
@@ -98,7 +98,7 @@ export class requestCustomer {
     Address: string;
     isActive: string;
     companyID: number;
-    OwnerID: number;
+    UserID: number;
     customerID: number;
     orderID: number = 0;
 }
@@ -107,7 +107,7 @@ export class requestTable {
     seatCapacity: number;
     isActive: string;
     outletID: number;
-    OwnerID: number;
+    UserID: number;
     tableID: number;
     description: string;
     orderID: number = 0;
@@ -136,7 +136,7 @@ export class responseOrder {
     kotID: number = 0;
     kotNO: number = 0;
     outletID: number = 0;
-    ownerID: number = 0;
+    UserID: number;
     statusID: number = 0;
 }
 
@@ -218,6 +218,10 @@ export class tablesResponse {
     tableName: string;
     kotID: number;
 }
+export class changeOrderStatus {
+    kotID: number = 0;
+    statusID: number = 0;
+}
 //.............................KOT Requests Models................................
 export class POSNewModelRequest {
     requestKotSR: requestKotSR;
@@ -243,9 +247,11 @@ export class requestKotSR {
 export class requestKot {
     kotNO: string;
     outletID: number = 0;
-    OwnerID: number = 0;
+    UserID: number = 0;
     kotID: number = 0;
     remarks: string;
+    orderType: string;
+    Timer: string;
 }
 
 export class requestKotDetail {
@@ -304,7 +310,7 @@ export class POSNewModelResponse {
 export class responseKot {
     kotNO: string;
     outletID: number = 0;
-    OwnerID: number = 0;
+    UserID: number = 0;
     kotID: number = 0;
     remarks: string;
 }
@@ -344,4 +350,31 @@ export class responseCustomerDetail {
     customerDetailID: number = 0;
     kotID: number = 0;
     customerID: number = 0;
+}
+
+
+export class requestCustomerInfo {
+    customerInfoID: number = 0;
+    Adress: string = "";
+    Phone: string = "";
+    customerID: number = 0;
+    UserID: number = 0;
+}
+
+export class customerModel {
+    requestCustomer: requestCustomer;
+    requestCustomerInfo: requestCustomerInfo;
+
+    constructor() {
+        this.requestCustomer = new requestCustomer();
+        this.requestCustomerInfo = new requestCustomerInfo();
+    }
+}
+
+export class responseAddress {
+    adress: string = "";
+    customerID: number = 0;
+    customerInfoID: number = 0;
+    phone: string = "";
+    checked: boolean = false;
 }

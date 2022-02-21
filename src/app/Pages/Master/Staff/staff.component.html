@@ -1,0 +1,190 @@
+<section class="main-content-wrapper" [hidden]="isShow==true">
+    <section class="content-header">
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="top-left-header">Staff</h2>
+                <input type="hidden" class="datatable_name" data-title="Tables" data-id_name="datatable">
+            </div>
+            <div class="col-md-6">
+                <a class="btn_list m-right bg-blue-btn btn" (click)=addNewStaff()>
+                    <i data-feather="plus"></i> Add Staff</a>
+            </div>
+        </div>
+    </section>
+    <div class="box-wrapper" [hidden]="StaffModelResponse.length == 0">
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+            <thead>
+                <tr>
+                    <th>SN</th>
+                    <th>Staff Name</th>
+                    <th>Designation</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let p of StaffModelResponse let ndx=index;">
+                    <td>{{ndx+1}}</td>
+                    <td>{{p.staffName}}</td>
+                    <td>{{p.staffDesignation}}</td>
+                    <td>
+                        <button class="btn btn-success color text-white btn-sm m-1" title="Edit" (click)="editStaff(p)">
+                            <i class="fa fa-pencil" aria-hidden="true"></i></button>
+                        <button class="btn btn-primary color text-white btn-sm m-1" title="Assign Role"
+                            data-toggle="modal" data-target="#AssignRoleModal" (click)="AssignGroup(p)">
+                            <i class="fa fa-user-plus" aria-hidden="true"></i></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="main-content-wrapper" [hidden]="isShow==false">
+    <section class="content-header">
+        <h3 *ngIf="addMode == false" class="top-left-header">
+            Add Staff </h3>
+        <h3 *ngIf="addMode == true" class="top-left-header">
+            Edit Staff </h3>
+    </section>
+
+    <form [formGroup]="StaffForm" (ngSubmit)="saveStaff()">
+        <div class="row">
+            <div class="col-sm-12 mb-2 col-md-6">
+                <div class="form-group">
+                    <label>Staff Name<span class="required_star">*</span></label>
+                    <input minlength="2" autocomplete="off" type="text" formControlName="staffName"
+                        class="form-control" placeholder="Staff Name" value=""
+                        [ngClass]="{ 'is-invalid': submitted && f.staffName.errors }" />
+                    <div *ngIf="submitted && f.staffName.errors" class="invalid-feedback">
+                        <div *ngIf="f.staffName.errors.required">Staff Name is required</div>
+                        <small
+                            *ngIf="StaffForm.controls['staffName'].errors?.minlength && !f.staffName.errors.whitespace"
+                            class="text-danger">Staff Name must be at
+                            least 2 characters long.</small>
+                        <small *ngIf="f.staffName.errors.whitespace && !f.staffName.errors.required">Please enter
+                            valid
+                            data</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 mb-2 col-md-6">
+                <div class="form-group"><label>Staff Mobile No. <span class="required_star">*</span></label>
+                    <input type="text" class="form-control" mask='0000-0000000' placeholder="Mobile No."
+                        formControlName="staffMobileNo"
+                        [ngClass]="{ 'is-invalid': submitted && f.staffMobileNo.errors }">
+                    <div *ngIf="submitted && f.staffMobileNo.errors" class="invalid-feedback">
+                        <div *ngIf="f.staffMobileNo.errors.required">Mobile No is required</div>
+                        <small *ngIf="f.staffMobileNo.errors.pattern">Mobile No format not correct!</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 mb-2 col-md-6">
+                <div class="form-group">
+                    <label>Staff Email <span class="required_star">*</span></label>
+                    <input type="staffEmail" class="form-control" placeholder="Email Address"
+                        formControlName="staffEmail" [ngClass]="{ 'is-invalid': submitted && f.staffEmail.errors }">
+                    <div *ngIf="submitted && f.staffEmail.errors" class="invalid-feedback">
+                        <div *ngIf="f.staffEmail.errors.required">Email is required</div>
+                        <small *ngIf="f.staffEmail.errors.pattern">Email format not correct!</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 mb-2 col-md-6">
+                <div class="form-group">
+                    <label>Password <span class="required_star">*</span></label>
+                    <input type="password" formControlName="staffPassword" class="form-control" placeholder="Password"
+                        [ngClass]="{ 'is-invalid': submitted && f.staffPassword.errors }">
+                    <div *ngIf="submitted && f.staffPassword.errors" class="invalid-feedback">
+                        <div *ngIf="f.staffPassword.errors.required">Enter Password</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 mb-2 col-md-6">
+                <div class="form-group"><label>Designation<span class="required_star">*</span></label>
+                    <select class="form-control" formControlName="staffDesignation"
+                        [ngClass]="{ 'is-invalid': submitted && f.staffDesignation.errors }" (change)="setDesignation()">
+                        <option selected="true">Select Designation</option>
+                        <option>Manager</option>
+                        <option>Chef</option>
+                        <option>Waiter</option>
+                        <option>Cashier</option>
+                        <option>Sweeper</option>
+                        <option>Other</option>
+                    </select>
+                    <div *ngIf="submitted && f.staffDesignation.errors" class="invalid-feedback">
+                        <div *ngIf="f.staffDesignation.errors.required">Select Designation</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 mb-2 col-md-6">
+                <div class="form-group float-start">
+                    <label class="col-sm-12">Is Active?</label>
+                    <div class="col-sm-6">
+                        <input type="checkbox" class="form-control " formControlName="isActive"
+                            (click)="isActiveCheck(IsActive.checked)" #IsActive />
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 mb-2 col-md-6">
+                <div class="form-group">
+                    <label>Staff Address <span class="required_star">*</span></label>
+                    <textarea formControlName="staffAddress" maxlength="250" class="form-control"
+                        autocomplete="off"></textarea>
+                </div>
+            </div>
+            <div class="row my-3">
+                <div class="col-sm-6 col-md-2">
+                    <button type="submit" class="w-100 btn bg-blue-btn">
+                        Submit </button>
+                </div>
+                <div class="col-sm-6 col-md-2">
+                    <button type="button" class="w-100 btn bg-blue-btn" (click)=addNewStaff()>
+                        Back </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
+
+
+
+<div class="modal fade come-from-modal left" id="AssignRoleModal" tabindex="-1" role="dialog" data-backdrop="static"
+    data-keyboard="false" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" #closeAssignRoleModal><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Assign Role</h4>
+            </div>
+            <div class="modal-body">
+                <form #assignRoleToGroupForm="ngForm" autocomplete="off" (ngSubmit)="saveAssignRole()">
+                    <div class="row">
+                        <div class="col-sm-12 mb-2 col-md-4">
+                            <div class="form-group">
+                                <label>Staff Name</label>
+                                <input  minlength="2" autocomplete="off" type="text" value="{{staffName}}"
+                                    class="form-control" readonly />
+                            </div>
+                        </div>
+                        <div class="col-sm-6 mb-2 col-md-8">
+                            <div class="form-group">
+                                <label>Select Role </label>
+                                <ng-multiselect-dropdown [placeholder]="'Assign Role'" [data]="allRoles"
+                                    [(ngModel)]="selectedRoles" [settings]="dropdownSettings"
+                                    (onSelect)="onItemSelect($event)" (onSelectAll)="onSelectAll($event)"
+                                    (onDeSelect)="onItemDeSelect($event)" (onDeSelectAll)="onItemDeSelectAll($event)"
+                                    [ngModelOptions]="{standalone: true}">
+                                </ng-multiselect-dropdown>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" type="submit" (click)="saveAssignRole()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

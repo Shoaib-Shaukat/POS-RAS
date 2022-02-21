@@ -52,7 +52,7 @@
       <div class="col-sm-12 mb-2 col-md-6">
         <div class="form-group">
           <label>Customer Name<span class="required_star">*</span></label>
-          <input tabindex="1" minlength="3" autocomplete="off" type="text" formControlName="customerName"
+          <input minlength="3" autocomplete="off" type="text" formControlName="customerName"
             class="form-control" placeholder="Customer Name" value=""
             [ngClass]="{ 'is-invalid': submitted && f.customerName.errors }" />
           <div *ngIf="submitted && f.customerName.errors" class="invalid-feedback">
@@ -69,7 +69,7 @@
       <div class="col-sm-12 mb-2 col-md-6">
         <div class="form-group">
           <label>Refrence Code<span class="required_star">*</span></label>
-          <input tabindex="1" autocomplete="off" type="text" formControlName="refCode" class="form-control"
+          <input autocomplete="off" type="text" formControlName="refCode" class="form-control"
             placeholder="Customer Name" value="" [ngClass]="{ 'is-invalid': submitted && f.refCode.errors }" />
           <div *ngIf="submitted && f.refCode.errors" class="invalid-feedback">
             <div *ngIf="f.refCode.errors.required">Refrence Code is required</div>
@@ -101,7 +101,7 @@
       <div class="col-sm-12 mb-2 col-md-6">
         <div class="form-group">
           <label>Address <span class="required_star">*</span></label>
-          <textarea formControlName="Address" maxlength="250" class="form-control" tabindex="3"
+          <textarea formControlName="Address" maxlength="250" class="form-control"
             autocomplete="off"></textarea>
         </div>
       </div>
@@ -111,9 +111,8 @@
             Submit </button>
         </div>
         <div class="col-sm-12 col-md-2">
-          <a class="w-100 btn bg-blue-btn" (click)=addCustomer()>
-            Back
-          </a>
+          <button type="button" class="w-100 btn bg-blue-btn" (click)=addCustomer()>
+            Back </button>
         </div>
       </div>
     </div>

@@ -2,11 +2,11 @@ export class CurrencyModelRequest {
     currencyID: number;
     currencyName: string;
     symbol: string;
-    OwnerID: number;
+    UserID: number;
 }
 export class CurrencyModelResponse {
     currencyID: number;
     currencyName: string;
     symbol: string;
-    OwnerID: number;
+    UserID: number;
 }

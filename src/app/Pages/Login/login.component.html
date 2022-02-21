@@ -17,7 +17,6 @@
                   [ngClass]="{ 'is-invalid': submitted && f.Username.errors }">
                 <div *ngIf="submitted && f.Username.errors" class="invalid-feedback text-left">
                   <div *ngIf="f.Username.errors.required">Email is required!</div>
-                  <div *ngIf="loginForm.controls['Username'].errors?.pattern">Email format not correct!</div>
                 </div>
               </div>
             </div>

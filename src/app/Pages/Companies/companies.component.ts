@@ -15,6 +15,7 @@ export class CompaniesComponent implements OnInit {
   CompaniesRequestModel: CompaniesRequestModel;
   CompaniesResponseModel: CompaniesResponseModel[];
   ownerID: any;
+  userID: any;
   isShow: boolean = false;
   addMode: boolean = false;
   CompanyForm: FormGroup;
@@ -29,6 +30,7 @@ export class CompaniesComponent implements OnInit {
     this.GV.companyID = 0;
     this.GV.OutletID = 0;
     this.ownerID = localStorage.getItem('ownerID');
+    this.userID = Number(localStorage.getItem('userID'));
     this.IntializeForm();
     this.getCompanies();
   }
@@ -58,7 +60,7 @@ export class CompaniesComponent implements OnInit {
   }
 
   getCompanies() {
-    this.API.getdata('/Owner/getCompany?OwnerId=' + this.ownerID).subscribe(c => {
+    this.API.getdata('/Owner/getCompany?userID=' + this.userID).subscribe(c => {
       if (c != null) {
         this.CompaniesResponseModel = c.companyModel;
       }
@@ -80,7 +82,8 @@ export class CompaniesComponent implements OnInit {
   }
 
   enterInCompany(p: any) {
-    this.GV.companyID = p.companyID;
+    Number(localStorage.setItem('companyID', p.companyID));
+    this.GV.companyID = Number(p.companyID);
     this.GV.companyName = p.companyName;
     if (p.companyID == undefined) {
       this.GV.companyID = 0;

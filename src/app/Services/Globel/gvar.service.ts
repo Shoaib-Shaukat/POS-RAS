@@ -11,10 +11,12 @@ export class GvarService {
   G_IsRunning: boolean = false;
   companyID: number = 0;
   OutletID: number = 0;
+  isOwner: any = false;
   OutletAddress: string = "";
   Currency: string = "";
   companyName: string = "";
   ownerID: number = 0;
+  userID: any = 0;
   OutletName: string = "";
   locationID: number;
   userName: any;

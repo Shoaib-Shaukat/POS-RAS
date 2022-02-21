@@ -16,12 +16,16 @@ import { CurrencyModelRequest, CurrencyModelResponse } from './currencyModel';
 export class CurrencyComponent implements OnInit {
   CurrencyModelRequest: CurrencyModelRequest;
   CurrencyModelResponse: CurrencyModelResponse[];
-  dtOptions: DataTables.Settings = {};
-  dtTrigger: Subject<any> = new Subject<any>();
+
   addMode: boolean = false;
   submitted: boolean = false;
   CurrencyForm: FormGroup;
   isShow: boolean = false;
+
+  @ViewChildren(DataTableDirective)
+  datatableElement: QueryList<DataTableDirective>;
+  dtOptions: DataTables.Settings = {};
+  dtTrigger: Subject<any> = new Subject<any>();
   constructor(private API: ApiService,
     private GV: GvarService,
     public toastr: ToastrService,
@@ -29,7 +33,10 @@ export class CurrencyComponent implements OnInit {
     private router: Router) {
     this.CurrencyModelResponse = [];
     this.CurrencyModelRequest = new CurrencyModelRequest();
-
+    this.dtOptions = {
+      pagingType: 'full_numbers',
+      pageLength: 10
+    };
   }
   addNewCurrency() {
     this.submitted = false;
@@ -42,16 +49,13 @@ export class CurrencyComponent implements OnInit {
       currencyID: new FormControl(""),
       currencyName: new FormControl("", [Validators.required, this.noWhitespaceValidator]),
       symbol: new FormControl("", [Validators.required, this.noWhitespaceValidator]),
-      OwnerID: new FormControl(""),
+      UserID: new FormControl(""),
     });
   }
   ngOnInit(): void {
+    this.GV.userID = Number(localStorage.getItem('userID'));
     this.InitializeForm();
     this.getCurrencies();
-    this.dtOptions = {
-      pagingType: 'full_numbers',
-      pageLength: 10
-    };
   }
 
   public noWhitespaceValidator(control: FormControl) {
@@ -68,7 +72,7 @@ export class CurrencyComponent implements OnInit {
       if (this.CurrencyForm.controls.currencyID.value == "" || this.CurrencyForm.controls.currencyID.value == null) {
         this.CurrencyForm.controls.currencyID.setValue(0);
       }
-      this.CurrencyForm.controls.OwnerID.setValue(this.GV.ownerID);
+      this.CurrencyForm.controls.UserID.setValue(this.GV.userID);
       this.CurrencyModelRequest = this.CurrencyForm.value;
       this.API.PostData('/Generic/AddEditCurrency', this.CurrencyModelRequest).subscribe(c => {
         if (c != null) {
@@ -97,10 +101,12 @@ export class CurrencyComponent implements OnInit {
   }
 
   getCurrencies() {
-    this.API.getdata('/Generic/getCurrency?OwnerID=' + this.GV.ownerID).subscribe(c => {
+    this.API.getdata('/Generic/getCurrency?userID=' + this.GV.userID).subscribe(c => {
       if (c != null) {
-        this.CurrencyModelResponse = c.responseCurrencies;
-        this.dtTrigger.next();
+        this.destroyDT(0, false).then(destroyed => {
+          this.CurrencyModelResponse = c.responseCurrencies;
+          this.dtTrigger.next();
+        });
       }
     },
       error => {
@@ -116,4 +122,68 @@ export class CurrencyComponent implements OnInit {
     this.isShow = !this.isShow;
     this.CurrencyForm.patchValue(p);
   }
+
+
+  destroyDT = (tableIndex: any, clearData: any): Promise<boolean> => {
+    return new Promise((resolve) => {
+      if (this.datatableElement)
+        this.datatableElement.forEach((dtElement: DataTableDirective, index) => {
+
+          if (index == tableIndex) {
+            if (dtElement.dtInstance) {
+
+              if (tableIndex == 0) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+              }
+              else if (tableIndex == 1) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+
+              } else if (tableIndex == 2) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+              }
+              else if (tableIndex == 3) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+
+              }
+              else if (tableIndex == 4) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+              }
+            }
+            else {
+              resolve(true);
+            }
+          }
+        });
+    });
+  };
 }

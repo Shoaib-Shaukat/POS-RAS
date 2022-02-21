@@ -63,6 +63,7 @@ export class FoodItemsComponent implements OnInit, OnDestroy {
     this.defaultFoodCat = new FoodCatResponseModel();
   }
   ngOnInit(): void {
+    this.GV.userID = Number(localStorage.getItem('userID'));
     this.symbol = this.GV.Currency;
     this.responseFoodMenuItem = [];
     this.ItemsResponseModelReplica = [];
@@ -96,7 +97,7 @@ export class FoodItemsComponent implements OnInit, OnDestroy {
       isActive: new FormControl(),
       hasVariant: new FormControl(),
       foodMenuID: new FormControl("", [Validators.required]),
-      OwnerID: new FormControl(),
+      UserID: new FormControl(),
       outletID: new FormControl(),
       discount: new FormControl(),
       calculatedPrice: new FormControl(),
@@ -198,9 +199,9 @@ export class FoodItemsComponent implements OnInit, OnDestroy {
       if (this.MenuItemsForm.controls.refCode.value == null) {
         this.MenuItemsForm.controls.refCode.setValue("");
       }
-      
+
       this.MenuItemsForm.controls.outletID.setValue(this.GV.OutletID);
-      this.MenuItemsForm.controls.OwnerID.setValue(this.GV.ownerID);
+      this.MenuItemsForm.controls.UserID.setValue(this.GV.userID);
       this.MenuItemsForm.controls.foodMenuID.setValue(+(this.MenuItemsForm.controls.foodMenuID.value));
       this.foodMenuItemModel.requestFoodMenuItem = this.MenuItemsForm.value;
       if (this.imageUrl == null || this.imageUrl == "" || this.imageUrl == undefined) {

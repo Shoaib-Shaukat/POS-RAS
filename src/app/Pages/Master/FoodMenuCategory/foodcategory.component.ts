@@ -46,9 +46,11 @@ export class FoodcategoryComponent implements OnInit {
       foodMenuName: new FormControl("", [Validators.required, this.noWhitespaceValidator]),
       isActive: new FormControl(),
       outletID: new FormControl(),
+      UserID: new FormControl(),
     });
   }
   ngOnInit(): void {
+    this.GV.userID = Number(localStorage.getItem('userID'));
     this.outletID = this.GV.OutletID;
     this.InitializeForm();
     this.GetFoodMenuCategory();
@@ -83,6 +85,7 @@ export class FoodcategoryComponent implements OnInit {
         this.FoodCatForm.controls.foodMenuID.setValue(0);
       }
       this.FoodCatForm.controls.outletID.setValue(this.outletID);
+      this.FoodCatForm.controls.UserID.setValue(this.GV.userID);
       this.FoodCatRequestModel = this.FoodCatForm.value;
       this.API.PostData('/FoodMenu/AddEditfoodMenu', this.FoodCatRequestModel).subscribe(c => {
         if (c != null) {

@@ -2,11 +2,11 @@
   <section class="content-header">
     <div class="row">
       <div class="col-md-6">
-        <h2 class="top-left-header">Users</h2>
+        <h2 class="top-left-header">Registered Owners</h2>
         <input type="hidden" class="datatable_name" data-title="Food Menu Categories" data-id_name="datatable">
       </div>
       <div class="col-md-6">
-        <a class="btn_list m-right bg-blue-btn btn" (click)=addNewUser()> Add User</a>
+        <a class="btn_list m-right bg-blue-btn btn" (click)=addNewUser()> Add Owner</a>
       </div>
     </div>
   </section>
@@ -49,9 +49,9 @@
 <div class="box-wrapper" [hidden]="isShow==false">
   <section class="content-header">
     <h3 *ngIf="addMode == false" class="top-left-header">
-      Add User </h3>
+      Add Owner </h3>
     <h3 *ngIf="addMode == true" class="top-left-header">
-      Edit User </h3>
+      Edit Owner </h3>
   </section>
 
   <form [formGroup]="RegisterForm" (ngSubmit)="onRegisterSubmit()">
@@ -96,7 +96,7 @@
             <small *ngIf="RegisterForm.controls['Password'].errors?.required" class="text-danger">Password
               is required!</small>
             <small *ngIf="RegisterForm.controls['Password'].errors?.pattern" class="text-danger">
-              Password should be atleast 8 charcters long, atleast one alphabet letter, one number, and one
+              Password should be atleast 8 characters long, atleast one alphabet letter, one number, and one
               special character!</small>
           </div>
         </div>
@@ -175,7 +175,7 @@
       <div class="col-sm-12 mb-2 col-md-6">
         <div class="form-group">
           <label>Address <span class="required_star">*</span></label>
-          <textarea formControlName="Address" maxlength="250" class="form-control" tabindex="3"
+          <textarea formControlName="Address" maxlength="250" class="form-control"
             autocomplete="off"></textarea>
           <div
             *ngIf="(RegisterForm.controls['Address'].invalid && RegisterForm.controls['Address'].touched) || RegisterForm.controls['Address'].dirty"
@@ -200,9 +200,8 @@
             Submit </button>
         </div>
         <div class="col-sm-12 col-md-2">
-          <a class="w-100 btn bg-blue-btn" (click)=addNewUser()>
-            Back
-          </a>
+          <button type="button" class="w-100 btn bg-blue-btn" (click)=addNewUser()>
+            Back </button>
         </div>
       </div>
     </div>

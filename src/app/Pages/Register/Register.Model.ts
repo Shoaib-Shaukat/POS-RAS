@@ -10,6 +10,7 @@ export class registerModelRequest {
         this.Address = "";
         this.Password = "";
         this.isActive = false;
+        this.Designation = "";
     }
 
     ownerId: number;
@@ -22,6 +23,7 @@ export class registerModelRequest {
     Address: string;
     Password: string;
     isActive: boolean
+    Designation: string;
 }
 
 export class registerModelResponse {
@@ -36,6 +38,7 @@ export class registerModelResponse {
         this.address = "";
         this.password = "";
         this.isActive = false;
+        this.Designation = "";
     }
 
     ownerId: number;
@@ -47,5 +50,6 @@ export class registerModelResponse {
     gender: string;
     address: string;
     password: string;
-    isActive: boolean
+    isActive: boolean;
+    Designation: string;
 }

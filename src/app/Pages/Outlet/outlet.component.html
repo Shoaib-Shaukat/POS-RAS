@@ -40,54 +40,58 @@
       <div class="col-sm-12 mb-2 col-md-6">
         <div class="form-group">
           <label>Outlet Name <span class="required_star">*</span></label>
-          <input tabindex="1" autocomplete="off" type="text" formControlName="outletName" class="form-control"
-            placeholder="Outlet Name" value="" [ngClass]="{ 'is-invalid': submitted && f.outletName.errors }" />
+          <input autocomplete="off" type="text" formControlName="outletName" class="form-control" minlength="3"
+            maxlength="50" placeholder="Outlet Name" value=""
+            [ngClass]="{ 'is-invalid': submitted && f.outletName.errors }" />
           <div *ngIf="submitted && f.outletName.errors" class="invalid-feedback">
-            <div *ngIf="f.outletName.errors.required">Outlet Name is required</div>
-            <small *ngIf="f.outletName.errors.whitespace && !f.outletName.errors.required">Please enter valid
-              data</small>
+            <div *ngIf="f.outletName.errors.required">Outlet Name is required!</div>
+            <small *ngIf="OutletForm.controls['outletName'].errors?.minlength && !f.outletName.errors.whitespace"
+              class="text-danger">Outlet Name must be greater than 3 and less than 50 characters!</small>
+            <small *ngIf="f.outletName.errors.whitespace && !f.outletName.errors.required">Please enter
+              valid data</small>
           </div>
         </div>
       </div>
       <div class="col-sm-12 mb-2 col-md-6">
         <div class="form-group">
           <label>Phone <span class="required_star">*</span></label>
-          <input tabindex="4" autocomplete="off" type="text" mask='000-0000000' formControlName="phone"
-            class="form-control" placeholder="Phone Number" value=""
-            [ngClass]="{ 'is-invalid': submitted && f.phone.errors }" />
+          <input autocomplete="off" type="text" mask='000-0000000' formControlName="phone" class="form-control"
+            placeholder="Phone Number" value="" [ngClass]="{ 'is-invalid': submitted && f.phone.errors }" />
           <div *ngIf="submitted && f.phone.errors" class="invalid-feedback">
             <div *ngIf="f.phone.errors.required">Phone No. is required</div>
+            <div *ngIf="f.phone.errors.pattern">Phone Number pattern not correct!</div>
           </div>
         </div>
       </div>
       <div class="col-sm-12 mb-2 col-md-6">
         <div class="form-group">
           <label>Email<span class="required_star">*</span></label>
-          <input tabindex="4" autocomplete="off" type="text" formControlName="email" class="form-control"
-            placeholder="Email" value="" [ngClass]="{ 'is-invalid': submitted && f.email.errors }" />
+          <input autocomplete="off" type="text" formControlName="email" class="form-control" placeholder="Email"
+            value="" [ngClass]="{ 'is-invalid': submitted && f.email.errors }" />
           <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
             <div *ngIf="f.email.errors.required">Email is required</div>
+            <div *ngIf="f.email.errors.pattern">Email pattern is not correct!</div>
           </div>
         </div>
       </div>
       <div class="col-sm-12 mb-2 col-md-3">
         <div class="form-group">
           <label>Currency</label>
-          <select class="form-control" formControlName="symbol"
-            [ngClass]="{ 'is-invalid': submitted && f.symbol.errors }">
-            <option *ngFor="let c of CurrencyModelResponse" [value]="c.symbol">
+          <select class="form-control" formControlName="currencyID"
+            [ngClass]="{ 'is-invalid': submitted && f.currencyID.errors }">
+            <option *ngFor="let c of CurrencyModelResponse" [value]="c.currencyID">
               {{ c.currencyName }}
             </option>
           </select>
-          <div *ngIf="submitted && f.symbol.errors" class="invalid-feedback">
-            <div *ngIf="f.symbol.errors.required">Select Currency!</div>
+          <div *ngIf="submitted && f.currencyID.errors" class="invalid-feedback">
+            <div *ngIf="f.currencyID.errors.required">Currency is required!</div>
           </div>
         </div>
       </div>
       <div class="col-sm-12 mb-2 col-md-3">
         <div class="form-group">
           <label>Manager</label>
-          <select tabindex="2" class="form-control select2" id="default_waiter">
+          <select class="form-control select2" id="default_waiter">
             <option value="">Select</option>
             <option value="">zak</option>
           </select>
@@ -96,7 +100,7 @@
       <div class="col-sm-12 mb-2 col-md-6">
         <div class="form-group">
           <label>Address <span class="required_star">*</span></label>
-          <textarea tabindex="3" autocomplete="off" formControlName="address" class="form-control" placeholder="Address"
+          <textarea autocomplete="off" formControlName="address" class="form-control" placeholder="Address"
             [ngClass]="{ 'is-invalid': submitted && f.address.errors }"></textarea>
           <div *ngIf="submitted && f.address.errors" class="invalid-feedback">
             <div *ngIf="f.address.errors.required">Address is required</div>
@@ -105,22 +109,30 @@
       </div>
       <div class="col-sm-12 mb-2 col-md-6">
         <div class="form-group float-start">
+          <label class="col-sm-12">Has Kitchen?</label>
+          <div class="col-sm-4">
+            <input type="checkbox" class="form-control" formControlName="hasKitchen"
+              (click)="hasKitchenChange(isHasKitchen.checked)" #isHasKitchen />
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-12 mb-2 col-md-6">
+        <div class="form-group float-start">
           <label class="col-sm-12">Is Active?</label>
           <div class="col-sm-6">
-            <input type="checkbox" class="form-control " formControlName="Active"
+            <input type="checkbox" class="form-control" formControlName="isActive"
               (click)="isActiveCheck(Active.checked)" #Active />
           </div>
         </div>
       </div>
       <div class="row my-3">
         <div class="col-sm-12 col-md-2">
-          <button type="" name="submit" value="submit" class="w-100 btn bg-blue-btn">
+          <button type="submit" name="submit" value="submit" class="w-100 btn bg-blue-btn">
             Submit </button>
         </div>
         <div class="col-sm-12 col-md-2">
-          <a class="w-100 btn bg-blue-btn" (click)=addNewOutlet()>
-            Back
-          </a>
+          <button type="button" class="w-100 btn bg-blue-btn" (click)=addNewOutlet()>
+            Back </button>
         </div>
       </div>
     </div>

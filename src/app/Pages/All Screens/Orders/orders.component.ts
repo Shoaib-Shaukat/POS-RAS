@@ -8,7 +8,7 @@ import { Subject } from 'rxjs';
 import { ApiService } from 'src/app/Services/API/api.service';
 import { GvarService } from 'src/app/Services/Globel/gvar.service';
 import { CurrencyModelRequest, CurrencyModelResponse } from '../../Master/Currency/currencyModel';
-import { POSModelRequest, responseOrder } from './ordersModel';
+import { POSNewModelRequest, requestCustomerTable, responseCustomer, responseOrder, responseTable } from './ordersModel';
 
 @Component({
   selector: 'app-orders',
@@ -16,9 +16,15 @@ import { POSModelRequest, responseOrder } from './ordersModel';
   styleUrls: ['./orders.component.css']
 })
 export class OrdersComponent implements OnInit {
+  customerName: string = "";
+  orderRemarks: string = "";
+  selectedTables: requestCustomerTable[];
+  responseTable: responseTable[];
+  responseCustomer: responseCustomer[];
+  customerFound: boolean = false;
+  POSNewModelRequest: POSNewModelRequest;
   tableList: string = "";
   @ViewChildren("closeOrderModal") closeOrderModal: any;
-  POSModelRequest: POSModelRequest;
   responseOrder: responseOrder[];
   dtOptions: DataTables.Settings = {};
   dtTrigger: Subject<any> = new Subject<any>();
@@ -31,7 +37,21 @@ export class OrdersComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router) {
     this.responseOrder = [];
-    this.POSModelRequest = new POSModelRequest();
+    this.POSNewModelRequest = new POSNewModelRequest();
+    this.responseCustomer = [];
+    this.selectedTables = [];
+    this.responseTable = [];
+  }
+
+  ngOnInit(): void {
+    this.GV.OutletID = Number(localStorage.getItem('outletID'));
+    this.GV.companyID = Number(localStorage.getItem('companyID'));
+    this.dtOptions = {
+      pagingType: 'full_numbers',
+      pageLength: 10
+    };
+    this.getAllOrders();
+    this.getCustomersAndTables();
   }
   addOrder() {
     this.submitted = false;
@@ -39,23 +59,14 @@ export class OrdersComponent implements OnInit {
     this.addMode = false;
     this.router.navigate(['/AllScreen/Pos']);
   }
-  ngOnInit(): void {
-    this.getAllOrders();
-    this.dtOptions = {
-      pagingType: 'full_numbers',
-      pageLength: 10
-    };
-  }
+
   getAllOrders() {
     this.responseOrder = [];
-    this.API.getdata('/Generic/getOrderByOutletID?outletID=' + this.GV.OutletID).subscribe(c => {
+    this.API.getdata('/Pos/getOrderByOutletID?outletID=' + this.GV.OutletID).subscribe(c => {
       if (c != null) {
         this.responseOrder = c.responseKot;
         this.dtTrigger.next();
         this.responseOrder.sort((a, b) => a.kotID < b.kotID ? 1 : a.kotID > b.kotID ? -1 : 0);
-        //.......................
-        // this.responseTableReplica = c.responseTable;
-        // this.responseOrder.sort((a, b) => a.orderID < b.orderID ? 1 : a.orderID > b.orderID ? -1 : 0);
       }
     },
       error => {
@@ -65,9 +76,33 @@ export class OrdersComponent implements OnInit {
         });
       });
   }
-
+  getCustomersAndTables() {
+    this.API.getdata('/FoodMenu/getCustomer?companyID=' + this.GV.companyID).subscribe(c => {
+      if (c != null) {
+        this.responseCustomer = c.responseCustomers;
+      }
+    },
+      error => {
+        this.toastr.error(error.statusText, 'Error', {
+          timeOut: 3000,
+          'progressBar': true,
+        });
+      });
+    this.API.getdata('/FoodMenu/getTable?outletID=' + this.GV.OutletID).subscribe(c => {
+      if (c != null) {
+        this.responseTable = c.responseTables;
+      }
+    },
+      error => {
+        this.toastr.error(error.statusText, 'Error', {
+          timeOut: 3000,
+          'progressBar': true,
+        });
+      });
+  }
   viewOrder(p: any) {
-    this.API.getdata('/Generic/getOrder?OrderID=' + p.orderID).subscribe(c => {
+    this.POSNewModelRequest = new POSNewModelRequest();
+    this.API.getdata('/Pos/getKOTBykotID?kotID=' + p.kotID).subscribe(c => {
       if (c != null) {
         if (c.message == "Data not found") {
           this.toastr.error(c.message, 'Error', {
@@ -77,11 +112,37 @@ export class OrdersComponent implements OnInit {
           return;
         }
         else {
-          this.POSModelRequest = c;
-          this.POSModelRequest.responseTable.forEach((x) => {
-            if (this.POSModelRequest.responseTable.length > 0) {
-              this.tableList = this.tableList.concat(x.tableName, ', ');
+          if (c.responseCustomerDetail == null) {
+            this.POSNewModelRequest.requestCustomerDetail.customerID = 0;
+            this.POSNewModelRequest.requestCustomerDetail.customerDetailID = 0;
+            this.POSNewModelRequest.requestCustomerDetail.kotID = 0;
+          }
+          else {
+            this.POSNewModelRequest.requestCustomerDetail = c.responseCustomerDetail;
+            if (this.POSNewModelRequest.requestCustomerDetail.customerID > 0) {
+              var index = this.responseCustomer.findIndex((c) => c.customerID == this.POSNewModelRequest.requestCustomerDetail.customerID);
+              this.customerName = this.responseCustomer[index].customerName;
             }
+          }
+          this.POSNewModelRequest.requestCustomerTable = c.responseCustomerTable;
+          this.POSNewModelRequest.requestKot = c.responseKot;
+          this.orderRemarks = this.POSNewModelRequest.requestKot.remarks;
+          this.POSNewModelRequest.requestKotDetail = c.responseKotDetail;
+          this.selectedTables = c.responseCustomerTable;
+          if (this.POSNewModelRequest.requestCustomerDetail.customerID > 0) {
+            var index = this.responseCustomer.findIndex((c) => c.customerID == this.POSNewModelRequest.requestCustomerDetail.customerID);
+            this.customerName = this.responseCustomer[index].customerName;
+          }
+          else {
+            this.customerName = "";
+          }
+          this.tableList = "";
+          this.POSNewModelRequest.requestCustomerTable.forEach((x) => {
+            this.responseTable.forEach((c) => {
+              if (c.tableID == x.tableID) {
+                this.tableList = this.tableList.concat(c.tableName, ', ');
+              }
+            })
           })
           this.tableList = this.tableList.slice(0, -2);
         }
@@ -93,11 +154,5 @@ export class OrdersComponent implements OnInit {
           'progressBar': true,
         });
       });
-  }
-
-  closeOrderDetailModal() {
-    this.tableList = "";
-    this.POSModelRequest = new POSModelRequest();
-    this.closeOrderModal["first"].nativeElement.click();
   }
 }

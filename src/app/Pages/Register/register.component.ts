@@ -68,7 +68,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   onRegisterSubmit() {
-    this.RegisterForm.markAllAsTouched()
+    this.RegisterForm.markAllAsTouched();
     if (this.RegisterForm.valid) {
       if (this.RegisterForm.controls.ownerId.value == null) {
         this.RegisterForm.controls.ownerId.setValue(0);

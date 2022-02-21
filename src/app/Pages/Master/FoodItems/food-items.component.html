@@ -57,7 +57,8 @@
                     <td *ngIf="p.discount == 0 && p.hasVariant == false" style="text-align: right;">{{symbol}} {{p.price
                         |
                         number}}</td>
-                    <td *ngIf="p.discount != 0 && p.hasVariant == false" style="text-align: right;">{{symbol}} {{p.calculatedPrice
+                    <td *ngIf="p.discount != 0 && p.hasVariant == false" style="text-align: right;">{{symbol}}
+                        {{p.calculatedPrice
                         | number}} / <del class="text-danger">{{p.price |
                             number}}</del>
                     </td>
@@ -100,8 +101,8 @@
                     <div class="col-sm-6 mb-2 col-md-4">
                         <div class="form-group">
                             <label>Item Name<span class="required_star">*</span></label>
-                            <input tabindex="1" minlength="3" autocomplete="off" type="text"
-                                formControlName="foodItemName" class="form-control" placeholder="Item Name" value=""
+                            <input minlength="3" autocomplete="off" type="text" formControlName="foodItemName"
+                                class="form-control" placeholder="Item Name" value=""
                                 [ngClass]="{ 'is-invalid': submitted && f.foodItemName.errors }" />
                             <div *ngIf="submitted && f.foodItemName.errors" class="invalid-feedback">
                                 <div *ngIf="f.foodItemName.errors.required">Item
@@ -121,7 +122,7 @@
                     <div class="col-sm-6 mb-2 col-md-2">
                         <div class="form-group">
                             <label>Refrence Code</label>
-                            <input tabindex="1" maxlength="10" autocomplete="off" type="text" formControlName="refCode"
+                            <input maxlength="10" autocomplete="off" type="text" formControlName="refCode"
                                 class="form-control" placeholder="Ref Code" value="" />
                         </div>
                     </div>
@@ -180,7 +181,7 @@
                     <div class="col-sm-12 mb-2 col-md-6">
                         <div class="form-group">
                             <label>Upload File </label>
-                            <input tabindex="1" type="file" accept="image/*" #myInput class="form-control"
+                            <input type="file" accept="image/*" #myInput class="form-control"
                                 [disabled]="ItemPrice == true" placeholder="Upload File"
                                 (change)="attachImage($event);">
                         </div>
@@ -200,9 +201,8 @@
                                 Submit </button>
                         </div>
                         <div class="col-sm-12 col-md-2">
-                            <a class="w-100 btn bg-blue-btn" (click)=addNewFoodCategory()>
-                                Back
-                            </a>
+                            <button type="button" class="w-100 btn bg-blue-btn" (click)=addNewFoodCategory()>
+                                Back </button>
                         </div>
                     </div>
                 </div>
@@ -267,9 +267,9 @@
                         <div class="col-sm-12 mb-2 col-md-4">
                             <div class="form-group">
                                 <label>Variant Name<span class="required_star">*</span></label>
-                                <input tabindex="1" minlength="3" autocomplete="off" type="text"
-                                    formControlName="variantName" class="form-control" placeholder="Variant Name"
-                                    value="" [ngClass]="{ 'is-invalid': Vsubmitted && g.variantName.errors }" />
+                                <input minlength="3" autocomplete="off" type="text" formControlName="variantName"
+                                    class="form-control" placeholder="Variant Name" value=""
+                                    [ngClass]="{ 'is-invalid': Vsubmitted && g.variantName.errors }" />
                                 <div *ngIf="Vsubmitted && g.variantName.errors" class="invalid-feedback">
                                     <div *ngIf="g.variantName.errors.required">Variant
                                         Name is
@@ -288,15 +288,15 @@
                         <div class="col-sm-12 mb-2 col-md-2">
                             <div class="form-group">
                                 <label>Reference Code</label>
-                                <input tabindex="1" autocomplete="off" type="text" formControlName="RefCode"
-                                    class="form-control" value="" />
+                                <input autocomplete="off" type="text" formControlName="RefCode" class="form-control"
+                                    value="" />
                             </div>
                         </div>
                         <div class="col-sm-12 mb-2 col-md-6">
                             <div class="form-group">
                                 <label>Description</label>
                                 <textarea formControlName="description" maxlength="250" class="form-control"
-                                    tabindex="3" autocomplete="off"></textarea>
+                                    autocomplete="off"></textarea>
                             </div>
                         </div>
                         <div class="col-sm-12 mb-2 col-md-6">
@@ -337,7 +337,7 @@
                         <div class="col-sm-12 mb-2 col-md-6">
                             <div class="form-group">
                                 <label>Upload File </label>
-                                <input tabindex="1" type="file" accept="image/*" #myInputV class="form-control"
+                                <input type="file" accept="image/*" #myInputV class="form-control"
                                     placeholder="Upload File" (change)="attachImageV($event);">
                             </div>
                         </div>
@@ -391,7 +391,8 @@
                                     </td>
                                     <td *ngIf="p.discount == 0" style="text-align: right;">{{symbol}} {{p.variantPrice |
                                         number}}</td>
-                                    <td *ngIf="p.discount != 0" style="text-align: right;">{{symbol}} {{p.calculatedPrice
+                                    <td *ngIf="p.discount != 0" style="text-align: right;">{{symbol}}
+                                        {{p.calculatedPrice
                                         | number}} / <del class="text-danger">{{p.variantPrice |
                                             number}}</del>
                                     </td>

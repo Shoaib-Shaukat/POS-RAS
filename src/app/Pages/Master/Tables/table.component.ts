@@ -42,7 +42,7 @@ export class TableComponent implements OnInit {
     this.TableForm = new FormGroup({
       tableName: new FormControl("", [Validators.required, this.noWhitespaceValidator]),
       isActive: new FormControl(""),
-      OwnerID: new FormControl(""),
+      UserID: new FormControl(""),
       tableID: new FormControl(""),
       seatCapacity: new FormControl("", [Validators.required]),
       outletID: new FormControl(""),
@@ -50,6 +50,7 @@ export class TableComponent implements OnInit {
     });
   }
   ngOnInit(): void {
+    this.GV.userID = Number(localStorage.getItem('userID'));
     this.outletID = this.GV.OutletID;
     this.InitializeForm();
     this.getTables();
@@ -77,7 +78,7 @@ export class TableComponent implements OnInit {
     }
     else {
       this.TableForm.controls.outletID.setValue(this.GV.OutletID);
-      this.TableForm.controls.OwnerID.setValue(this.GV.ownerID);
+      this.TableForm.controls.UserID.setValue(this.GV.userID);
     }
     this.submitted = true;
     if (this.TableForm.valid) {
@@ -122,7 +123,7 @@ export class TableComponent implements OnInit {
       });
       return;
     }
-    this.API.getdata('/FoodMenu/getTable?outletID=' + this.outletID).subscribe(c => {
+    this.API.getdata('/FoodMenu/getTableMaster?outletID=' + this.outletID).subscribe(c => {
       if (c != null) {
         this.responseTable = c.responseTables;
         this.dtTrigger.next();

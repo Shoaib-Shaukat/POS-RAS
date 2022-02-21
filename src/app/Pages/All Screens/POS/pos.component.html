@@ -46,10 +46,9 @@
                             Take Away</button>
                         <button class="selected__btn_c"
                             [ngStyle]="{'background-color': orderTypeValue == 'Delivery' ? '#82C0CF ' : '#64e1ff' }"
-                            id="delivery_button" data-toggle="modal" data-target="#DeliveryModal"
+                            id="delivery_button" data-toggle="modal" data-target="#addDeliveryModal"
                             (click)="orderType(3)"><i class="fal fa-truck"></i>
                             Delivery</button>
-                        <!-- <button id="table_button"><i class="fal fa-table"></i> Table</button> -->
                     </div>
 
                     <div class="waiter_customer">
@@ -100,7 +99,7 @@
                     </div>
                 </div>
 
-                <div class="table-box anyClassFour">
+                <div class="table-box anyClassFour" #scrollMe [scrollTop]="scrollMe.scrollHeight">
                     <div class="table-responsive">
                         <table id="datatable" class="table table-striped">
                             <thead style="background-color: #ff6060">
@@ -197,10 +196,10 @@
                                     {{subTotal | number}}</span>
                             </div>
                             <div class="item">
-                                <span>Discount: </span>
-                                <span id="all_items_discount">{{GV.Currency}}
-                                    {{discount |
-                                    number}}</span>
+                                <span>Discount: <i class="fal fa-edit no-need-for-waiter" id="open_charge_modal"></i>
+                                    <span id="show_charge_amount">{{GV.Currency}}
+                                        {{discount |
+                                        number}}</span></span>
                             </div>
                             <div class="item">
                                 <span>Tax: </span>
@@ -212,7 +211,6 @@
                             <div class="item">
                                 <span>Charge: <i class="fal fa-edit no-need-for-waiter" id="open_charge_modal"></i>
                                     <span id="show_charge_amount">0.00</span></span>
-
                             </div>
                         </div>
                         <div class="payable">
@@ -222,22 +220,25 @@
                         </div>
                         <div class="main_bottom">
                             <div class="button_group">
-                                <button id="cancel_button" (click)="resetOrder()"><i class="fas fa-times"></i>
-                                    Cancel</button>
+                                <button id="cancel_button" (click)="resetOrder()"><i class="fas fa-redo"></i>
+                                    Reset</button>
                                 <button id="cancel_button" data-toggle="modal"
                                     [disabled]="POSNewModelRequest.requestKotDetail.length == 0"
                                     data-target="#addRemarksModal"><i class="fas fa-comment"></i>
                                     Remarks</button>
-                                <button id="direct_invoice" [disabled]="POSNewModelRequest.requestKotDetail.length == 0"
+                                <button id="direct_invoice" style="background-color: rgb(4, 0, 223);"
+                                    [disabled]="POSNewModelRequest.requestKotDetail.length == 0"
                                     class="no-need-for-waiter" [printStyle]="{h1 : {'color': 'black'}, 
                                 h2 : {'border': 'solid 2px'}, 
                                     th:{'border-bottom': 'solid 1px'}, table:{'border': 'solid 1px'}, 
                                     td:{'border-bottom': 'solid 0.5px', 'border-right': 'solid 0.5px'}}"
                                     printSectionId="InvoicePrint" ngxPrint><i class="fas fa-file-invoice"></i>
-                                    <span id="place_edit_order_direct_invoice"> Quick Invoice</span></button>
-                                <button title="Shift+P" [disabled]="POSNewModelRequest.requestKotDetail.length == 0"
-                                    class="placeOrderSound" id="place_order_operation" (click)="submitOrder()"><i
-                                        class="fas fa-utensils"></i> <span id="place_edit_order"> Place
+                                    <span id="place_edit_order_direct_invoice"> Invoice</span></button>
+                                <button style="background-color: rgb(0, 208, 0);" title="Shift+P"
+                                    [disabled]="POSNewModelRequest.requestKotDetail.length == 0" class="placeOrderSound"
+                                    id="place_order_operation" (click)="submitOrder()">
+                                    <i class="fas fa-utensils"></i>
+                                    <span id="place_edit_order"> Place
                                         Order</span></button>
                             </div>
                         </div>
@@ -245,6 +246,20 @@
                 </div>
             </div>
         </div>
+
+
+        <button [hidden]="true" type="button" id="KOTReciept" #KOTReciept [printStyle]="{h1 : {'color': 'black'}, 
+        h2 : {'border': 'solid 2px'}, 
+            th:{'border-bottom': 'solid 1px'}, table:{'border': 'solid 1px'},
+            td:{'border-bottom': 'solid 0.5px', 'border-right': 'solid 0.5px'}}" printSectionId="KOTPrint"
+            ngxPrint></button>
+
+        <button [hidden]="true" type="button" id="InvoiceReciept" #InvoiceReciept [printStyle]="{h1 : {'color': 'black'}, 
+            h2 : {'border': 'solid 2px'}, 
+                th:{'border-bottom': 'solid 1px'}, table:{'border': 'solid 1px'}, 
+                td:{'border-bottom': 'solid 0.5px', 'border-right': 'solid 0.5px'}}" printSectionId="InvoicePrint"
+            ngxPrint></button>
+
         <div class="main_right" style="height: 540px;">
             <form [formGroup]="SearchForm">
                 <div class="row">
@@ -262,8 +277,8 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group mb-2">
-                            <input type="text" class="inputField" formControlName="searchByRefCode"
-                                placeholder="Search by Refrence Code" (change)="searchByRC()">
+                            <input type="text" class="inputField" (input)="searchByRC()"
+                                formControlName="searchByRefCode" placeholder="Search by Refrence Code">
                             <button type="submit" class="searchButton" (click)="searchByRC()"><i
                                     class="fa fa-search"></i></button>
                         </div>
@@ -374,132 +389,48 @@
     </div>
 </div>
 
-<!-- ..........................................POPUP................................................. -->
 
-<div class="modal fade  come-from-modal left" id="OrderViewModal" tabindex="-1" role="dialog" data-backdrop="static"
+<div class="modal fade come-from-modal right" id="addDeliveryModal" tabindex="-1" role="dialog" data-backdrop="static"
     data-keyboard="false" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" #closeOrderViewModal><span
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" #closeAddCustomerModal><span
                         aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Order Detail</h4>
+                <h4 class="modal-title" id="myModalLabel">Add Delivery</h4>
             </div>
             <div class="modal-body">
-                <h5>Order No: {{POSNewModelRequest.requestKot.kotID}}</h5>
-                <h5>KOT NO: {{POSNewModelRequest.requestKot.kotNO}}</h5>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Customer Name</label>
-                            <textarea class="form-control" style="height: 40px;" [(ngModel)]="customerName"
-                                readonly></textarea>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Table</label>
-                            <textarea class="form-control" style="height: 40px;" readonly>{{tableList}}</textarea>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="form-group">
-                        <label><b>Items</b></label>
-                        <div class="table-box anyClassThree">
-                            <div class="table-responsive">
-                                <table id="datatable" class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th style="color: black;">Name</th>
-                                            <th style="color: black;">Qty</th>
-                                            <th style="text-align: right; color: black;">Price</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr *ngFor="let p of POSNewModelRequest.requestKotDetail let ndx=index;">
-                                            <td *ngIf="!p.variantID && !p.dealID">
-                                                {{p.foodItemName}}</td>
-                                            <td *ngIf="p.variantID && !p.dealID">
-                                                {{p.foodItemName}} ({{p.variantName}})
-                                            </td>
-                                            <td *ngIf="p.dealID">{{p.dealName}}</td>
-                                            <td>
-                                                {{p.quantity}}
-                                            </td>
-                                            <td *ngIf="p.variantID && !p.dealID && p.discount == 0"
-                                                style="text-align: right;">
-                                                {{GV.Currency}} {{p.variantPrice | number}}
-                                            </td>
-                                            <td *ngIf="p.variantID && !p.dealID && p.discount != 0"
-                                                style="text-align: right;">
-                                                {{GV.Currency}} {{p.calculatedPrice | number}}
-                                            </td>
-                                            <td *ngIf="!p.variantID && !p.dealID && p.discount == 0"
-                                                style="text-align: right;">
-                                                {{GV.Currency}} {{p.price | number}}
-                                            </td>
-                                            <td *ngIf="!p.variantID && !p.dealID && p.discount != 0"
-                                                style="text-align: right;">
-                                                {{GV.Currency}} {{p.calculatedPrice | number}}
-                                            </td>
-                                            <td *ngIf="p.dealID" style="text-align: right;">
-                                                {{GV.Currency}} {{p.dealPrice | number}}
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <div class="form-group">
-                                    <label><b>Remarks</b></label>
-                                    <textarea class="form-control" style="height: 70px;"
-                                        readonly>{{POSNewModelRequest.requestKot.remarks}}</textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success" data-dismiss="modal" (click)="editOrder()" [printStyle]="{h1 : {'color': 'black'}, 
-                h2 : {'border': 'solid 2px'}, 
-                    th:{'border-bottom': 'solid 1px'}, table:{'border': 'solid 1px'},
-                    td:{'border-bottom': 'solid 0.5px', 'border-right': 'solid 0.5px'}}" printSectionId="KOTPrint"
-                    ngxPrint>Print KOT</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal" (click)="resetOrder()">Close</button>
-                <button type="button" class="btn btn-primary" (click)="editOrder()">Edit
-                    Order</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade come-from-modal right" id="DeliveryModal" tabindex="-1" role="dialog"
-    aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Delivery</h4>
-            </div>
-            <div class="modal-body">
-                <form [formGroup]="DeliveryForm" (ngSubmit)="saveDelivery()">
+                <form [formGroup]="CustomerForm" (ngSubmit)="saveCustomer()">
                     <div class="row">
                         <div class="col-sm-12 mb-2 col-md-6">
                             <div class="form-group">
                                 <label>Customer Name<span class="required_star">*</span></label>
-                                <input tabindex="1" minlength="3" autocomplete="off" type="text"
+                                <input minlength="3" autocomplete="off" type="text"
                                     formControlName="customerName" class="form-control" placeholder="Customer Name"
-                                    value="" [ngClass]="{ 'is-invalid': submitted && d.customerName.errors }" />
-                                <div *ngIf="submitted && d.customerName.errors" class="invalid-feedback">
-                                    <div *ngIf="d.customerName.errors.required">Customer Name is required</div>
+                                    value="" [ngClass]="{ 'is-invalid': submitted && h.customerName.errors }" />
+                                <div *ngIf="submitted && h.customerName.errors" class="invalid-feedback">
+                                    <div *ngIf="h.customerName.errors.required">Customer Name is required</div>
                                     <small
-                                        *ngIf="DeliveryForm.controls['customerName'].errors?.minlength && !d.customerName.errors.whitespace"
+                                        *ngIf="CustomerForm.controls['customerName'].errors?.minlength && !h.customerName.errors.whitespace"
                                         class="text-danger">Customer
                                         Name must be at
                                         least 3 characters long.</small>
                                     <small
-                                        *ngIf="d.customerName.errors.whitespace && !d.customerName.errors.required">Please
+                                        *ngIf="h.customerName.errors.whitespace && !h.customerName.errors.required">Please
+                                        enter valid
+                                        data</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 mb-2 col-md-6">
+                            <div class="form-group">
+                                <label>Refrence Code<span class="required_star">*</span></label>
+                                <input autocomplete="off" type="text" formControlName="refCode"
+                                    class="form-control" placeholder="Customer Name" value=""
+                                    [ngClass]="{ 'is-invalid': submitted && h.refCode.errors }" />
+                                <div *ngIf="submitted && h.refCode.errors" class="invalid-feedback">
+                                    <div *ngIf="h.refCode.errors.required">Refrence Code is required</div>
+                                    <small *ngIf="h.refCode.errors.whitespace && !h.refCode.errors.required">Please
                                         enter valid
                                         data</small>
                                 </div>
@@ -510,30 +441,103 @@
                                 <label>Mobile No. <span class="required_star">*</span></label>
                                 <input type="text" class="form-control" mask='0000-0000000' placeholder="Mobile No."
                                     formControlName="mobileNO"
-                                    [ngClass]="{ 'is-invalid': submitted && d.mobileNO.errors }">
-                                <div *ngIf="submitted && d.mobileNO.errors" class="invalid-feedback">
-                                    <div *ngIf="d.mobileNO.errors.required">Mobile number is required</div>
-                                    <small *ngIf="d.mobileNO.errors.pattern">Mobile number format not correct.</small>
+                                    [ngClass]="{ 'is-invalid': submitted && h.mobileNO.errors }">
+                                <div *ngIf="submitted && h.mobileNO.errors" class="invalid-feedback">
+                                    <div *ngIf="h.mobileNO.errors.required">Mobile number is required</div>
+                                    <small *ngIf="h.mobileNO.errors.pattern">Mobile number format not correct.</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 mb-2 col-md-6">
+                            <div class="form-group float-start">
+                                <label class="col-sm-12">Is Active?</label>
+                                <div class="col-sm-6">
+                                    <input type="checkbox" class="form-control " formControlName="isActive"
+                                        (click)="isActiveCheck(IsActive.checked)" #IsActive />
                                 </div>
                             </div>
                         </div>
                         <div class="col-sm-12 mb-2 col-md-12">
                             <div class="form-group">
                                 <label>Address <span class="required_star">*</span></label>
-                                <textarea formControlName="Address" maxlength="250" class="form-control" tabindex="3"
-                                    autocomplete="off"
-                                    [ngClass]="{ 'is-invalid': submitted && d.Address.errors }"></textarea>
-                                <div *ngIf="submitted && d.Address.errors" class="invalid-feedback">
-                                    <div *ngIf="d.Address.errors.required">Address is required</div>
-                                </div>
+                                <textarea formControlName="Address" maxlength="250" class="form-control"
+                                    autocomplete="off"></textarea>
                             </div>
                         </div>
+                        <div class="col-sm-12 mb-2 col-md-12" *ngIf="viewMode == true">
+                            <div class="form-group">
+                                <label>Favourites</label>
+                                <textarea style="height: 100px;" formControlName="favDescription" maxlength="250"
+                                    class="form-control" autocomplete="off" readonly></textarea>
+                                <!-- <select class="form-control">
+                                    <option *ngFor="let p of customerFavResponse">
+                                        {{p.occurrence}} x {{p.foodItemName}}
+                                    </option>
+                                </select> -->
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12 mb-2 col-md-12">
+                            <div class="form-group">
+                                <label></label>
+                                <button *ngIf="addMoborAdd == false && CustomerForm.controls.customerID.value > 0"
+                                    type="button" class="btn btn-primary float-end" (click)="addMobAdd()">Add Mobile
+                                    No or Address</button>
+                                <button *ngIf="addMoborAdd == true" type="button" class="btn btn-primary float-end"
+                                    (click)="addMobAdd()">Cancel</button>
+                            </div>
+                        </div>
+                        <ng-container *ngIf="addMoborAdd">
+                            <div class="col-sm-12 mb-2 col-md-6">
+                                <div class="form-group">
+                                    <label>Mobile No.</label>
+                                    <input type="text" id="newMobileNo" #newMobileNo name="newMobileNo"
+                                        class="form-control" mask='0000-0000000' placeholder="Mobile No."
+                                        (change)="setMobile(newMobileNo)">
+                                </div>
+                            </div>
+                            <div class="col-sm-12 mb-2 col-md-6">
+                                <div class="form-group">
+                                    <label>Address</label>
+                                    <textarea id="newAddress" #newAddress name="newAddress" maxlength="250"
+                                        class="form-control" autocomplete="off"
+                                        (change)="setAddress(newAddress)"></textarea>
+                                </div>
+                            </div>
+                        </ng-container>
+                        <ng-container *ngIf="responseAddress.length > 0">
+                            <div class="table-box">
+                                <div class="table-responsive">
+                                    <table id="datatable" class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th style="color: black;">Address</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let p of responseAddress let ndx=index;">
+                                                <td><input type="checkbox" id="addressCheck" #addressCheck
+                                                        [checked]="p.checked" name="addressCheck"
+                                                        (click)="checkAddress(addressCheck.checked,p)"></td>
+                                                <td>{{p.adress}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </ng-container>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" (click)="saveDelivery()">Save</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal"
+                    (click)="addCustomer()">Cancel</button>
+                <button type="button" class="btn btn-secondary" (click)="resetForm()">Reset</button>
+                <button type="button" *ngIf="viewMode == false" class="btn btn-primary"
+                    (click)="saveCustomer()">Save</button>
+                <button type="button" *ngIf="viewMode == true" class="btn btn-primary"
+                    (click)="saveCustomer()">Update</button>
             </div>
         </div>
     </div>
@@ -585,7 +589,7 @@
     </div>
 </div>
 
-<div class="modal fade half-modal right" id="addCustomerModal" tabindex="-1" role="dialog" data-backdrop="static"
+<div class="modal fade come-from-modal right" id="addCustomerModal" tabindex="-1" role="dialog" data-backdrop="static"
     data-keyboard="false" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -600,7 +604,7 @@
                         <div class="col-sm-12 mb-2 col-md-6">
                             <div class="form-group">
                                 <label>Customer Name<span class="required_star">*</span></label>
-                                <input tabindex="1" minlength="3" autocomplete="off" type="text"
+                                <input minlength="3" autocomplete="off" type="text"
                                     formControlName="customerName" class="form-control" placeholder="Customer Name"
                                     value="" [ngClass]="{ 'is-invalid': submitted && h.customerName.errors }" />
                                 <div *ngIf="submitted && h.customerName.errors" class="invalid-feedback">
@@ -620,7 +624,7 @@
                         <div class="col-sm-12 mb-2 col-md-6">
                             <div class="form-group">
                                 <label>Refrence Code<span class="required_star">*</span></label>
-                                <input tabindex="1" autocomplete="off" type="text" formControlName="refCode"
+                                <input autocomplete="off" type="text" formControlName="refCode"
                                     class="form-control" placeholder="Customer Name" value=""
                                     [ngClass]="{ 'is-invalid': submitted && h.refCode.errors }" />
                                 <div *ngIf="submitted && h.refCode.errors" class="invalid-feedback">
@@ -655,7 +659,7 @@
                         <div class="col-sm-12 mb-2 col-md-12">
                             <div class="form-group">
                                 <label>Address <span class="required_star">*</span></label>
-                                <textarea formControlName="Address" maxlength="250" class="form-control" tabindex="3"
+                                <textarea formControlName="Address" maxlength="250" class="form-control"
                                     autocomplete="off"></textarea>
                             </div>
                         </div>
@@ -663,7 +667,7 @@
                             <div class="form-group">
                                 <label>Favourites</label>
                                 <textarea style="height: 100px;" formControlName="favDescription" maxlength="250"
-                                    class="form-control" tabindex="3" autocomplete="off" readonly></textarea>
+                                    class="form-control" autocomplete="off" readonly></textarea>
                                 <!-- <select class="form-control">
                                     <option *ngFor="let p of customerFavResponse">
                                         {{p.occurrence}} x {{p.foodItemName}}
@@ -671,6 +675,35 @@
                                 </select> -->
                             </div>
                         </div>
+
+                        <div class="col-sm-12 mb-2 col-md-12">
+                            <div class="form-group">
+                                <label></label>
+                                <button *ngIf="addMoborAdd == false" type="button" class="btn btn-primary float-end"
+                                    (click)="addMobAdd()">Add Mobile
+                                    No or Address</button>
+                                <button *ngIf="addMoborAdd == true" type="button" class="btn btn-primary float-end"
+                                    (click)="addMobAdd()">Cancel</button>
+                            </div>
+                        </div>
+                        <ng-container *ngIf="addMoborAdd">
+                            <div class="col-sm-12 mb-2 col-md-6">
+                                <div class="form-group">
+                                    <label>Mobile No.</label>
+                                    <input type="text" id="newMobileNo" #newMobileNo name="newMobileNo"
+                                        class="form-control" mask='0000-0000000' placeholder="Mobile No."
+                                        (change)="setMobile(newMobileNo)">
+                                </div>
+                            </div>
+                            <div class="col-sm-12 mb-2 col-md-6">
+                                <div class="form-group">
+                                    <label>Address</label>
+                                    <textarea id="newAddress" #newAddress name="newAddress" maxlength="250"
+                                        class="form-control" autocomplete="off"
+                                        (change)="setAddress(newAddress)"></textarea>
+                                </div>
+                            </div>
+                        </ng-container>
                     </div>
                 </form>
             </div>
@@ -690,8 +723,7 @@
 <!-- .......................................KOT Receipt............................................. -->
 
 <div class="invoice" id="KOTPrint" [hidden]="true" data-backdrop="static" data-keyboard="false">
-    <h3 class="text-center">KOT NO:
-        KOT-{{POSNewModelRequest.requestKot.kotNO}}-{{POSNewModelRequest.requestKotSR.kotDate}}-{{POSNewModelRequest.requestKot.outletID}}
+    <h3 class="text-center">ORDER NO: {{POSNewModelRequest.requestKot.kotNO}}
     </h3>
     <p class="centered">
         Table: {{tableList}}
@@ -702,9 +734,7 @@
             Order No: Payment Pending</ng-container> -->
         Waiter: abc
         <br>
-        Customer: {{customerName}}
-        <br>
-        <!-- Order Type: {{POSNewModelRequest.requestKot.orderType}} -->
+        Order Type: {{POSNewModelRequest.requestKot.orderType}}
         <br>
     </p>
     <div class="table-box">
@@ -858,7 +888,7 @@
                         <div class="form-group">
                             <label>Remarks</label>
                             <textarea style="height: 100px;" [(ngModel)]="orderRemarks" maxlength="250"
-                                class="form-control" tabindex="3" autocomplete="off"></textarea>
+                                class="form-control" autocomplete="off"></textarea>
                         </div>
                     </div>
                 </div>
@@ -874,49 +904,52 @@
     data-keyboard="false" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" #closeTablesModal><span
-                        aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Total:
-                    {{totalTables}} Free: {{tablesFree}} Occupied: {{tablesOccupied}} </h4>
-                <h4 class="modal-title" id="myModalLabel">Tables</h4>
+            <div class="row">
+                <div class="modal-header">
+
+                    <div class="col-md-2">
+                        <button type="button" class="close float-start" data-dismiss="modal" aria-label="Close"
+                            #closeTablesModal><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="row col-md-9">
+                        <div class="col-md-4">
+                            <h4 class="modal-title" id="myModalLabel">Total:
+                                {{totalTables}} </h4>
+                        </div>
+                        <div class="row col-md-4">
+                            <div class="col-md-2 fff">
+                            </div>
+                            <div class="col-md-8">
+                                <h4 class="modal-title" id="myModalLabel">
+                                    Free: {{tablesFree}} </h4>
+                            </div>
+                        </div>
+                        <div class="row col-md-4">
+                            <div class="col-md-2 ggg">
+                            </div>
+                            <div class="col-md-8">
+                                <h4 class="modal-title" id="myModalLabel">
+                                    Occupied: {{tablesOccupied}} </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <h4 class="modal-title float-end" id="myModalLabel">Tables</h4>
+                    </div>
+                </div>
             </div>
             <div class="modal-body">
                 <div class="row">
                     <div class="col-sm-6 mb-3 col-md-3 " *ngFor="let p of tablesResponse">
-                        <div class="tables-box text-center"
-                            [ngStyle]="{'background-color': p.statusID == 1 ? 'rgb(233 25 25)' :  'rgb(15 157 15)'}">
+                        <div class="tables-box text-center" (dblclick)="viewOrder(p)"
+                            [ngStyle]="{'background-color': p.statusID == 1 ? '#f15a29' :  'rgb(23, 161, 175)'}">
                             <h3 class="title" style="color: white;">{{p.tableName}}</h3>
-                            <p *ngIf="p.statusID == 1" class="outlet_code mb-0">Status: Occupied</p>
-                            <p *ngIf="p.statusID == 2" class="outlet_code mb-0">Status: Free</p>
-                            <div class="btn_box">
-                                <div class="row mt-4">
-                                    <div class="col-md-6">
-                                        <button
-                                            [ngStyle]="{'background-color': p.statusID == 1 ? '#006800' :  '#d70000'}"
-                                            [disabled]="p.statusID == 2" type="button" class="w-100 btn bg-blue-btn"
-                                            (click)="editOrder(); viewOrder(p);" [printStyle]="{h1 : {'color': 'black'}, 
-                                            h2 : {'border': 'solid 2px'}, 
-                                                th:{'border-bottom': 'solid 1px'}, table:{'border': 'solid 1px'},
-                                                td:{'border-bottom': 'solid 0.5px', 'border-right': 'solid 0.5px'}}"
-                                            printSectionId="KOTPrint" ngxPrint>KOT</button>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <button
-                                            [ngStyle]="{'background-color': p.statusID == 1 ? '#006800' :  '#d70000'}"
-                                            [disabled]="p.statusID == 2" type="button" class="w-100 btn bg-blue-btn"
-                                            (click)="viewOrder(p)" data-toggle="modal"
-                                            data-target="#OrderViewModal">VIEW</button>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -938,29 +971,43 @@
                         <thead>
                             <tr>
                                 <th style="color: black;">SR</th>
-                                <th style="color: black;">KOT NO</th>
+                                <th style="color: black;">ORDER NO</th>
                                 <th style="color: black;">STATUS</th>
+                                <th style="color: black;">ACTIONS</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr *ngFor="let p of responseOrder let ndx=index;">
-                                <td>{{ndx+1}}</td>
-                                <td>{{p.kotNO}}</td>
-                                <td *ngIf="p.statusID == 3" style="color: green;">
-                                    NEW_ORDER
-                                </td>
-                                <td *ngIf="p.statusID == 4" style="color: rgb(242, 255, 0);">
-                                    IN_QUEUE
-                                </td>
-                                <td *ngIf="p.statusID == 5" style="color: #f15a29">
-                                    ORDER_READY
-                                </td>
-                                <td *ngIf="p.statusID == 6" style="color: rgb(12, 0, 242);">
-                                    PAYMENT_MADE
-                                </td>
-                                <td *ngIf="p.statusID == 7" style="color: red;">
-                                    ORDER_CANCELED
-                                </td>
+                                <ng-container *ngIf="p.statusID != 6 && p.statusID != 7">
+                                    <td>{{ndx+1}}</td>
+                                    <td>{{p.kotNO}}</td>
+                                    <td *ngIf="p.statusID == 3" style="color: rgb(0, 197, 0);">
+                                        NEW_ORDER
+                                    </td>
+                                    <td *ngIf="p.statusID == 4" style="color: rgb(12, 0, 242);">
+                                        IN_QUEUE
+                                    </td>
+                                    <td *ngIf="p.statusID == 5" style="color: rgb(199, 0, 209);">
+                                        ORDER_READY
+                                    </td>
+                                    <td *ngIf="p.statusID == 8" style="color: #f15a29;">
+                                        ORDER_COLLECTED
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-success color text-white btn-sm m-1" title="Edit"
+                                            (click)="viewOrder(p)">
+                                            <i class="fa fa-pencil" aria-hidden="true"></i></button>
+                                        <button class="btn btn-secondary color text-white btn-sm m-1" title="Bill"
+                                            (click)="getInvoiceReciept(p.kotID)">
+                                            B</button>
+                                        <button class="btn btn-danger color text-white btn-sm m-1" title="Invoice"
+                                            (click)="paymentMade(p); getInvoiceReciept(p.kotID)">
+                                            I</button>
+                                        <button class="btn btn-primary color text-white btn-sm m-1" title="Cancel Order"
+                                            (click)="cancelOrderNotConfirm(p)">
+                                            <i class="fa fa-times" aria-hidden="true"></i></button>
+                                    </td>
+                                </ng-container>
                             </tr>
                         </tbody>
                     </table>

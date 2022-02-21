@@ -1,12 +1,12 @@
 import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataTableDirective } from 'angular-datatables';
+import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
-import { first } from 'rxjs/operators';
 import { ApiService } from 'src/app/Services/API/api.service';
-import Swal from 'sweetalert2';
-import { UnitRequest } from './Modal/unit';
+import { GvarService } from 'src/app/Services/Globel/gvar.service';
+import { unitRequest, unitResponse } from './IngredientUnitsModel';
 
 @Component({
   selector: 'app-units',
@@ -15,98 +15,188 @@ import { UnitRequest } from './Modal/unit';
 })
 export class UnitsComponent implements OnInit {
   @ViewChildren(DataTableDirective)
-  dtOptions: any = {};
-  dtTrigger: Subject<any> = new Subject();
-  dataTable: any;
+  datatableElement: QueryList<DataTableDirective>;
+  dtOptions: DataTables.Settings = {};
+  dtTrigger: Subject<any> = new Subject<any>();
+
+  unitRequest: unitRequest;
+  unitResponse: unitResponse[];
   addMode: boolean = false;
-  UnitRequest = new UnitRequest();
-  UnitResponse: any = [];
-  ingredientUnitForm: FormGroup;
-  isShow = false;
-  constructor(
-    private api: ApiService,
+  submitted: boolean = false;
+  UnitForm: FormGroup;
+  isShow: boolean = false;
+  constructor(private API: ApiService,
+    private GV: GvarService,
+    public toastr: ToastrService,
     private route: ActivatedRoute,
-    private router: Router
-  ) {
-    this.UnitResponse = [];
-    this.ingredientUnitForm = new FormGroup({});
-    this.UnitRequest = new UnitRequest();
-  }
-  addNewUnits() {
-    this.isShow = !this.isShow;
-  }
-  InitializeForm(): any {
-    this.ingredientUnitForm = new FormGroup({
-      categoryname: new FormControl(''),
-      description: new FormControl(''),
-      unitID: new FormControl(''),
-    });
-  }
-  ngOnInits() {
-    setTimeout(() => {
-      this.dtOptions = {
-        pagingType: 'full_numbers',
-        pageLength: 10,
-        lengthMenu: [5, 10, 25],
-        processing: true,
-      };
-    }, 100);
+    private router: Router) {
+    this.unitResponse = [];
+    this.unitRequest = new unitRequest();
+
   }
   ngOnInit(): void {
-    this.ngOnInits();
+    this.GV.userID = Number(localStorage.getItem('userID'));
+    this.GV.OutletID = Number(localStorage.getItem('outletID'));
     this.InitializeForm();
-    this.getUnit();
+    this.getUnits();
+    this.dtOptions = {
+      pagingType: 'full_numbers',
+      pageLength: 10
+    };
   }
-  onIngredientUnitSubmit() { }
-  SaveUnit(status: any) {
-    if (status == 'New') {
-      this.UnitRequest.unitID = 0;
-    } else {
-      this.UnitRequest.unitID = this.ingredientUnitForm.controls.unitID.value;
-    }
-    this.UnitRequest.Name = this.ingredientUnitForm.controls.categoryname.value;
-    this.UnitRequest.Description =
-      this.ingredientUnitForm.controls.description.value;
-    // this.api
-    //   .addUnit(this.UnitRequest)
-    //   .pipe(first())
-    //   .subscribe({
-    //     next: () => {
-    //       // get return url from query parameters or default to home page
-    //       const returnUrl =
-    //         this.route.snapshot.queryParams['returnUrl'] || '/Master/Customer';
-    //       Swal.fire({
-    //         text: 'Units added successfully.',
-    //         icon: 'success',
-    //         confirmButtonText: 'OK',
-    //       });
-    //       this.isShow = !this.isShow;
-    //       this.getUnit();
-    //     },
-    //     error: (error) => {
-    //       Swal.fire({
-    //         text: error.error.Message,
-    //         icon: 'error',
-    //         confirmButtonText: 'OK',
-    //       });
-    //       // this.loading = false;
-    //     },
-    //   });
+  InitializeForm() {
+    this.UnitForm = new FormGroup({
+      unitID: new FormControl(""),
+      Name: new FormControl("", [Validators.required, this.noWhitespaceValidator]),
+      isActive: new FormControl(""),
+      UserID: new FormControl(""),
+      outletID: new FormControl(""),
+    });
   }
-  getUnit() {
-    // this.api.getUnit().subscribe(
-    //   (data) => {
-    //     this.UnitResponse = data;
-    //   },
-    //   (err) => {}
-    // );
+
+  public noWhitespaceValidator(control: FormControl) {
+    const isWhitespace = (control.value || '').trim().length === 0;
+    const isValid = !isWhitespace;
+    return isValid ? null : { 'whitespace': true };
   }
-  EditUnit(unit: any) {
-    this.addMode = !this.addMode;
+
+  get f() { return this.UnitForm.controls; }
+
+  addUnit() {
+    this.submitted = false;
+    this.UnitForm.reset();
     this.isShow = !this.isShow;
-    //this.customerForm.patchValue(customer);
-    this.ingredientUnitForm.controls.unitID.setValue(unit.unitID);
-    this.ingredientUnitForm.controls.categoryname.setValue(unit.name);
-    this.ingredientUnitForm.controls.description.setValue(unit.description);
+    this.addMode = true;
   }
+
+  saveUnitInfo() {
+    this.submitted = true;
+    if (this.UnitForm.valid) {
+      if (this.UnitForm.controls.unitID.value == "" || this.UnitForm.controls.unitID.value == null) {
+        this.UnitForm.controls.unitID.setValue(0);
+      }
+      this.UnitForm.controls.UserID.setValue(this.GV.userID);
+      this.UnitForm.controls.outletID.setValue(this.GV.OutletID);
+      this.unitRequest = this.UnitForm.value;
+      this.API.PostData('/Ingredient/AddEditUnit', this.unitRequest).subscribe(c => {
+        if (c != null) {
+          if (c.status == "Failed") {
+            this.toastr.error(c.message, 'Error', {
+              timeOut: 3000,
+              'progressBar': true,
+            });
+            return;
+          }
+          this.toastr.success(c.message, 'Success', {
+            timeOut: 3000,
+            'progressBar': true,
+          });
+          this.isShow = !this.isShow;
+          this.getUnits();
+        }
+      },
+        error => {
+          this.toastr.error(error.message, 'Error', {
+            timeOut: 3000,
+            'progressBar': true,
+          });
+        });
+    }
+  }
+
+  getUnits() {
+    this.API.getdata('/Ingredient/getUnit?OutletID=' + this.GV.OutletID).subscribe(c => {
+      if (c != null) {
+        this.destroyDT(0, false).then(destroyed => {
+          this.unitResponse = c.unitResponse;
+          this.dtTrigger.next();
+        });
+      }
+    },
+      error => {
+        this.toastr.error(error.statusText, 'Error', {
+          timeOut: 3000,
+          'progressBar': true,
+        });
+      });
+  }
+
+  editUnit(p: any) {
+    this.addMode = false;
+    this.isShow = !this.isShow;
+    this.UnitForm.controls.unitID.patchValue(p.unitID);
+    this.UnitForm.controls.Name.patchValue(p.name);
+    this.UnitForm.controls.isActive.patchValue(p.isActive);
+    this.UnitForm.controls.OutletID.patchValue(p.outletID);
+  }
+
+  isActiveCheck(check: boolean) {
+    if (check == true) {
+      this.UnitForm.controls.isActive.setValue(true);
+    } else {
+      this.UnitForm.controls.isActive.setValue(false);
+    }
+  }
+  destroyDT = (tableIndex: any, clearData: any): Promise<boolean> => {
+    return new Promise((resolve) => {
+      if (this.datatableElement)
+        this.datatableElement.forEach((dtElement: DataTableDirective, index) => {
+
+          if (index == tableIndex) {
+            if (dtElement.dtInstance) {
+
+              if (tableIndex == 0) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+              }
+              else if (tableIndex == 1) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+
+              } else if (tableIndex == 2) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+              }
+              else if (tableIndex == 3) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+
+              }
+              else if (tableIndex == 4) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+              }
+            }
+            else {
+              resolve(true);
+            }
+          }
+        });
+    });
+  };
 }

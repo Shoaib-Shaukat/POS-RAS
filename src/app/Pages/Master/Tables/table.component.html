@@ -53,7 +53,7 @@
             <div class="col-sm-12 mb-2 col-md-6">
                 <div class="form-group">
                     <label>Table Name<span class="required_star">*</span></label>
-                    <input tabindex="1" minlength="2" autocomplete="off" type="text" formControlName="tableName"
+                    <input minlength="2" autocomplete="off" type="text" formControlName="tableName"
                         class="form-control" placeholder="Table Name" value=""
                         [ngClass]="{ 'is-invalid': submitted && f.tableName.errors }" />
                     <div *ngIf="submitted && f.tableName.errors" class="invalid-feedback">
@@ -71,7 +71,7 @@
             <div class="col-sm-12 mb-2 col-md-6">
                 <div class="form-group">
                     <label>Seating Capacity<span class="required_star">*</span></label>
-                    <input tabindex="1" autocomplete="off" type="number" formControlName="seatCapacity"
+                    <input autocomplete="off" type="number" formControlName="seatCapacity"
                         class="form-control" placeholder="Seating Capacity" value=""
                         [ngClass]="{ 'is-invalid': submitted && f.seatCapacity.errors }" />
                     <div *ngIf="submitted && f.seatCapacity.errors" class="invalid-feedback">
@@ -101,9 +101,8 @@
                         Submit </button>
                 </div>
                 <div class="col-sm-12 col-md-2">
-                    <a class="w-100 btn bg-blue-btn" (click)=addNewFoodCategory()>
-                        Back
-                    </a>
+                    <button type="button" class="w-100 btn bg-blue-btn" (click)=addNewFoodCategory()>
+                        Back </button>
                 </div>
             </div>
         </div>

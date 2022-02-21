@@ -22,8 +22,7 @@ export class LoginComponent implements OnInit {
     public API: ApiService, private route: ActivatedRoute, private router: Router, private toastr: ToastrService) {
     this.LoginViewModel = new LoginViewModel();
     this.loginForm = new FormGroup({
-      Username: new FormControl("", [Validators.required,
-      Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")]),
+      Username: new FormControl("", [Validators.required]),
       Password: new FormControl("", [Validators.required]),
     });
   }
@@ -38,27 +37,41 @@ export class LoginComponent implements OnInit {
       this.LoginViewModel = this.loginForm.value;
       this.API.LoginUser('/api/Token/Login/', this.LoginViewModel).subscribe(
         (data) => {
+          this.ngOnInit();
           this.toastr.success('Login Successful', 'Success', {
             timeOut: 3000,
             'progressBar': true,
           });
-
           localStorage.setItem('token', data.token);
           localStorage.setItem('userRoles', data.roles);
           localStorage.setItem('userName', data.name);
-          localStorage.setItem('ownerID', data.ownerID);
-          if (this.GV.canGetOwner) {
-            this.router.navigate(['/Users']);
-          }
-          else {
+          Number(localStorage.setItem('companyID', data.companyID));
+          Number(localStorage.setItem('userID', data.userID));
+          localStorage.setItem('isOwner', data.owner);
+          localStorage.setItem('userMenus', data.menuID);
+
+          this.GV.userID = Number(data.userID);
+          this.GV.isOwner = data.owner;
+          if (data.companyID == 0) {
+            this.GV.companyID = 0;
             this.router.navigate(['/Companies']);
           }
+          else {
+            this.GV.companyID = data.companyID;
+            this.router.navigate(['/Outlet']);
+          }
+          // if (this.GV.canGetOwner) {
+          //   this.router.navigate(['/Register']);
+          // }
+          // else {
+          //   this.router.navigate(['/Companies']);
+          // }
         },
         (error) => {
           this.clicked = false;
           this.loginForm.enable({ emitEvent: true });
           if (error.error != undefined) {
-            this.toastr.error(error.error.Message, 'Error', {
+            this.toastr.error(error.error.message, 'Error', {
               timeOut: 3000,
               'progressBar': true,
             });

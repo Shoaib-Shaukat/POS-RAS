@@ -1,9 +1,7 @@
-
-
-  .text-danger {
-    font-size: 13px;
-    --bs-text-opacity: 1;
-    color: rgba(var(--bs-danger-rgb),var(--bs-text-opacity))!important;
+.text-danger {
+  font-size: 13px;
+  --bs-text-opacity: 1;
+  color: rgba(var(--bs-danger-rgb), var(--bs-text-opacity)) !important;
 }
 
 .text-left {
@@ -34,18 +32,17 @@
   transition: all 0.3s;
 }
 
-.bg-login-btn:hover, .bg-login-btn:focus{
+.bg-login-btn:hover, .bg-login-btn:focus {
   cursor: pointer;
   background-color: #c90000 !important;
   color: white !important;
 }
 
 .form-group input[type="radio"] {
-  -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
+  width: 25px;
+  height: 25px;
   border: 1px solid #d8d6de;
+  border-radius: 20px !important;
+  padding: 2px 5px;
+  cursor: pointer;
 }
