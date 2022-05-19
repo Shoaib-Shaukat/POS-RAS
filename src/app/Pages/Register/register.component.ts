@@ -73,9 +73,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
       if (this.RegisterForm.controls.ownerId.value == null) {
         this.RegisterForm.controls.ownerId.setValue(0);
       }
-      if (this.RegisterForm.controls.isActive.value == "" || this.RegisterForm.controls.isActive.value == null) {
-        this.RegisterForm.controls.isActive.setValue(false);
-      }
       this.registerModelRequest = this.RegisterForm.value;
       this.API.LoginUser('/api/Owner/AddEditOwner', this.registerModelRequest).subscribe(
         (data) => {
@@ -143,6 +140,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     this.submitted = false;
     this.RegisterForm.reset();
     this.isShow = !this.isShow;
+    this.RegisterForm.controls.isActive.setValue(true);
   }
 
   getUsers() {

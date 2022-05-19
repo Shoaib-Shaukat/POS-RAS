@@ -7,11 +7,11 @@
             </div>
             <div class="col-md-6">
                 <a class="btn_list m-right bg-blue-btn btn" (click)=addOrder()>
-                    <i data-feather="plus"></i> Add Order</a>
+                    <i class="fa fa-plus icon"></i> Add Order</a>
             </div>
         </div>
     </section>
-    <div class="box-wrapper" [hidden]="responseOrder.length == 0">
+    <div class="box-wrapper">
         <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
             <thead>
                 <tr>
@@ -26,22 +26,22 @@
                     <td>{{ndx+1}}</td>
                     <td>{{p.kotNO}}</td>
                     <td *ngIf="p.statusID == 3" style="color: rgb(0, 197, 0);">
-                        NEW_ORDER
+                        <b>NEW_ORDER</b>
                     </td>
                     <td *ngIf="p.statusID == 4" style="color: rgb(12, 0, 242);">
-                        IN_QUEUE
+                        <b>IN_QUEUE</b>
                     </td>
                     <td *ngIf="p.statusID == 5" style="color: rgb(199, 0, 209);">
-                        ORDER_READY
+                        <b>ORDER_READY</b>
                     </td>
                     <td *ngIf="p.statusID == 8" style="color: #f15a29;">
-                        ORDER_COLLECTED
+                        <b>ORDER_COLLECTED</b>
                     </td>
                     <td *ngIf="p.statusID == 6" style="color: rgb(0, 0, 0);">
-                        PAYMENT_MADE
+                        <b>PAYMENT_MADE</b>
                     </td>
                     <td *ngIf="p.statusID == 7" style="color: red;">
-                        ORDER_CANCELED
+                        <b>ORDER_CANCELED</b>
                     </td>
                     <td>
                         <button class="btn btn-primary color text-white btn-sm m-1" (click)="viewOrder(p)"

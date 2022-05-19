@@ -1,0 +1,55 @@
+<div class="login-auth-page">
+  <div class="row h-100">
+    <div class="d-flex col-lg-7">
+      <img class="img-fluid" src="/assets/css/patterns/login.jpg" alt="Login V2">
+    </div>
+    <div class="d-flex col-lg-5 align-items-center auth-bg px-2 p-lg-5">
+      <div class="col-12 col-sm-8 col-md-6 col-lg-12 px-xl-2 mx-auto">
+        <div class="login-box-body px-3">
+          <div class="text-center">
+            <img src="assets/img/posLogoNew.gif" alt="" class="logoClass">
+          </div>
+          <div>
+            <h3 class="auth-title text-center">WELCOME TO POS</h3>
+            <p class="auth-desc text-center mb-5">Sign-In to your account and start the adventure!</p>
+          </div>
+          <form [formGroup]="loginForm" (ngSubmit)="onLoginSubmit()">
+            <div class="col-sm-12 mb-3 text-center">
+              <div class="form-group has-feedback">
+                <input type="text" class="form-control" placeholder="Email" formControlName="Username"
+                  [ngClass]="{ 'is-invalid': submitted && f.Username.errors }">
+                <div *ngIf="submitted && f.Username.errors" class="invalid-feedback text-left">
+                  <div *ngIf="f.Username.errors.required">Email is required!</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-12 mb-3 text-center">
+              <div class="form-group has-feedback pass">
+                <input type="password" formControlName="Password" class="form-control" placeholder="Password"
+                  [ngClass]="{ 'is-invalid': submitted && f.Password.errors }">
+                <div *ngIf="submitted && f.Password.errors" class="invalid-feedback text-left">
+                  <div *ngIf="f.Password.errors.required">Password is required!</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-12">
+              <button type="submit" name="submit" value="submit" class="btn bg-blue-btn w-100">
+                <ng-container [ngTemplateOutlet]="clicked?loader:noLoader"></ng-container>
+                <ng-template #noLoader>
+                  Login
+                </ng-template>
+                <ng-template #loader>
+                  <img src="assets/img/ajax-loader.gif">
+                </ng-template>
+              </button>
+            </div>
+            <!-- <hr> 
+            <div class="col-sm-12 text-center">
+              <p>Don’t have an account? <a routerLink="/register">Signup</a></p>
+            </div> -->
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,304 @@
+<section class="main-content-wrapper" [hidden]="isShow==true">
+    <section class="content-header">
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="top-left-header">Sections</h2>
+                <input type="hidden" class="datatable_name" data-title="Section" data-id_name="datatable">
+            </div>
+            <div class="col-md-6">
+                <a class="btn_list m-right bg-blue-btn btn" (click)=addSection()>
+                    <i class="fa fa-plus icon"></i>Add Section</a>
+            </div>
+        </div>
+    </section>
+    <div class="box-wrapper">
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+            <thead>
+                <tr>
+                    <th>SN</th>
+                    <th>Section Name</th>
+                    <th>Is Active</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let p of responseSection let ndx=index;">
+                    <td>{{ndx+1}}</td>
+                    <td>{{p.sectionName}}</td>
+                    <td><input readonly type="checkbox" name="isActive" [checked]="p.isActive" value="{{p.isActive}}"
+                            onClick="return false"></td>
+                    <td>
+                        <button class="btn btn-success color text-white btn-sm m-1" title="Edit"
+                            (click)="editSection(p)">
+                            <i class="fa fa-pencil" aria-hidden="true"></i></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="main-content-wrapper" [hidden]="isShow==false">
+    <section class="content-header">
+        <div class="row">
+            <div class="col-md-10">
+                <h3 *ngIf="addMode == false" class="top-left-header">
+                    Add Section </h3>
+                <h3 *ngIf="addMode == true" class="top-left-header">
+                    Edit Section </h3>
+            </div>
+            <div class="col-md-2">
+                <a class="btn_list m-right bg-grey-btn btn" (click)="resetAll()">
+                    <i class="fa fa-redo" style="margin-right: 5px;" aria-hidden="true"></i> Reset</a>
+            </div>
+        </div>
+    </section>
+    <section class="box-wrapper">
+        <form [formGroup]="SectionForm">
+            <div class="row">
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group">
+                        <label>Section Name<span class="required_star">*</span></label>
+                        <input minlength="3" autocomplete="off" type="text" formControlName="sectionName"
+                            class="form-control" placeholder="Section Name" value=""
+                            [ngClass]="{ 'is-invalid': submitted && f.sectionName.errors }" />
+                        <div *ngIf="submitted && f.sectionName.errors" class="invalid-feedback">
+                            <div *ngIf="f.sectionName.errors.required">Section Name is required</div>
+                            <small
+                                *ngIf="SectionForm.controls['sectionName'].errors?.minlength && !f.sectionName.errors.whitespace"
+                                class="text-danger">Section
+                                Name must be at
+                                least 3 characters long.</small>
+                            <small *ngIf="f.sectionName.errors.whitespace && !f.sectionName.errors.required">Please
+                                enter
+                                valid
+                                data</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group float-start">
+                        <label class="col-sm-12">Has Screen?</label>
+                        <div class="col-sm-5">
+                            <input type="checkbox" class="form-control" formControlName="hasScreen"
+                                (click)="hasScreenChecked(HasScreen.checked)" #HasScreen />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="row mt-5">
+            <label class="headerClass mb-5">Printer Info</label>
+            <div class="col-md-2">
+                <a class="btn_list m-right bg-blue-btn btn mt-2" (click)="addPrinter()" data-toggle="modal"
+                    data-target="#PrinterModal">
+                    Add Printer</a>
+            </div>
+        </div>
+        <section class="main-content-wrapper">
+            <div class="table-box">
+                <div class="table-responsive">
+                    <table id="datatable" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>SN</th>
+                                <th>Printer Name</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let p of requestSectionModel.requestPrinter let ndx=index;">
+                                <td>{{ndx+1}}</td>
+                                <td>{{p.printerTitle}}</td>
+                                <td style="text-align: right;">
+                                    <a class="btn btn-secondary color text-white btn-sm m-1" title="Remove"
+                                        (click)="removePrinter(p)"><i class="fas fa-minus-circle"
+                                            aria-hidden="true"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+        <div class="row">
+            <label class="headerClass mb-5">Receipt Format</label>
+            <div class="col-sm-12 mb-2 col-md-8">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>KOT Receipt Format</label>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="radio" id="Radio1" value="0" name="kotFormat" class="col-sm-4"
+                                (click)="kotFChanged()" [checked]="KotFormatValue == 0">
+                            <label class="col-sm-8" for="Radio1" style="margin-left: 5px;">No Print</label>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="radio" id="Radio1" value="56" name="kotFormat" class="col-sm-4"
+                                (click)="kotFChanged()" [checked]="KotFormatValue == 1">
+                            <label class="col-sm-8" for="Radio1" style="margin-left: 5px;">56mm</label>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="radio" id="Radio2" value="80" name="kotFormat" class="col-sm-4"
+                                (click)="kotFChanged()" [checked]="KotFormatValue == 2">
+                            <label class="col-sm-8" for="Radio2" style="margin-left: 5px;">80mm</label>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="radio" id="Radio2" value="A4" name="kotFormat" class="col-sm-4"
+                                (click)="kotFChanged()" [checked]="KotFormatValue == 3">
+                            <label class="col-sm-8" for="Radio2" style="margin-left: 5px;">A4</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 mb-2 col-md-8">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Bill Receipt Format</label>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="radio" id="Radio1" value="0" name="billFormat" class="col-sm-4"
+                                (click)="billFChanged()" [checked]="BillFormatValue == 0">
+                            <label class="col-sm-8" for="Radio1" style="margin-left: 5px;">No Print</label>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="radio" id="Radio1" value="56" name="billFormat" class="col-sm-4"
+                                (click)="billFChanged()" [checked]="BillFormatValue == 1">
+                            <label class="col-sm-8" for="Radio1" style="margin-left: 5px;">56mm</label>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="radio" id="Radio2" value="80" name="billFormat" class="col-sm-4"
+                                (click)="billFChanged()" [checked]="BillFormatValue == 2">
+                            <label class="col-sm-8" for="Radio2" style="margin-left: 5px;">80mm</label>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="radio" id="Radio2" value="A4" name="billFormat" class="col-sm-4"
+                                (click)="billFChanged()" [checked]="BillFormatValue == 3">
+                            <label class="col-sm-8" for="Radio2" style="margin-left: 5px;">A4</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-5">
+            <div class="col-sm-12 mb-2 col-md-8">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Invoice Receipt Format</label>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="radio" id="Radio1" value="0" name="invoiceFormat" class="col-sm-4"
+                                (click)="invoiceFChanged()" [checked]="InvoiceFormatValue == 0">
+                            <label class="col-sm-8" for="Radio1" style="margin-left: 5px;">No Print</label>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="radio" id="Radio1" value="56" name="invoiceFormat" class="col-sm-4"
+                                (click)="invoiceFChanged()" [checked]="InvoiceFormatValue == 1">
+                            <label class="col-sm-8" for="Radio1" style="margin-left: 5px;">56mm</label>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="radio" id="Radio2" value="80" name="invoiceFormat" class="col-sm-4"
+                                (click)="invoiceFChanged()" [checked]="InvoiceFormatValue == 2">
+                            <label class="col-sm-8" for="Radio2" style="margin-left: 5px;">80mm</label>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="radio" id="Radio2" value="A4" name="invoiceFormat" class="col-sm-4"
+                                (click)="invoiceFChanged()" [checked]="InvoiceFormatValue == 3">
+                            <label class="col-sm-8" for="Radio2" style="margin-left: 5px;">A4</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row my-3">
+            <div class="col-sm-12 col-md-2">
+                <button *ngIf="addMode == false" type="submit" name="submit" value="submit"
+                    class="w-100 btn bg-blue-btn" (click)="saveSection()">
+                    Submit </button>
+                <button *ngIf="addMode == true" type="submit" name="submit" value="submit" class="w-100 btn bg-blue-btn"
+                    (click)="saveSection()">
+                    Update </button>
+            </div>
+            <div class="col-sm-12 col-md-2">
+                <button type="button" class="w-100 btn bg-blue-btn" (click)="addSection()">
+                    Back </button>
+            </div>
+        </div>
+    </section>
+</section>
+
+<div class="modal fade come-from-modal left" id="PrinterModal" data-backdrop="static" data-keyboard="false"
+    tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Printer</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" #closePrinterModal>
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="PrinterForm" (ngSubmit)="pushPrinter()">
+                    <div class="row">
+                        <div class="col-sm-12 mb-2 col-md-6">
+                            <div class="form-group">
+                                <label>Printer Title<span class="required_star">*</span></label>
+                                <input minlength="3" autocomplete="off" type="text" formControlName="printerTitle"
+                                    class="form-control" placeholder="Printer Title" value=""
+                                    [ngClass]="{ 'is-invalid': Psubmitted && g.printerTitle.errors }" />
+                                <div *ngIf="Psubmitted && g.printerTitle.errors" class="invalid-feedback">
+                                    <div *ngIf="g.printerTitle.errors.required">Printer
+                                        Name is
+                                        required</div>
+                                    <small
+                                        *ngIf="PrinterForm.controls['printerTitle'].errors?.minlength && !g.printerTitle.errors.whitespace"
+                                        class="text-danger">Printer
+                                        Name must be at
+                                        least 3 characters long.</small>
+                                    <small
+                                        *ngIf="g.printerTitle.errors.whitespace && !g.printerTitle.errors.required">Please
+                                        enter valid data</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 mb-2 col-md-6">
+                            <div class="form-group">
+                                <label>Printer IP</label>
+                                <input type="number" formControlName="printerIP" class="form-control" step="1"
+                                    placeholder="Printer IP Address" />
+                            </div>
+                        </div>
+                        <div class="col-sm-12 mb-2 col-md-6">
+                            <div class="form-group">
+                                <label>Printer Port</label>
+                                <input type="number" formControlName="printerPort" class="form-control" step="1"
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57 "
+                                    placeholder="Printer Port" />
+                            </div>
+                        </div>
+                        <div class="col-sm-12 mb-2 col-md-6">
+                            <div class="form-group float-start">
+                                <label class="col-sm-12">Is Active?</label>
+                                <div class="col-sm-6">
+                                    <input type="checkbox" class="form-control" formControlName="isActive"
+                                        (click)="isActiveCheckPrinter(ActivePrinter.checked)" #ActivePrinter />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" (click)="pushPrinter()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

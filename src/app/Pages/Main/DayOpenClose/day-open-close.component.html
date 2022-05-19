@@ -1,0 +1,224 @@
+<!-- <div class="container">
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8 mt-5">
+            <div class="card" style="background-color: #D6E4F1;">
+                <div class="card-deck">
+                    <div class="card-body">
+                        <div class="row border m-1">
+                            <div class="col-md-6">
+                                <input type="radio" id="Radio1" value="Male" [(ngModel)]="OpenOrClose"
+                                    class="col-sm-4 mt-2">
+                                <label for="Radio1">Open Day</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="radio" id="Radio2" value="Female" [(ngModel)]="OpenOrClose"
+                                    class="col-sm-4 mt-2">
+                                <label for="Radio2">Close Day</label>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <aside id="info-block">
+                                    <section class="file-marker">
+                                        <div>
+                                            <div class="box-title">
+                                                Day Open
+                                            </div>
+                                            <div class="box-contents">
+                                                <div id="audit-trail">
+                                                    <h6 class="text-center mt-2">Select Date To Open Day</h6>
+                                                    <div class="row">
+                                                        <div class="col-md-2"></div>
+                                                        <div class="form-group col-md-8">
+                                                            <input type="date" class="form-control">
+                                                            <button type="button"
+                                                                class="btn_list m-right bg-blue-btn btn mt-3 h-50  w-100">Open
+                                                                Working Day</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+                                </aside>
+                            </div>
+                            <div class="col-md-6">
+                                <aside id="info-block">
+                                    <section class="file-marker">
+                                        <div>
+                                            <div class="box-title">
+                                                Day Close
+                                            </div>
+                                            <div class="box-contents">
+                                                <div id="audit-trail">
+                                                    <h6 class="text-center mt-2">Select Date To Close Day</h6>
+                                                    <div class="row">
+                                                        <div class="col-md-2"></div>
+                                                        <div class="form-group col-md-8">
+                                                            <input type="date" class="form-control">
+                                                            <button type="button"
+                                                                class="btn_list m-right bg-blue-btn btn mt-3 h-50  w-100">Close
+                                                                Working Day</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+                                </aside>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-md-4">
+                                <div class="d-inline-block align-middle imgDiv"><img
+                                        src="../../../../assets/img/Gmail_icon.png" alt="user image"
+                                        class="img-radius align-top imgStyle">
+                                </div>
+                                <input #op1 type="radio" id="options1" name="function" value="Yes"
+                                    class="custom-control-input" (click)="seeInput(op1.value)">
+                                <label for="Radio3">Gmail</label>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-inline-block align-middle imgDiv"><img
+                                        src="../../../../assets/img/transparent-outlook-icon-2.png" alt="user image"
+                                        class="img-radius align-top imgStyle">
+                                </div>
+                                <input #op2 type="radio" id="options2" name="function" value="No"
+                                    class="custom-control-input" (click)="seeInput(op2.value)">
+                                <label for="Radio4">Outlook</label>
+                            </div>
+                            <div class="col-md-4">
+                                <button class=" btn bg-grey-btn" style="width: 150px;"
+                                    routerLink="/Dashboard">Exit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+
+
+
+
+<section class="main-content-wrapper">
+    <section class="content-header">
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="top-left-header" *ngIf="!showMaster">Day Open/Close</h2>
+                <h2 class="top-left-header" *ngIf="showMaster">Day Open/Close Master</h2>
+                <input type="hidden" class="datatable_name" data-title="Tables" data-id_name="datatable">
+            </div>
+            <div class="col-md-6" *ngIf="showMaster">
+                <a class="btn_list m-right bg-blue-btn btn" (click)="navigate(1)">
+                    Open/Close Day <i class="fa fa-arrow-right" style="margin-left: 6px;"></i></a>
+            </div>
+            <div class="col-md-6" *ngIf="!showMaster">
+                <a class="btn_list m-right bg-blue-btn btn" (click)="navigate(2)">
+                    <i class="fa fa-arrow-left" style="margin-right: 7px;"></i>Back to Master</a>
+            </div>
+        </div>
+    </section>
+</section>
+
+<section class="main-content-wrapper" [hidden]="!showMaster">
+    <section class="box-wrapper mb-3">
+        <div class="row mt-3">
+            <div class="col-md-4">
+                <div class="box-contents">
+                    <h6 class="mt-2">Select From Date</h6>
+                    <div class="form-group">
+                        <input type="date" class="form-control" [(ngModel)]="fromDate" (change)="getBetweenDates()">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="box-contents">
+                    <h6 class="mt-2">Select To Date</h6>
+                    <div class="form-group">
+                        <input type="date" class="form-control" [(ngModel)]="toDate" (change)="getBetweenDates()">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="box-contents">
+                    <h6 class="text-center mt-2">Days Selected:
+                        <span *ngIf="dateArray.length > 0">{{dateArray.length}}</span>
+                        <span *ngIf="dateArray.length == 0">0</span>
+                    </h6>
+                    <div class="row">
+                        <div class="col-md-2"></div>
+                        <div class="form-group col-md-8">
+                            <button type="button" class="w-100 btn bg-blue-btn float-right" (click)="saveFromToDate()"
+                                [disabled]="dateArray.length == 0">
+                                Generate </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="box-wrapper">
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+            <thead>
+                <tr>
+                    <th>SN</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let p of existingDaysResponse let ndx=index;">
+                    <td>{{ndx+1}}</td>
+                    <td>{{p.openingDate | date}}</td>
+                    <td class="ir_w_1 ir_txt_center"><button class="btn btn-danger color text-white btn-sm m-1"
+                            (click)="removeDateNotConfirm(p)" title="Remove">
+                            <i class="fa fa-minus" aria-hidden="true"></i></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="main-content-wrapper" [hidden]="showMaster">
+    <section class="box-wrapper">
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <div class="box-contents">
+                    <div id="audit-trail">
+                        <h6 class="text-center mt-2">Select Date To Open Day</h6>
+                        <div class="row">
+                            <div class="col-md-2"></div>
+                            <div class="form-group col-md-8">
+                                <input type="date" class="form-control" [(ngModel)]="openingDate">
+                                <button type="button" (click)="saveInfo(1)"
+                                    class="btn_list m-right bg-blue-btn btn mt-3 h-50  w-100">Open
+                                    Working Day</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="box-contents">
+                    <div id="audit-trail">
+                        <h6 class="text-center mt-2">Select Date To Close Day</h6>
+                        <div class="row">
+                            <div class="col-md-2"></div>
+                            <div class="form-group col-md-8">
+                                <input type="date" class="form-control" [(ngModel)]="closingDate">
+                                <button type="button" (click)="saveInfo(2)"
+                                    class="btn_list m-right bg-blue-btn btn mt-3 h-50  w-100">Close
+                                    Working Day</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</section>

@@ -669,13 +669,6 @@
   ===================================
   simple style specific page
 */
-.top-left-header {
-  font-family: emoji;
-  margin-top: 0px;
-  font-size: 1.8rem;
-  font-weight: 500;
-  color: #636363;
-}
 .required_star {
   color: #dd4b39 !important;
 }

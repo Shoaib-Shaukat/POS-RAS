@@ -14,10 +14,12 @@ import { requestPaymentModel, responsePaymentModel } from './paymentModel';
   styleUrls: ['./paymentmethod.component.css']
 })
 export class PaymentmethodComponent implements OnInit {
-  requestPaymentModel: requestPaymentModel;
-  responsePaymentModel: responsePaymentModel[];
+  @ViewChildren(DataTableDirective)
+  datatableElement: QueryList<DataTableDirective>;
   dtOptions: DataTables.Settings = {};
   dtTrigger: Subject<any> = new Subject<any>();
+  requestPaymentModel: requestPaymentModel;
+  responsePaymentModel: responsePaymentModel[];
   addMode: boolean = false;
   submitted: boolean = false;
   PaymentForm: FormGroup;
@@ -30,6 +32,10 @@ export class PaymentmethodComponent implements OnInit {
     private router: Router) {
     this.responsePaymentModel = [];
     this.requestPaymentModel = new requestPaymentModel();
+    this.dtOptions = {
+      pagingType: 'full_numbers',
+      pageLength: 10
+    };
 
   }
   addNewPayment() {
@@ -37,6 +43,7 @@ export class PaymentmethodComponent implements OnInit {
     this.PaymentForm.reset();
     this.isShow = !this.isShow;
     this.addMode = false;
+    this.PaymentForm.controls.isActive.setValue(true);
   }
   InitializeForm() {
     this.PaymentForm = new FormGroup({
@@ -55,10 +62,6 @@ export class PaymentmethodComponent implements OnInit {
     this.outletID = this.GV.OutletID;
     this.InitializeForm();
     this.getPayments();
-    this.dtOptions = {
-      pagingType: 'full_numbers',
-      pageLength: 10
-    };
   }
 
   public noWhitespaceValidator(control: FormControl) {
@@ -83,9 +86,6 @@ export class PaymentmethodComponent implements OnInit {
     }
     this.submitted = true;
     if (this.PaymentForm.valid) {
-      if (this.PaymentForm.controls.isActive.value == "" || this.PaymentForm.controls.isActive.value == null) {
-        this.PaymentForm.controls.isActive.setValue(false);
-      }
       if (this.PaymentForm.controls.paymentID.value == "" || this.PaymentForm.controls.paymentID.value == null) {
         this.PaymentForm.controls.paymentID.setValue(0);
       }
@@ -126,8 +126,10 @@ export class PaymentmethodComponent implements OnInit {
     }
     this.API.getdata('/FoodMenu/getPayment?outletID=' + this.outletID).subscribe(c => {
       if (c != null) {
-        this.responsePaymentModel = c.responsePayments;
-        this.dtTrigger.next();
+        this.destroyDT(0, false).then(destroyed => {
+          this.responsePaymentModel = c.responsePayments;
+          this.dtTrigger.next();
+        });
       }
     },
       error => {
@@ -151,4 +153,68 @@ export class PaymentmethodComponent implements OnInit {
     this.isShow = !this.isShow;
     this.PaymentForm.patchValue(p);
   }
+
+
+  destroyDT = (tableIndex: any, clearData: any): Promise<boolean> => {
+    return new Promise((resolve) => {
+      if (this.datatableElement)
+        this.datatableElement.forEach((dtElement: DataTableDirective, index) => {
+
+          if (index == tableIndex) {
+            if (dtElement.dtInstance) {
+
+              if (tableIndex == 0) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+              }
+              else if (tableIndex == 1) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+
+              } else if (tableIndex == 2) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+              }
+              else if (tableIndex == 3) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+
+              }
+              else if (tableIndex == 4) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+              }
+            }
+            else {
+              resolve(true);
+            }
+          }
+        });
+    });
+  };
 }

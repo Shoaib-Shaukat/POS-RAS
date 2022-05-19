@@ -1,6 +1,6 @@
 export class responseOrder {
     kotID: number = 0;
-    kotNO: number = 0;
+    kotNO: string;
     outletID: number = 0;
     ownerID: number = 0;
     statusID: number = 0;
@@ -8,6 +8,7 @@ export class responseOrder {
     orderType: string = "";
     tableDetail: any = [];
     minute: any = {};
+    statusName: string;
 }
 export class tablesResponse {
     tableID: number;
@@ -89,6 +90,11 @@ export class requestKotDetail {
     itemsDescription: string;
     dealPrice: number = 0;
     kotID: number = 0;
+    kotDetailID: number = 0;
+    sectionID: number = 0;
+    sectionName: string;
+    itemStatusID: number;
+    itemStatus: string;
 }
 
 export class requestCustomerTable {
@@ -101,4 +107,15 @@ export class requestCustomerDetail {
     customerDetailID: number = 0;
     kotID: number = 0;
     customerID: number = 0;
+}
+
+export class responseSection {
+    sectionID: number;
+    sectionName: string;
+    outletID: number;
+    userID: number;
+    invoiceFormat: number;
+    billFormat: number;
+    kotFormat: number;
+    hasScreen: boolean;
 }

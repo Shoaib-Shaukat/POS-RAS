@@ -24,6 +24,7 @@ export class requestDealsModel {
     variantName: string;
     variantPrice: number;
     Quantity: number;
+    sectionID: number;
 }
 export class responseDealsModel {
     dealID: number;
@@ -51,6 +52,12 @@ export class responseFoodMenuItem {
     refCode: string;
     Quantity: number;
     Checked: boolean;
+    outletID: number;
+    currencyID: number;
+    generalRemarks: string;
+    prepRemarks: string;
+    preparationTime: number;
+    sectionID: number;
 }
 
 export class responseVariant {

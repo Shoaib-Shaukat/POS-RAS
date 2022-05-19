@@ -37,7 +37,7 @@ export class LeftmenuComponent implements OnInit {
       this.showCompanies = false;
     }
     this.GV.companyID = Number(localStorage.getItem('companyID'));
-    this.GV.isOwner = Number(localStorage.getItem('isOwner'));
+    this.GV.isOwner = localStorage.getItem('isOwner');
     this.GV.userID = Number(localStorage.getItem('userID'));
     this.GV.OutletID = Number(localStorage.getItem('outletID'));
     this.AssignMenu();

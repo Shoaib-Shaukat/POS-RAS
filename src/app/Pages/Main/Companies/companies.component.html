@@ -1,0 +1,83 @@
+<section class="main-content-wrapper" [hidden]="isShow==true">
+    <section class="content-header">
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="top-left-header">Companies</h2>
+                <input type="hidden" class="datatable_name" data-title="Food Menu Categories" data-id_name="datatable">
+            </div>
+            <div class="col-md-6">
+                <a *ngIf="GV.canAddEditCompany" class="btn_list m-right bg-blue-btn btn" (click)=addNewCompany()>
+                    <i class="fa fa-plus icon"></i> Add Company</a>
+            </div>
+        </div>
+    </section>
+    <div class="row">
+        <div class="col-sm-12 mb-3 col-md-6 " *ngFor="let p of CompaniesResponseModel">
+            <div class="outlet-box text-center">
+                <i class="fa fa-building fa-3x" [style.color]="p.color"></i>
+                <h3 class="title">{{p.companyName}}</h3>
+                <div class="btn_box">
+                    <a *ngIf="GV.canAddEditCompany " class="bg-blue-btn btn " (click)="editCompany(p)">
+                        <strong>Edit</strong></a>
+                    <a class="bg-blue-btn btn " (click)="enterInCompany(p)">
+                        <strong>Enter</strong></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="main-content-wrapper" [hidden]="isShow==false">
+    <section class="content-header">
+        <h3 *ngIf="addMode == false" class="top-left-header">
+            Add Company </h3>
+        <h3 *ngIf="addMode == true" class="top-left-header">
+            Edit Company </h3>
+    </section>
+    <section class="box-wrapper">
+        <form [formGroup]="CompanyForm" (ngSubmit)="onCompanySubmit()">
+            <div class="row">
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group">
+                        <label>Company Name <span class="required_star">*</span></label>
+                        <input minlength="3" autocomplete="off" type="text" formControlName="companyName"
+                            class="form-control" placeholder="Company Name" value=""
+                            [ngClass]="{ 'is-invalid': submitted && f.companyName.errors }" />
+                        <div *ngIf="submitted && f.companyName.errors" class="invalid-feedback">
+                            <div *ngIf="f.companyName.errors.required">Company Name is required</div>
+                            <small *ngIf="CompanyForm.controls['companyName'].errors?.minlength"
+                                class="text-danger">Company
+                                Name must be at
+                                least 3 characters long.</small>
+                            <small *ngIf="f.companyName.errors.whitespace && !f.companyName.errors.required">Please
+                                enter
+                                valid data</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group float-start">
+                        <label class="col-sm-12">Is Active?</label>
+                        <div class="col-sm-6">
+                            <input type="checkbox" class="form-control " formControlName="isActive"
+                                (click)="isActiveCheck(IsActive.checked)" #IsActive />
+                        </div>
+                    </div>
+                </div>
+                <div class="row my-3">
+                    <div class="col-sm-12 col-md-2">
+                        <button *ngIf="addMode == false" type="submit" name="submit" value="submit"
+                            class="w-100 btn bg-blue-btn">
+                            Submit </button>
+                        <button *ngIf="addMode == true" type="submit" name="submit" value="submit"
+                            class="w-100 btn bg-blue-btn">
+                            Update </button>
+                    </div>
+                    <div class="col-sm-12 col-md-2">
+                        <button type="button" class="w-100 btn bg-blue-btn" (click)="addNewCompany()">
+                            Back </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </section>
+</section>

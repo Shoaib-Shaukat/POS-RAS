@@ -1,5 +1,9 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, Inject, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { ApiService } from 'src/app/Services/API/api.service';
+import { GvarService } from 'src/app/Services/Globel/gvar.service';
 
 @Component({
   selector: 'app-topar',
@@ -7,15 +11,43 @@ import { Component, Inject, OnInit } from '@angular/core';
   styleUrls: ['./topar.component.css']
 })
 export class ToparComponent implements OnInit {
+  OutletName: any;
+  CompanyName: any;
   userName: any;
   elem: any;
+  date: any;
   fullMode: boolean = false;
-  constructor(@Inject(DOCUMENT) private document: any) { }
-
+  constructor(@Inject(DOCUMENT) private document: any, public GV: GvarService, public router: Router,
+    public API: ApiService, private toastr: ToastrService) {
+    this.OutletName = localStorage.getItem('OutletName');
+    this.CompanyName = localStorage.getItem('companyName');
+    this.date = localStorage.getItem('openingDate');
+    this.GV.OutletEntered.subscribe((data) => {
+      this.setOutletName(data);
+    })
+    this.GV.CompanyEntered.subscribe((data) => {
+      this.setCompanyName(data);
+    })
+    this.GV.openingDate.subscribe((data: any) => {
+      this.date = data;
+    })
+  }
   ngOnInit(): void {
     this.elem = document.documentElement;
     this.fullMode = false;
     this.userName = localStorage.getItem('userName');
+    this.GV.userID = localStorage.getItem('userID');
+    this.GV.companyID = Number(localStorage.getItem('companyID'));
+    var token = localStorage.getItem('token');
+    if (!token) {
+      this.router.navigate(['login']);
+    }
+  }
+  setOutletName(data: any) {
+    this.OutletName = data;
+  }
+  setCompanyName(data: any) {
+    this.CompanyName = data;
   }
   //..................................................................................................
   openFullscreen() {

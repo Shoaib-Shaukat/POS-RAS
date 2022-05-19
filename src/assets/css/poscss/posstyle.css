@@ -1523,3 +1523,215 @@ textarea:focus {
         margin-top: -1px;
     }
 }
+.hrClass {
+    margin-top: 8px !important;
+    border-top: 2px dotted black !important;
+    background-color: white !important;
+}
+
+.fa, .fas {
+    font-size: small;
+    font-family: "Font Awesome 5 Pro";
+    font-weight: 400;
+}
+
+.headerClass{
+    height: 38px;
+    background-color: #4728a7;
+    color: white;
+    padding: 7px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    margin-top: 20px;
+    min-width: 200px;
+    text-align: center;
+  }
+
+
+  
+.small-modal.left .modal-dialog,
+.small-modal.right .modal-dialog {
+  position: fixed;
+  margin: auto;
+  width: 100%;
+  height: 50%;
+  -webkit-transform: translate3d(0%, 0, 0);
+  -ms-transform: translate3d(0%, 0, 0);
+  -o-transform: translate3d(0%, 0, 0);
+  transform: translate3d(0%, 0, 0);
+}
+
+.small-modal.left .modal-content,
+.small-modal.right .modal-content {
+  height: 100%;
+  overflow-y: auto;
+  border-radius: 0px;
+}
+
+.small-modal.left .modal-body,
+.small-modal.right .modal-body {
+  padding: 15px 15px 20px;
+}
+
+.small-modal.right.fade .modal-dialog {
+  right: -320px;
+  -webkit-transition: opacity 0.3s linear, right 0.3s ease-out;
+  -moz-transition: opacity 0.3s linear, right 0.3s ease-out;
+  -o-transition: opacity 0.3s linear, right 0.3s ease-out;
+  transition: opacity 0.3s linear, right 0.3s ease-out;
+}
+
+.small-modal.right.fade.in .modal-dialog {
+  right: 0;
+}
+
+
+.half-modal.left .modal-dialog,
+.half-modal.right .modal-dialog {
+  position: fixed;
+  margin: auto;
+  width: 100%;
+  height: 80%;
+  -webkit-transform: translate3d(0%, 0, 0);
+  -ms-transform: translate3d(0%, 0, 0);
+  -o-transform: translate3d(0%, 0, 0);
+  transform: translate3d(0%, 0, 0);
+}
+
+.half-modal.left .modal-content,
+.half-modal.right .modal-content {
+  height: 100%;
+  overflow-y: auto;
+  border-radius: 0px;
+}
+
+.half-modal.left .modal-body,
+.half-modal.right .modal-body {
+  padding: 15px 15px 20px;
+}
+
+.half-modal.right.fade .modal-dialog {
+  right: -320px;
+  -webkit-transition: opacity 0.3s linear, right 0.3s ease-out;
+  -moz-transition: opacity 0.3s linear, right 0.3s ease-out;
+  -o-transition: opacity 0.3s linear, right 0.3s ease-out;
+  transition: opacity 0.3s linear, right 0.3s ease-out;
+}
+
+.modal.left.fade .modal-dialog {
+  left: -320px;
+  -webkit-transition: opacity 0.3s linear, left 0.3s ease-out;
+  -moz-transition: opacity 0.3s linear, left 0.3s ease-out;
+  -o-transition: opacity 0.3s linear, left 0.3s ease-out;
+  transition: opacity 0.3s linear, left 0.3s ease-out;
+}
+
+.modal.left.fade.in .modal-dialog {
+  left: 0;
+}
+
+.half-modal.right.fade.in .modal-dialog {
+  right: 0;
+}
+
+
+
+
+.come-from-modal.left .modal-dialog,
+.come-from-modal.right .modal-dialog {
+  position: fixed;
+  margin: auto;
+  width: 1100px;
+  height: 100%;
+  -webkit-transform: translate3d(0%, 0, 0);
+  -ms-transform: translate3d(0%, 0, 0);
+  -o-transform: translate3d(0%, 0, 0);
+  transform: translate3d(0%, 0, 0);
+}
+
+.come-from-modal.left .modal-content,
+.come-from-modal.right .modal-content {
+  height: 100%;
+  overflow-y: auto;
+  border-radius: 0px;
+}
+
+.come-from-modal.left .modal-body,
+.come-from-modal.right .modal-body {
+  padding: 15px 15px 20px;
+}
+
+.come-from-modal.right.fade .modal-dialog {
+  right: -320px;
+  -webkit-transition: opacity 0.3s linear, right 0.3s ease-out;
+  -moz-transition: opacity 0.3s linear, right 0.3s ease-out;
+  -o-transition: opacity 0.3s linear, right 0.3s ease-out;
+  transition: opacity 0.3s linear, right 0.3s ease-out;
+}
+
+.modal.left.fade .modal-dialog {
+  left: -320px;
+  -webkit-transition: opacity 0.3s linear, left 0.3s ease-out;
+  -moz-transition: opacity 0.3s linear, left 0.3s ease-out;
+  -o-transition: opacity 0.3s linear, left 0.3s ease-out;
+  transition: opacity 0.3s linear, left 0.3s ease-out;
+}
+
+.modal.left.fade.in .modal-dialog {
+  left: 0;
+}
+
+.come-from-modal.right.fade.in .modal-dialog {
+  right: 0;
+}
+
+.ir_h15_m_w91[disabled], .ir_h15_m_w91[readonly], .ir_h15_m_w91[readonly]:focus {
+  background-color: #e9ecef;
+  opacity: 1;
+}
+
+@media (min-width: 900px) {
+  .modal-dialog {
+    max-width: 900px;
+    margin: 1.75rem auto;
+  }
+}
+
+input[type="checkbox"] {
+   cursor: pointer;
+  }
+
+  /* .nav-tabs .nav-item.show .nav-link.active, .nav-tabs .nav-link.active {
+    min-width: 120px;
+    color: #7367f0;
+    border-color: transparent transparent #7367f0 transparent;
+    border-width: 2px;
+} */
+
+.nav-tabs .nav-item.show .nav-link.active, .nav-tabs .nav-link.active {
+    margin-right: 5px;
+    background-color: #e40000;
+    min-width: 120px;
+    color: #ffffff;
+    border-color: transparent transparent #030022 transparent;
+    border-width: 0px;
+    cursor: pointer !important;
+}
+.nav-link.active[disabled] {
+    cursor: not-allowed !important;
+    background-color: #b10000 !important;
+}
+input[type="checkbox"][disabled] {
+    cursor: not-allowed !important;
+}
+.nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    height: 47px;
+}
+
+.searchBar {
+    width: 250px;
+    margin: 5px;
+    height: 40px;
+}

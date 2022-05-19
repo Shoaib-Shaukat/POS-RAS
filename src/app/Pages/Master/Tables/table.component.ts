@@ -14,10 +14,13 @@ import { requestTable, responseTable } from './tableModel';
   styleUrls: ['./table.component.css']
 })
 export class TableComponent implements OnInit {
-  requestTable: requestTable;
-  responseTable: responseTable[];
+  @ViewChildren(DataTableDirective)
+  datatableElement: QueryList<DataTableDirective>;
   dtOptions: DataTables.Settings = {};
   dtTrigger: Subject<any> = new Subject<any>();
+
+  requestTable: requestTable;
+  responseTable: responseTable[];
   addMode: boolean = false;
   submitted: boolean = false;
   TableForm: FormGroup;
@@ -30,13 +33,17 @@ export class TableComponent implements OnInit {
     private router: Router) {
     this.responseTable = [];
     this.requestTable = new requestTable();
-
+    this.dtOptions = {
+      pagingType: 'full_numbers',
+      pageLength: 10
+    };
   }
   addNewFoodCategory() {
     this.submitted = false;
     this.TableForm.reset();
     this.isShow = !this.isShow;
     this.addMode = false;
+    this.TableForm.controls.isActive.setValue(true);
   }
   InitializeForm() {
     this.TableForm = new FormGroup({
@@ -54,10 +61,6 @@ export class TableComponent implements OnInit {
     this.outletID = this.GV.OutletID;
     this.InitializeForm();
     this.getTables();
-    this.dtOptions = {
-      pagingType: 'full_numbers',
-      pageLength: 10
-    };
   }
 
   public noWhitespaceValidator(control: FormControl) {
@@ -82,9 +85,6 @@ export class TableComponent implements OnInit {
     }
     this.submitted = true;
     if (this.TableForm.valid) {
-      if (this.TableForm.controls.isActive.value == "" || this.TableForm.controls.isActive.value == null) {
-        this.TableForm.controls.isActive.setValue(false);
-      }
       if (this.TableForm.controls.tableID.value == "" || this.TableForm.controls.tableID.value == null) {
         this.TableForm.controls.tableID.setValue(0);
       }
@@ -125,8 +125,10 @@ export class TableComponent implements OnInit {
     }
     this.API.getdata('/FoodMenu/getTableMaster?outletID=' + this.outletID).subscribe(c => {
       if (c != null) {
-        this.responseTable = c.responseTables;
-        this.dtTrigger.next();
+        this.destroyDT(0, false).then(destroyed => {
+          this.responseTable = c.responseTables;
+          this.dtTrigger.next();
+        });
       }
     },
       error => {
@@ -150,4 +152,67 @@ export class TableComponent implements OnInit {
     this.isShow = !this.isShow;
     this.TableForm.patchValue(p);
   }
+
+  destroyDT = (tableIndex: any, clearData: any): Promise<boolean> => {
+    return new Promise((resolve) => {
+      if (this.datatableElement)
+        this.datatableElement.forEach((dtElement: DataTableDirective, index) => {
+
+          if (index == tableIndex) {
+            if (dtElement.dtInstance) {
+
+              if (tableIndex == 0) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+              }
+              else if (tableIndex == 1) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+
+              } else if (tableIndex == 2) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+              }
+              else if (tableIndex == 3) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+
+              }
+              else if (tableIndex == 4) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+              }
+            }
+            else {
+              resolve(true);
+            }
+          }
+        });
+    });
+  };
 }

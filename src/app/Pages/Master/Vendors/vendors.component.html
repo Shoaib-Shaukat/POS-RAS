@@ -1,0 +1,166 @@
+<section class="main-content-wrapper" [hidden]="isShow==true">
+    <section class="content-header">
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="top-left-header">Vendors</h2>
+                <input type="hidden" class="datatable_name" data-title="Section" data-id_name="datatable">
+            </div>
+            <div class="col-md-6">
+                <a class="btn_list m-right bg-blue-btn btn" (click)=addVendor()>
+                    <i class="fa fa-plus icon"></i>Add Vendor</a>
+            </div>
+        </div>
+    </section>
+    <div class="box-wrapper">
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+            <thead>
+                <tr>
+                    <th>SN</th>
+                    <th>Vendor Name</th>
+                    <th>Is Active</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let p of VendorModelResponse let ndx=index;">
+                    <td>{{ndx+1}}</td>
+                    <td>{{p.vendorName}}</td>
+                    <td><input readonly type="checkbox" name="isActive" [checked]="p.isActive" value="{{p.isActive}}"
+                            onClick="return false"></td>
+                    <td>
+                        <button class="btn btn-success color text-white btn-sm m-1" title="Edit"
+                            (click)="editVendor(p)">
+                            <i class="fa fa-pencil" aria-hidden="true"></i></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="main-content-wrapper" [hidden]="isShow==false">
+    <section class="content-header">
+        <h3 *ngIf="addMode == false" class="top-left-header">
+            Add Vendor </h3>
+        <h3 *ngIf="addMode == true" class="top-left-header">
+            Edit Vendor </h3>
+    </section>
+    <section class="box-wrapper">
+        <form [formGroup]="VendorForm" (ngSubmit)="saveVendor()">
+            <div class="row">
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group">
+                        <label>Vendor Name<span class="required_star">*</span></label>
+                        <input minlength="3" autocomplete="off" type="text" formControlName="vendorName"
+                            class="form-control" placeholder="Vendor Name" value=""
+                            [ngClass]="{ 'is-invalid': submitted && f.vendorName.errors }" />
+                        <div *ngIf="submitted && f.vendorName.errors" class="invalid-feedback">
+                            <div *ngIf="f.vendorName.errors.required">Vendor Name is required</div>
+                            <small
+                                *ngIf="VendorForm.controls['vendorName'].errors?.minlength && !f.vendorName.errors.whitespace"
+                                class="text-danger">Vendor
+                                Name must be at
+                                least 3 characters long.</small>
+                            <small *ngIf="f.vendorName.errors.whitespace && !f.vendorName.errors.required">Please enter
+                                valid
+                                data</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group ">
+                        <label>Email </label>
+                        <input type="email" class="form-control" placeholder="Email" formControlName="email">
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group">
+                        <label>Phone </label>
+                        <input autocomplete="off" type="text" mask='000-0000000' formControlName="phoneNo"
+                            class="form-control" placeholder="Phone Number" value=""
+                            [ngClass]="{ 'is-invalid': submitted && f.phoneNo.errors }" />
+                        <div *ngIf="submitted && f.phoneNo.errors" class="invalid-feedback">
+                            <small *ngIf="f.phoneNo.errors.pattern">Phone No. format not correct!</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group">
+                        <label>Mobile No.</label>
+                        <input type="text" class="form-control" mask='0000-0000000' placeholder="Mobile No."
+                            formControlName="mobileNo" [ngClass]="{ 'is-invalid': submitted && f.mobileNo.errors }">
+                        <div *ngIf="submitted && f.mobileNo.errors" class="invalid-feedback">
+                            <small *ngIf="f.mobileNo.errors.pattern">Mobile No. format not correct!</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group">
+                        <label>Country</label>
+                        <select class="form-control" formControlName="countryID" (change)="changeCountry()">
+                            <option *ngFor="let p of responseCountries" [value]="p.id">{{p.countryName}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group">
+                        <label>Postal Code</label>
+                        <input autocomplete="off" type="text" formControlName="postalCode" class="form-control"
+                            placeholder="Postal Code" value="" />
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group">
+                        <label>State</label>
+                        <select class="form-control" (change)="changeRegion($event.target)" formControlName="stateID">
+                            <option *ngFor="let p of responseRegions" [value]="p.Id">{{p.regionName}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group">
+                        <label>Fax No.</label>
+                        <input autocomplete="off" type="text" mask="00:00:00" formControlName="faxNo"
+                            class="form-control" placeholder="Fax No." value="" />
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group">
+                        <label>City</label>
+                        <select class="form-control" formControlName="cityID">
+                            <option *ngFor="let p of responseCity" [value]="p.Id">{{p.cityName}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group float-start">
+                        <label class="col-sm-12">Is Active?</label>
+                        <div class="col-sm-6">
+                            <input type="checkbox" class="form-control" formControlName="isActive"
+                                (click)="isActiveCheck(IsActive.checked)" #IsActive />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group">
+                        <label>Address</label>
+                        <textarea formControlName="vendorAddress" maxlength="250" class="form-control"
+                            autocomplete="off"></textarea>
+                    </div>
+                </div>
+                <div class="row my-3">
+                    <div class="col-sm-12 col-md-2">
+                        <button type="" name="submit" value="submit" class="w-100 btn bg-blue-btn">
+                            Submit </button>
+                    </div>
+                    <div class="col-sm-12 col-md-2">
+                        <button type="button" class="w-100 btn bg-blue-btn" (click)=addVendor()>
+                            Back </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </section>
+</section>

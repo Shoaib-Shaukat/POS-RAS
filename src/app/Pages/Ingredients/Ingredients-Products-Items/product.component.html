@@ -1,0 +1,297 @@
+<section class="main-content-wrapper" [hidden]="isShow==true">
+    <section class="content-header">
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="top-left-header">Ingredients</h2>
+                <input type="hidden" class="datatable_name" data-title="Section" data-id_name="datatable">
+            </div>
+            <div class="col-md-6">
+                <a class="btn_list m-right bg-blue-btn btn" (click)=addProduct()>
+                    <i class="fa fa-plus icon"></i> Add Ingredient</a>
+            </div>
+        </div>
+    </section>
+    <div class="box-wrapper">
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+            <thead>
+                <tr>
+                    <th>SN</th>
+                    <th>Description</th>
+                    <th>Is Active</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let p of ProductModelResponse let ndx=index;">
+                    <td>{{ndx+1}}</td>
+                    <td>{{p.description}}</td>
+                    <td><input readonly type="checkbox" name="isActive" [checked]="p.isActive" value="{{p.isActive}}"
+                            onClick="return false"></td>
+                    <td>
+                        <button class="btn btn-success color text-white btn-sm m-1" title="Edit"
+                            (click)="editProduct(p)">
+                            <i class="fa fa-pencil" aria-hidden="true"></i></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="main-content-wrapper" [hidden]="isShow==false">
+    <section class="content-header">
+        <div class="row">
+            <div class="col-md-10">
+                <h3 *ngIf="addMode == false" class="top-left-header">
+                    Add Ingredient </h3>
+                <h3 *ngIf="addMode == true" class="top-left-header">
+                    Edit Ingredient </h3>
+            </div>
+            <div class="col-md-2">
+                <a class="btn_list m-right bg-grey-btn btn" (click)="resetAll()">
+                    <i class="fa fa-redo" style="margin-right: 5px;" aria-hidden="true"></i> Reset</a>
+            </div>
+        </div>
+    </section>
+    <section class="box-wrapper">
+        <form [formGroup]="ProductForm" (ngSubmit)="saveProduct()">
+            <div class="row">
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group">
+                        <label>Ingredient ID<span class="required_star">*</span></label>
+                        <input minlength="3" autocomplete="off" type="number" formControlName="pID" class="form-control"
+                            placeholder="Ingredient ID" value="" readonly />
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group">
+                        <label>Ingredient Category<span class="required_star">*</span></label>
+                        <select class="form-control" formControlName="ingredientID"
+                            (change)="getIngredientSubCategory()"
+                            [ngClass]="{ 'is-invalid': submitted && f.ingredientID.errors }">
+                            <option *ngFor="let c of IngredientResponse" [value]="c.ingredientID">
+                                {{ c.name }}
+                            </option>
+                        </select>
+                        <div *ngIf="submitted && f.ingredientID.errors" class="invalid-feedback">
+                            <div *ngIf="f.ingredientID.errors.pattern">Ingredient is required</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group">
+                        <label>Description <span class="required_star">*</span></label>
+                        <input minlength="3" autocomplete="off" type="text" formControlName="description"
+                            class="form-control" placeholder="Description Name" value=""
+                            [ngClass]="{ 'is-invalid': submitted && f.description.errors }" />
+                        <div *ngIf="submitted && f.description.errors" class="invalid-feedback">
+                            <div *ngIf="f.description.errors.required">Description is required</div>
+                            <small
+                                *ngIf="ProductForm.controls['description'].errors?.minlength && !f.description.errors.whitespace"
+                                class="text-danger">Description must be at least 3 characters long.</small>
+                            <small *ngIf="f.description.errors.whitespace && !f.description.errors.required">Please
+                                enter
+                                valid data</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group">
+                        <label>Ingredient Sub Category<span class="required_star">*</span></label>
+                        <select class="form-control" formControlName="ingredientCategoryID"
+                            [ngClass]="{ 'is-invalid': submitted && f.ingredientCategoryID.errors }">
+                            <option *ngFor="let c of SubCategoryResponse" [value]="c.ingredientCategoryID">
+                                {{ c.oName }}
+                            </option>
+                        </select>
+                        <div *ngIf="submitted && f.ingredientCategoryID.errors" class="invalid-feedback">
+                            <div *ngIf="f.ingredientCategoryID.errors.pattern">Sub Category is required</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group float-start">
+                        <label class="col-sm-12">Is Imported?</label>
+                        <div class="col-sm-5">
+                            <input type="checkbox" class="form-control " formControlName="isImported"
+                                (click)="isImportedCheck(IsImported.checked)" #IsImported />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group">
+                        <label>Ingredient Company<span class="required_star">*</span></label>
+                        <select class="form-control" formControlName="ingredientCompanyID"
+                            [ngClass]="{ 'is-invalid': submitted && f.ingredientCompanyID.errors }">
+                            <option *ngFor="let c of IngCompanyResponse" [value]="c.ingredientCompanyID">
+                                {{ c.ingredientCompanyName }}
+                            </option>
+                        </select>
+                        <div *ngIf="submitted && f.ingredientCompanyID.errors" class="invalid-feedback">
+                            <div *ngIf="f.ingredientCompanyID.errors.pattern">Company is required</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group float-start">
+                        <label class="col-sm-12">Is Active?</label>
+                        <div class="col-sm-6">
+                            <input type="checkbox" class="form-control " formControlName="isActive"
+                                (click)="isActiveCheck(IsActive.checked)" #IsActive />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group">
+                        <label title="Ingredient Unit Of Measure">Ingredient UOM<span
+                                class="required_star">*</span></label>
+                        <select class="form-control" formControlName="unitID"
+                            [ngClass]="{ 'is-invalid': submitted && f.unitID.errors }">
+                            <option *ngFor="let c of unitResponse" [value]="c.unitID">
+                                {{ c.name }}
+                            </option>
+                        </select>
+                        <div *ngIf="submitted && f.unitID.errors" class="invalid-feedback">
+                            <div *ngIf="f.unitID.errors.pattern">Unit is required</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <label class="headerClass">Basic Info</label>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group">
+                        <label>Cost Price<span class="required_star">*</span></label>
+                        <input type="number" maxlength="20" formControlName="costPrice" class="form-control"
+                            placeholder="Cost Price" value="" (change)="calOpValue()" />
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group">
+                        <label>Opening Quantity<span class="required_star">*</span></label>
+                        <input type="text" formControlName="opQuantity" class="form-control" maxlength="20"
+                            placeholder="Opening Quantity" value="" (change)="calOpValue()"
+                            onkeypress="return event.charCode >= 48 && event.charCode <= 57 " />
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group">
+                        <label>Base Sale Price<span class="required_star">*</span></label>
+                        <input type="number" formControlName="baseSalePrice" class="form-control" maxlength="20"
+                            placeholder="Base Sale Price" value="" (change)="resetDiscounts()" />
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group">
+                        <label>Opening Value<span class="required_star">*</span></label>
+                        <input type="number" formControlName="opValue" class="form-control" placeholder="Opening Value"
+                            maxlength="20" value="" />
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group">
+                        <label>Discount %<span class="required_star">*</span></label>
+                        <input type="text" formControlName="discountPercentage" class="form-control"
+                            placeholder="Discount Percentage" value="" (change)="caldiscountAmount()"
+                            onkeypress="return event.charCode >= 48 && event.charCode <= 57 " maxlength="20"
+                            [readonly]="showDiscount == true" />
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group">
+                        <label>Reorder Level<span class="required_star">*</span></label>
+                        <input type="text" formControlName="recorderLevel" class="form-control"
+                            placeholder="Reorder Level" value=""
+                            onkeypress="return event.charCode >= 48 && event.charCode <= 57 " maxlength="20" />
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group">
+                        <label>Discount Amount<span class="required_star">*</span></label>
+                        <input type="text" formControlName="discountAmount" class="form-control"
+                            placeholder="Discount Amount" value="" (change)="calDiscountPercentage()" maxlength="20"
+                            onkeypress="return event.charCode >= 48 && event.charCode <= 57 "
+                            [readonly]="showDiscount == true" />
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group">
+                        <label title="Ingredient Unit Of Measure">Location<span class="required_star">*</span></label>
+                        <select class="form-control" formControlName="locationID"
+                            [ngClass]="{ 'is-invalid': submitted && f.locationID.errors }">
+                            <option *ngFor="let c of LocationModelResponse" [value]="c.locationID">
+                                {{ c.locationName }}
+                            </option>
+                        </select>
+                        <div *ngIf="submitted && f.locationID.errors" class="invalid-feedback">
+                            <div *ngIf="f.locationID.errors.pattern">Location is required</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group">
+                        <label>Sale Price<span class="required_star">*</span></label>
+                        <input type="number" formControlName="salePrice" class="form-control" placeholder="Sale Price"
+                            maxlength="20" value="" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <label class="headerClass">Vendors Info</label>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Select Vendors</label>
+                        <ng-multiselect-dropdown [placeholder]="'Select Vendors'" [data]="VendorModelResponse"
+                            [(ngModel)]="selectedVendors" [settings]="dropdownSettings"
+                            (onSelect)="onVendorSelect($event)" (onSelectAll)="onSelectAll($event)"
+                            (onDeSelect)="onItemDeSelect($event)" (onDeSelectAll)="onItemDeSelectAll($event)"
+                            [ngModelOptions]="{standalone: true}">
+                        </ng-multiselect-dropdown>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <section class="main-content-wrapper" [hidden]="selectedVendorsArray.length == 0">
+                        <div class="table-box">
+                            <div class="table-responsive">
+                                <table id="datatable" class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>SN</th>
+                                            <th>Vendor Name</th>
+                                            <th>Phone No.</th>
+                                            <th>Mobile No.</th>
+                                            <th>Address</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let p of selectedVendorsArray let ndx=index;">
+                                            <td>{{ndx+1}}</td>
+                                            <td>{{p.vendorName}}</td>
+                                            <td>{{p.phoneNo}}</td>
+                                            <td>{{p.mobileNo}}</td>
+                                            <td>{{p.vendorAddress}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            <div class="row my-3">
+                <div class="col-sm-12 col-md-2">
+                    <button *ngIf="addMode == false" type="submit" name="submit" value="submit"
+                        class="w-100 btn bg-blue-btn">
+                        Submit </button>
+                    <button *ngIf="addMode == true" type="submit" name="submit" value="submit"
+                        class="w-100 btn bg-blue-btn">
+                        Update </button>
+                </div>
+                <div class="col-sm-12 col-md-2">
+                    <button type="button" class="w-100 btn bg-blue-btn" (click)="addProduct()">
+                        Back </button>
+                </div>
+            </div>
+        </form>
+    </section>
+</section>

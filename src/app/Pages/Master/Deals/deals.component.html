@@ -7,7 +7,7 @@
             </div>
             <div class="col-md-6">
                 <a class="btn_list m-right bg-blue-btn btn" (click)="makeDeal()">
-                    Make Deal</a>
+                    <i class="fa fa-plus icon"></i> Make Deal</a>
             </div>
         </div>
     </section>
@@ -36,23 +36,22 @@
                 <input type="hidden" class="datatable_name" data-title="Food Menu Categories" data-id_name="datatable">
             </div>
             <div class="col-md-6">
-                <span>Total: </span>
-                <input type="number" [(ngModel)]="totalAmount" readonly
-                    style="background-color: #e9ecef; width: 120px; margin-right: 20px;" />
-                <a class="btn_list m-right bg-grey-btn btn" (click)=goToDeals()>
-                    Back</a>
+                <span class="totalClass">Total:</span>
+                <input type="text" [(ngModel)]="totalAmount" readonly class="readOnlyField" />
+                <a class="btn_list m-right backButton btn" (click)=goToDeals()>
+                    <i class="fa fa-arrow-left icon"></i>Back</a>
                 <a class="btn_list m-right bg-grey-btn btn" (click)=resetDeals()>
-                    Reset</a>
+                    <i class="fa fa-redo icon"></i>Reset</a>
                 <a class="btn_list m-right bg-blue-btn btn" (click)="dealMakingDone(); fillItemsDescription();">
-                    Done</a>
-                <button [hidden]="true" type="button" data-toggle="modal" data-target=".DealModal" id="dealsDone"
+                    <i class="fa fa-check icon"></i> Done</a>
+                <button [hidden]="true" type="button" data-toggle="modal" data-target="#DealModal" id="dealsDone"
                     #dealsDone></button>
                 <button [hidden]="true" type="button" data-toggle="modal" data-target=".viewVariantsModal"
                     id="viewVariant" #viewVariant></button>
             </div>
         </div>
     </section>
-    <div class="box-wrapper" [hidden]="ItemsResponseModelReplica.length == 0">
+    <div class="box-wrapper">
         <form [formGroup]="SearchForm">
             <div class="row my-3">
                 <div class="col-md-6 col-sm-8 mb-2">
@@ -93,7 +92,9 @@
                             style="cursor: pointer;" (click)="plusQuantity(p)">+</button>
                     </td>
                     <td *ngIf="p.imageURl == null">
-                        -
+                        <div class="d-inline-block align-middle"><img src="../../../../assets/img/image_thumb.png"
+                                alt="user image" class="img-radius align-top" style="width: 50px;height: 50px;">
+                        </div>
                     </td>
                     <td *ngIf="p.imageURl != null">
                         <div class="d-inline-block align-middle"><img src="{{p.imageURl}}" alt="user image"
@@ -126,13 +127,12 @@
         </table>
     </div>
 </section>
-
-<div class="modal fade DealModal" id="view-assigned-group-role-modal" data-backdrop="static" data-keyboard="false"
+<div class="modal fade come-from-modal right" id="DealModal" data-backdrop="static" data-keyboard="false"
     tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Add Deal</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Deal Detail</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close" #closeDealsModal>
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -261,7 +261,10 @@
                                             style="cursor: pointer;" (click)="plusVQuantity(p)">+</button>
                                     </td>
                                     <td *ngIf="p.imageURL == null">
-                                        -
+                                        <div class="d-inline-block align-middle"><img
+                                                src="../../../../assets/img/image_thumb.png" alt="user image"
+                                                class="img-radius align-top" style="width: 50px;height: 50px;">
+                                        </div>
                                     </td>
                                     <td *ngIf="p.imageURL != null">
                                         <div class="d-inline-block align-middle"><img src="{{p.imageURL}}"

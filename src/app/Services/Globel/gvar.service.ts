@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { RolesRequestModel } from './RolesModel';
 import { CurrentUserViewModel } from './UsersModel';
@@ -6,6 +7,10 @@ import { CurrentUserViewModel } from './UsersModel';
   providedIn: 'root'
 })
 export class GvarService {
+  openingDate: any = new Subject<any>();
+  OutletInfo: any;
+  OutletEntered: Subject<any> = new Subject<any>();
+  CompanyEntered: Subject<any> = new Subject<any>();
   GoodsCallFrom: string;
   private Roles: RolesRequestModel[];
   G_IsRunning: boolean = false;
@@ -61,5 +66,15 @@ export class GvarService {
   }
   get canGetOutlets() {
     return this.roleMatch(6);
+  }
+
+  SetOutlet(OutletName: any) {
+    this.OutletEntered.next(OutletName);
+  }
+  SetCompany(CompanyName: any) {
+    this.CompanyEntered.next(CompanyName);
+  }
+  setOpeningDate(val: any) {
+    this.openingDate.next(val);
   }
 }

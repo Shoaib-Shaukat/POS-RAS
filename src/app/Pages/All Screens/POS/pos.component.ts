@@ -6,17 +6,48 @@ import { Subject } from 'rxjs';
 import { ApiService } from 'src/app/Services/API/api.service';
 import { GvarService } from 'src/app/Services/Globel/gvar.service';
 import { responseDealsModel } from '../../Master/Deals/dealsModel';
-import { MenuItemsModel, responseVariant } from '../../Master/FoodItems/ItemsModel';
-import { allVariantsResponse, changeOrderStatus, customerFavResponse, customerModel, FoodCatResponseModel, POSNewModelRequest, requestCustomer, requestCustomerTable, responseAddress, responseCustomer, responseFoodMenuItem, responseOrder, responseTable, tablesResponse } from './posModel';
+import { MenuItemsModel, responseVariant } from '../../Master/MenuItems/ItemsModel';
+import { allVariantsResponse, changeOrderStatus, customerFavResponse, customerModel, FBRRequestObject, FoodCatResponseModel, paymentTypesResponse, POSNewModelRequest, requestCustomer, requestCustomerTable, responseAddress, responseCustomer, responseFoodMenuItem, responseOrder, responseTable, tablesResponse, taxesResponseModel, taxResponseModel } from './posModel';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import Swal from 'sweetalert2';
-
+import { DataTableDirective } from 'angular-datatables';
+import { NgxQrcodeElementTypes, NgxQrcodeErrorCorrectionLevels } from '@techiediaries/ngx-qrcode';
 @Component({
   selector: 'app-pos',
   templateUrl: './pos.component.html',
   styleUrls: ['./pos.component.css']
 })
 export class PosComponent implements OnInit {
+  OpeningDate: any;
+  totalDiscount: number = 0;
+  invoiceDiscount: number = 0;
+  totalMinusInvDis: number = 0;
+  PaymentModeName: string = '';
+  chargesArray: { name: string, chargesAmount: number, chargesPercentage: number }[] = [
+    { "name": "Dine In", chargesAmount: 0, chargesPercentage: 0 },
+    { "name": "Take Away", chargesAmount: 0, chargesPercentage: 0 },
+    { "name": "Delivery", chargesAmount: 0, chargesPercentage: 0 },
+  ];
+  chargesValuePercentage: number = 0;
+  payModeID: number = 0;
+  paymentTypesResponse: paymentTypesResponse[];
+  totalTax: number = 0;
+  taxArr: any = [];
+  taxesResponseModel: taxesResponseModel[];
+  taxResponseModel: taxResponseModel[];
+  KOTNumber: any;
+  elementType = NgxQrcodeElementTypes.URL;
+  correctionLevel = NgxQrcodeErrorCorrectionLevels.HIGH;
+  QRCodeValue: any = 0;
+  chargesValue: any = 0;
+  FBRRequestObject: FBRRequestObject;
+  @ViewChildren(DataTableDirective)
+  datatableElement: QueryList<DataTableDirective>;
+  dtOptions: DataTables.Settings = {};
+  dtTrigger: Subject<any> = new Subject<any>();
+  OutletInfo: any;
+  // showCart: boolean = false;
+  // showItems: boolean = false;
   @ViewChild('scrollMe') private myScrollContainer: ElementRef;
   changeOrderStatus: changeOrderStatus;
   responseAddress: responseAddress[];
@@ -30,8 +61,9 @@ export class PosComponent implements OnInit {
   totalTables: number = 0;
   tablesOccupied: number = 0;
   tablesFree: number = 0;
-  dtOptions4: DataTables.Settings = {};
-  dtTrigger4: Subject<any> = new Subject<any>();
+  paidAmount: any = 0;
+  balanceDue: number = 0;
+  changeAmount: number = 0;
   //........................................
   orderTypeValue: any = "Dine In";
   favDescription: any = "";
@@ -56,6 +88,8 @@ export class PosComponent implements OnInit {
   @ViewChildren("closeAddRemarksModal") closeAddRemarksModal: any;
   @ViewChildren("closeTablesModal") closeTablesModal: any;
   @ViewChildren("closeOrdersModal") closeOrdersModal: any;
+  @ViewChildren("closeInvoiceModal") closeInvoiceModal: any;
+  @ViewChildren("closeInvDisModal") closeInvDisModal: any;
 
   SelectClicked: boolean = false;
   allVariantsResponse: allVariantsResponse[];
@@ -77,8 +111,6 @@ export class PosComponent implements OnInit {
   file: any[] = [];
   symbol: string = "";
   fileName: string = "No file chosen";
-  dtOptions: DataTables.Settings = {};
-  dtTrigger: Subject<any> = new Subject<any>();
 
   @ViewChildren("closeVariantModal") closeVariantModal: any;
   @ViewChildren("closeViewVariantModal") closeViewVariantModal: any;
@@ -130,6 +162,10 @@ export class PosComponent implements OnInit {
     this.responseTable = [];
     this.responseCustomer = [];
     this.allVariantsResponse = [];
+    this.taxesResponseModel = [];
+    this.taxResponseModel = [];
+    this.paymentTypesResponse = [];
+    this.FBRRequestObject = new FBRRequestObject();
     this.dropdownSettings = {
       singleSelection: false,
       idField: 'tableID',
@@ -139,25 +175,31 @@ export class PosComponent implements OnInit {
       itemsShowLimit: 10,
       allowSearchFilter: true
     }
-  }
-  ngOnInit(): void {
-    this.GV.userID = Number(localStorage.getItem('userID'));
-
-    this.getAllData();
-    this.symbol = this.GV.Currency;
-    this.responseFoodMenuItem = [];
-    this.ItemsResponseModelReplica = [];
-    this.InitializeForm();
     this.dtOptions = {
       pagingType: 'full_numbers',
       pageLength: 10,
     };
-    this.dtOptions4 = {
-      pagingType: 'full_numbers',
-      pageLength: 10,
-    };
+  }
+  ngOnInit(): void {
+    this.OpeningDate = localStorage.getItem('openingDate');
+    this.GV.OutletInfo = JSON.parse(localStorage.getItem('OutletInfo') || '{}');
+    this.OutletInfo = this.GV.OutletInfo;
+    this.GV.userID = Number(localStorage.getItem('userID'));
+    this.getAllData();
+    this.getTaxes();
+    this.symbol = this.GV.Currency;
+    this.responseFoodMenuItem = [];
+    this.ItemsResponseModelReplica = [];
+    this.InitializeForm();
     this.SearchForm.controls['foodMenuID'].enable();
     this.SearchForm.controls['searchByRefCode'].enable();
+    this.chargesValue = this.OutletInfo.serviceCharges;
+    this.chargesValuePercentage = this.OutletInfo.serviceChargesPer;
+    this.updateCharges();
+    this.getPaymentModes();
+    this.invoiceDiscount = 0;
+    this.totalMinusInvDis = 0;
+    this.totalDiscount = 0;
   }
 
   get f() { return this.MenuItemsForm.controls; }
@@ -230,6 +272,53 @@ export class PosComponent implements OnInit {
     });
   }
 
+  updateCharges() {
+    this.chargesArray.forEach((x) => {
+      if (x.name == "Dine In") {
+        if (this.OutletInfo.serviceCharges > 0) {
+          x.chargesAmount = this.OutletInfo.serviceCharges;
+          x.chargesPercentage = 0;
+        }
+        else if (this.OutletInfo.serviceChargesPer > 0) {
+          x.chargesAmount = 0;
+          x.chargesPercentage = this.OutletInfo.serviceChargesPer;
+        }
+        else {
+          x.chargesAmount = 0;
+          x.chargesPercentage = 0;
+        }
+      }
+      else if (x.name == "Take Away") {
+        if (this.OutletInfo.takeawayCharges > 0) {
+          x.chargesAmount = this.OutletInfo.takeawayCharges;
+          x.chargesPercentage = 0;
+        }
+        else if (this.OutletInfo.takeawayChargesPer > 0) {
+          x.chargesAmount = 0;
+          x.chargesPercentage = this.OutletInfo.takeawayChargesPer;
+        }
+        else {
+          x.chargesAmount = 0;
+          x.chargesPercentage = 0;
+        }
+      }
+      else {
+        if (this.OutletInfo.deliveryCharges > 0) {
+          x.chargesAmount = this.OutletInfo.deliveryCharges;
+          x.chargesPercentage = 0;
+        }
+        else if (this.OutletInfo.deliveryChargesPer > 0) {
+          x.chargesAmount = 0;
+          x.chargesPercentage = this.OutletInfo.deliveryChargesPer;
+        }
+        else {
+          x.chargesAmount = 0;
+          x.chargesPercentage = 0;
+        }
+      }
+    })
+  }
+
   getAllData() {
     if (this.GV.companyID == 0) {
       this.toastr.warning('Select Company First', '', {
@@ -275,7 +364,7 @@ export class PosComponent implements OnInit {
           this.ItemsResponseModelReplica = [];
           this.responseFoodMenuItem = c.responseFoodMenuItems;
           this.ItemsResponseModelReplica = c.responseFoodMenuItems;
-
+          this.taxResponseModel = c.responseTaxModel;
           this.ItemsResponseModelReplica.forEach((x) => {
             if (x.foodItemName.length > 15) {
               x.newStr = x.foodItemName.substring(0, 15) + '..';
@@ -345,10 +434,7 @@ export class PosComponent implements OnInit {
 
   }
 
-  ngOnDestroy(): void {
-    // Do not forget to unsubscribe the event
-    this.dtTrigger.unsubscribe();
-  }
+
   getAllTables() {
     this.responseTable = [];
     this.API.getdata('/FoodMenu/getTable?outletID=' + this.GV.OutletID).subscribe(c => {
@@ -391,6 +477,16 @@ export class PosComponent implements OnInit {
   }
 
   pushItem(p: any) {
+    var sectionID: any;
+    var outletID: any;
+    if (p.variantID > 0) {
+      var index = this.responseFoodMenuItem.findIndex((x) => x.foodItemID == p.foodItemID);
+      sectionID = this.responseFoodMenuItem[index].sectionID;
+      outletID = this.responseFoodMenuItem[index].outletID;
+    }
+    else {
+      sectionID = p.sectionID
+    }
     let body = {
       quantity: 0,
       calculatedPrice: p.calculatedPrice,
@@ -404,7 +500,7 @@ export class PosComponent implements OnInit {
       isActive: p.isActive,
       newStr: p.newStr,
       price: p.price,
-      outletID: p.outletID,
+      outletID: outletID,
       refCode: p.refCode,
       variantID: p.variantID,
       variantName: p.variantName,
@@ -414,6 +510,14 @@ export class PosComponent implements OnInit {
       itemsDescription: p.itemsDescription,
       dealPrice: p.dealPrice,
       kotID: 0,
+      status: 1,
+      sectionID: sectionID
+    }
+    if (body.sectionID == undefined) {
+      body.sectionID = 0;
+    }
+    if (body.outletID == undefined) {
+      body.outletID = this.GV.OutletID;
     }
     if (body.discount == undefined) {
       body.discount = 0;
@@ -448,39 +552,219 @@ export class PosComponent implements OnInit {
         this.POSNewModelRequest.requestKotDetail[index].quantity += 1;
       }
     }
+    this.calculateTaxes(p, true, 1);
     this.calculateTotals();
     this.closeVariantsModal["first"].nativeElement.click();
   }
 
+  getTaxes() {
+    this.API.getdata('/Generic/getTax?OutletID=' + this.GV.OutletID).subscribe(c => {
+      if (c != null) {
+        this.destroyDT(0, false).then(destroyed => {
+          this.taxesResponseModel = c.responseTax;
+          this.dtTrigger.next();
+        });
+      }
+    },
+      error => {
+        this.toastr.error(error.statusText, 'Error', {
+          timeOut: 3000,
+          'progressBar': true,
+        });
+      });
+  }
+
+  calculateTaxes(itemObj: any, bool: any, quantity: any) {
+    if (bool == true) {
+      //adding tax case
+      let arr = this.taxResponseModel.filter((c) => c.foodItemID == itemObj.foodItemID);
+      if (arr.length > 0) {
+        var loop = 0;
+        while (loop < quantity) {
+          //item with Taxes
+          arr.forEach((element) => {
+            var count = 0;
+            var obj: any = this.taxResponseModel.find((x: any) => (x.foodItemID == element.foodItemID) && (x.foodItemtaxID == element.foodItemtaxID));
+            var ind = this.taxArr.findIndex((y: any) => y.taxName == obj.taxName);
+            if (ind == -1) {
+              let body = {
+                taxName: obj.taxName,
+                taxRate: obj.taxRate,
+                count: count + 1,
+                isActive: true
+              }
+              this.taxArr.push(body);
+            }
+            else {
+              this.taxArr[ind].taxRate += obj.taxRate;
+              this.taxArr[ind].count += 1;
+            }
+          })
+          loop++;
+        }
+      }
+      else {
+        var loop = 0;
+        //item with No Taxes
+        while (loop < quantity) {
+          this.taxesResponseModel.forEach((el: any) => {
+            var count = 0;
+            var index = this.taxArr.findIndex((y: any) => y.taxName == el.taxName);
+            if (index == -1) {
+              let body = {
+                taxName: el.taxName,
+                taxRate: el.taxRate,
+                count: count + 1,
+                isActive: true
+              }
+              this.taxArr.push(body);
+            }
+            else {
+              this.taxArr[index].taxRate += el.taxRate;
+              this.taxArr[index].count += 1;
+            }
+          })
+          loop++;
+        }
+      }
+    }
+    else {
+      //removing tax case
+      var index = this.taxResponseModel.findIndex((c) => c.foodItemID == itemObj.foodItemID);
+      if (index != -1) {
+        //item with Taxes
+        let arr = this.taxResponseModel.filter((c) => c.foodItemID == itemObj.foodItemID);
+        arr.forEach((item) => {
+          var ind = this.taxArr.findIndex((y: any) => y.taxName == item.taxName);
+          this.taxArr[ind].taxRate -= item.taxRate * quantity;
+          this.taxArr[ind].count -= 1;
+          if (this.taxArr[ind].taxRate == 0) {
+            this.taxArr.splice(index, 1);
+          }
+        });
+      }
+      else {
+        //item with No Taxes
+        this.taxesResponseModel.forEach((el: any) => {
+          var index = this.taxArr.findIndex((y: any) => y.taxName == el.taxName);
+          this.taxArr[index].taxRate -= el.taxRate * quantity;
+          this.taxArr[index].count -= 1;
+          if (this.taxArr[index].taxRate == 0) {
+            this.taxArr.splice(index, 1);
+          }
+        })
+      }
+    }
+
+    this.totalTax = 0;
+    this.taxArr.forEach((p: any) => {
+      this.totalTax += p.taxRate;
+    });
+  }
+  // attachOutletTaxes() {
+  //   this.taxesResponseModel.forEach((el) => {
+  //     let body = {
+  //       taxName: el.taxName,
+  //       taxRate: el.taxRate,
+  //       isActive: true
+  //     }
+  //     this.taxArr.push(body);
+  //   })
+  //   this.totalTax = 0;
+  //   this.taxArr.forEach((p: any) => {
+  //     this.totalTax += p.taxRate;
+  //   });
+  //   this.total = this.subTotal + this.salesTax + this.chargesValue + this.totalTax;
+  // }
+  changeActiveStatus(p: any, val: any) {
+    if (val.checked == false) {
+      var index = this.taxArr.findIndex((x: any) => x.taxName == p.taxName);
+      this.taxArr[index].isActive = false;
+      this.totalTax -= this.taxArr[index].taxRate;
+    }
+    else {
+      var index = this.taxArr.findIndex((x: any) => x.taxName == p.taxName);
+      this.taxArr[index].isActive = true;
+      this.totalTax += this.taxArr[index].taxRate;
+    }
+    this.calculateTotals();
+  }
   calculateTotals() {
     this.subTotal = 0;
     this.salesTax = 0;
     this.discount = 0;
     this.total = 0;
+    this.balanceDue = 0;
+    this.paidAmount = 0;
+    this.changeAmount = 0;
     this.POSNewModelRequest.requestKotDetail.forEach((x) => {
       if (x.variantID) {
-        if (x.discount == 0) {
-          this.subTotal += x.variantPrice * x.quantity;
-        }
-        else {
+        this.subTotal += x.variantPrice * x.quantity;
+        if (x.discount > 0) {
           this.discount += (x.variantPrice - x.calculatedPrice) * x.quantity;
-          this.subTotal += x.calculatedPrice * x.quantity;
         }
+        // if (x.discount == 0) {
+        //   this.subTotal += x.variantPrice * x.quantity;
+        // }
+        // else {
+        //   this.discount += (x.variantPrice - x.calculatedPrice) * x.quantity;
+        //   this.subTotal += x.calculatedPrice * x.quantity;
+        // }
       }
       else if (x.foodItemID) {
-        if (x.discount == 0) {
-          this.subTotal += x.price * x.quantity;
-        }
-        else {
+        this.subTotal += x.price * x.quantity;
+        if (x.discount > 0) {
           this.discount += (x.price - x.calculatedPrice) * x.quantity;
-          this.subTotal += x.calculatedPrice * x.quantity;
         }
+
+        // if (x.discount == 0) {
+        //   this.subTotal += x.price * x.quantity;
+        // }
+        // else {
+        //   this.discount += (x.price - x.calculatedPrice) * x.quantity;
+        //   this.subTotal += x.calculatedPrice * x.quantity;
+        // }
       }
       else if (x.dealID) {
         this.subTotal += x.dealPrice * x.quantity;
       }
     })
-    this.total = this.subTotal + this.salesTax + this.discount;
+
+    if (this.POSNewModelRequest.requestKotDetail.length == 0) {
+      this.total = 0;
+    }
+    // else {
+    //   this.total = this.subTotal + this.salesTax + this.chargesValue;
+    // }
+
+
+    //finding tax percentage value according to subtotal
+    var taxPercentagewrtSubtotal = 0;
+    taxPercentagewrtSubtotal = (this.totalTax / 100) * this.subTotal;
+    //finding percentage value according to subtotal
+    let ChargesValuePercentage = 0;
+    ChargesValuePercentage = (this.chargesValuePercentage / 100) * this.subTotal;
+    if (this.chargesValue > 0) {
+      this.total += this.chargesValue;
+    }
+    if (this.chargesValuePercentage > 0) {
+      this.total += ChargesValuePercentage;
+    }
+    this.total += taxPercentagewrtSubtotal;
+    this.total += this.subTotal;
+    this.totalDiscount = this.discount + this.invoiceDiscount;
+    //this.total -= this.discount;
+    //this.total -= this.invoiceDiscount;
+
+    this.balanceDue = this.subTotal + this.salesTax + this.chargesValue;
+    if (this.balanceDue < 0) {
+      this.changeAmount = (this.balanceDue < 0) ? this.balanceDue * -1 : this.balanceDue;
+      this.balanceDue = 0;
+    }
+    else {
+      this.changeAmount = 0;
+    }
+    this.total = (Math.ceil(this.total));
     //............Discount......................
     // var one = this.subTotal - this.discount;
     // var two = this.subTotal - one;
@@ -488,7 +772,59 @@ export class PosComponent implements OnInit {
     // var four = three * 100;
     // this.discount = Math.floor(four);
   }
+  setTotalinInvDis() {
+    this.totalDiscount = this.discount + this.invoiceDiscount;
+    this.totalMinusInvDis = this.total - this.discount;
+  }
+  checkValidInput() {
+    if (this.invoiceDiscount > 0) {
+      if (this.discount + this.invoiceDiscount > this.total) {
+        this.invoiceDiscount = 0;
+        this.toastr.error('Invoice discount cannot be greater than Total Payable', '', {
+          timeOut: 3000,
+          'progressBar': true,
+        });
+      }
+      else {
+        this.totalDiscount = this.discount + this.invoiceDiscount;
+        this.totalMinusInvDis = this.total - this.totalDiscount;
+      }
+    }
+    else {
+      this.invoiceDiscount = 0;
+      this.totalDiscount = this.discount + this.invoiceDiscount;
+    }
+    // this.totalMinusInvDis = this.total - this.totalDiscount;
+    // if (this.invoiceDiscount > 0) {
+    //   var checkInvDisValid = this.totalMinusInvDis - this.invoiceDiscount;
+    //   if (checkInvDisValid < 0) {
+    //     this.invoiceDiscount = 0;
+    //     this.toastr.error('Invoice discount cannot be greater than Total Payable', '', {
+    //       timeOut: 3000,
+    //       'progressBar': true,
+    //     });
+    //   }
+    //   else {
+    //     this.totalMinusInvDis -= this.invoiceDiscount;
+    //     return
+    //   }
+    // }
+  }
+  saveInvDis() {
+    this.totalDiscount = this.discount + this.invoiceDiscount;
+    //this.discount += this.invoiceDiscount;
+    // this.total = this.totalMinusInvDis;
+  }
   decrement(p: any) {
+    if (p.quantity > 1) {
+      if (this.POSNewModelRequest.requestKotDetail.length > 0) {
+        this.calculateTaxes(p, false, 1);
+      }
+      else {
+        this.totalTax = 0;
+        this.taxArr = [];
+      }
+    }
     if (p.variantID) {
       var index = this.POSNewModelRequest.requestKotDetail.findIndex((x) => x.variantID == p.variantID);
       if (this.POSNewModelRequest.requestKotDetail[index].quantity > 1) {
@@ -517,8 +853,16 @@ export class PosComponent implements OnInit {
       }
     }
     this.calculateTotals();
+    return
   }
   increment(p: any) {
+    if (this.POSNewModelRequest.requestKotDetail.length > 0) {
+      this.calculateTaxes(p, true, 1);
+    }
+    else {
+      this.totalTax = 0;
+      this.taxArr = [];
+    }
     if (p.variantID) {
       var index = this.POSNewModelRequest.requestKotDetail.findIndex((x) => x.variantID == p.variantID);
       this.POSNewModelRequest.requestKotDetail[index].quantity += 1;
@@ -532,9 +876,17 @@ export class PosComponent implements OnInit {
       this.POSNewModelRequest.requestKotDetail[index].quantity += 1;
     }
     this.calculateTotals();
+    return
   }
 
   removeItem(p: any) {
+    if (this.POSNewModelRequest.requestKotDetail.length > 0) {
+      this.calculateTaxes(p, false, p.quantity);
+    }
+    else {
+      this.totalTax = 0;
+      this.taxArr = [];
+    }
     if (p.variantID) {
       var index = this.POSNewModelRequest.requestKotDetail.findIndex((x) => x.variantID == p.variantID);
       this.POSNewModelRequest.requestKotDetail[index].quantity = 0;
@@ -674,15 +1026,33 @@ export class PosComponent implements OnInit {
     this.salesTax = 0;
     this.discount = 0;
     this.total = 0;
+    this.balanceDue = 0;
+    this.paidAmount = 0;
+    this.changeAmount = 0;
+    this.totalTax = 0;
     this.customerFound = false;
     this.editMode = false;
     this.selectedTables = [];
+    this.taxArr = [];
     this.SearchForm.reset();
     this.CustomerForm.reset();
     this.changeOrderStatus = new changeOrderStatus();
     this.POSNewModelRequest = new POSNewModelRequest();
+    this.chargesValue = this.OutletInfo.serviceCharges;
+    this.chargesValuePercentage = this.OutletInfo.serviceChargesPer;
+    this.invoiceDiscount = 0;
+    this.totalMinusInvDis = 0;
+    this.totalDiscount = 0;
   }
-
+  private formatDate(date: any) {
+    const d = new Date(date);
+    let month = '' + (d.getMonth() + 1);
+    let day = '' + d.getDate();
+    const year = d.getFullYear();
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+    return [year, month, day].join('-');
+  }
   submitOrder() {
     if (this.POSNewModelRequest.requestKotDetail.length == 0) {
       this.toastr.error('Select atleast one item', '', {
@@ -691,10 +1061,72 @@ export class PosComponent implements OnInit {
       });
       return
     }
+    var date: any = localStorage.getItem('openingDate');
+    this.POSNewModelRequest.requestKot.invoiceDiscount = this.invoiceDiscount;
     this.POSNewModelRequest.requestKot.UserID = this.GV.userID;
     this.POSNewModelRequest.requestKot.outletID = this.GV.OutletID;
     this.POSNewModelRequest.requestKot.orderType = this.orderTypeValue;
     this.POSNewModelRequest.requestKotSR.outletID = this.GV.OutletID;
+    this.POSNewModelRequest.FBRRequestObject.InvoiceNumber = "";
+    this.POSNewModelRequest.FBRRequestObject.POSID = this.OutletInfo.posID;
+    this.POSNewModelRequest.FBRRequestObject.USIN = this.OutletInfo.usinNumber;
+    this.POSNewModelRequest.FBRRequestObject.RefUSIN = "";
+    this.POSNewModelRequest.FBRRequestObject.DateTime = date;
+    this.POSNewModelRequest.FBRRequestObject.BuyerName = "";
+    this.POSNewModelRequest.FBRRequestObject.BuyerNTN = "";
+    this.POSNewModelRequest.FBRRequestObject.BuyerCNIC = "";
+    this.POSNewModelRequest.FBRRequestObject.BuyerPhoneNumber = "";
+    this.POSNewModelRequest.FBRRequestObject.TotalSaleValue = this.total;
+    this.POSNewModelRequest.FBRRequestObject.TotalTaxCharged = this.totalTax;
+    this.POSNewModelRequest.FBRRequestObject.Discount = this.discount;
+    this.POSNewModelRequest.FBRRequestObject.FurtherTax = 0;
+    this.POSNewModelRequest.FBRRequestObject.TotalBillAmount = this.total;
+    this.POSNewModelRequest.FBRRequestObject.PaymentMode = this.payModeID;
+    this.POSNewModelRequest.FBRRequestObject.InvoiceType = 1;
+    this.POSNewModelRequest.FBRRequestObject.TotalQuantity = this.POSNewModelRequest.requestKotDetail.length;
+    this.POSNewModelRequest.requestKotDetail.forEach((item) => {
+      if (item.dealID) {
+        let body: any = {
+          ItemCode: item.refCode,
+          ItemName: item.dealName,
+          PCTCode: '',
+          Quantity: item.quantity,
+          TaxRate: 0,
+          SaleValue: item.price,
+          Discount: item.discount,
+          FurtherTax: 0,
+          TaxCharged: 0,
+          TotalAmount: item.quantity * item.price,
+          InvoiceType: 1,
+          RefUSIN: ''
+        }
+        this.POSNewModelRequest.FBRRequestObject.Items.push(body);
+      }
+      else {
+        let body: any = {
+          ItemCode: item.refCode,
+          ItemName: item.foodItemName,
+          PCTCode: '',
+          Quantity: item.quantity,
+          TaxRate: 0,
+          SaleValue: item.price,
+          Discount: item.discount,
+          FurtherTax: 0,
+          TaxCharged: 0,
+          TotalAmount: item.quantity * item.price,
+          InvoiceType: 1,
+          RefUSIN: '',
+        }
+        this.POSNewModelRequest.FBRRequestObject.Items.push(body);
+      }
+    });
+    if (!this.OpeningDate) {
+      this.toastr.error('No Date is opened yet', '', {
+        timeOut: 3000,
+        'progressBar': true,
+      });
+      return
+    }
     this.API.PostData('/Pos/AddEditKot', this.POSNewModelRequest).subscribe(c => {
       if (c != null) {
         this.getKOTReciept(c.kotID);
@@ -738,6 +1170,8 @@ export class PosComponent implements OnInit {
           }
           this.POSNewModelRequest.requestCustomerTable = c.responseCustomerTable;
           this.POSNewModelRequest.requestKot = c.responseKot;
+          this.invoiceDiscount = this.POSNewModelRequest.requestKot.invoiceDiscount;
+          this.KOTNumber = this.POSNewModelRequest.requestKot.kotNO.substring(0, 4);
           this.orderRemarks = this.POSNewModelRequest.requestKot.remarks;
           this.POSNewModelRequest.requestKotDetail = c.responseKotDetail;
           this.selectedTables = c.responseCustomerTable;
@@ -775,10 +1209,12 @@ export class PosComponent implements OnInit {
         });
       });
   }
-  getInvoiceReciept(kotID: any) {
+  getInvoiceReciept(kotID: any, val: any) {
     this.POSNewModelRequest = new POSNewModelRequest();
     this.API.getdata('/Pos/getKOTBykotID?kotID=' + kotID).subscribe(c => {
       if (c != null) {
+        this.QRCodeValue = c.responseKot.code;
+        this.invoiceDiscount = this.POSNewModelRequest.requestKot.invoiceDiscount;
         if (c.message == "Data not found") {
           this.toastr.error(c.message, 'Error', {
             timeOut: 3000,
@@ -801,6 +1237,8 @@ export class PosComponent implements OnInit {
           }
           this.POSNewModelRequest.requestCustomerTable = c.responseCustomerTable;
           this.POSNewModelRequest.requestKot = c.responseKot;
+          this.invoiceDiscount = this.POSNewModelRequest.requestKot.invoiceDiscount;
+          this.KOTNumber = this.POSNewModelRequest.requestKot.kotNO.substring(0, 4);
           this.orderRemarks = this.POSNewModelRequest.requestKot.remarks;
           this.POSNewModelRequest.requestKotDetail = c.responseKotDetail;
           this.selectedTables = c.responseCustomerTable;
@@ -827,9 +1265,15 @@ export class PosComponent implements OnInit {
           this.closeTablesModal["first"].nativeElement.click();
           this.closeOrdersModal["first"].nativeElement.click();
           this.calculateTotals();
-          var button: any = document.getElementById("InvoiceReciept");
-          setTimeout(() => { button.click() }, 1000);
-          setTimeout(() => { this.resetOrder(); }, 2000);
+          // if (val == 1) {
+          //   var button: any = document.getElementById("BillReciept");
+          //   setTimeout(() => { button.click() }, 1000);
+          // }
+          // else {
+          //   var button: any = document.getElementById("InvoiceReciept");
+          //   setTimeout(() => { button.click() }, 1000);
+          // }
+          // setTimeout(() => { this.resetOrder(); }, 2000);
         }
       }
     },
@@ -841,12 +1285,13 @@ export class PosComponent implements OnInit {
       });
   }
   getAllOrders() {
-    this.responseOrder = [];
     this.API.getdata('/Pos/getOrderByOutletID?outletID=' + this.GV.OutletID).subscribe(c => {
       if (c != null) {
-        this.responseOrder = c.responseKot;
-        this.dtTrigger4.next();
-        this.responseOrder.sort((a, b) => a.kotID < b.kotID ? 1 : a.kotID > b.kotID ? -1 : 0);
+        this.destroyDT(0, false).then(destroyed => {
+          this.responseOrder = c.responseKot;
+          this.responseOrder.sort((a, b) => a.kotID < b.kotID ? 1 : a.kotID > b.kotID ? -1 : 0);
+          this.dtTrigger.next();
+        });
       }
     },
       error => {
@@ -978,6 +1423,8 @@ export class PosComponent implements OnInit {
           }
           this.POSNewModelRequest.requestCustomerTable = c.responseCustomerTable;
           this.POSNewModelRequest.requestKot = c.responseKot;
+          this.invoiceDiscount = this.POSNewModelRequest.requestKot.invoiceDiscount;
+          this.KOTNumber = this.POSNewModelRequest.requestKot.kotNO.substring(0, 4);
           this.orderRemarks = this.POSNewModelRequest.requestKot.remarks;
           this.POSNewModelRequest.requestKotDetail = c.responseKotDetail;
           this.selectedTables = c.responseCustomerTable;
@@ -1000,6 +1447,11 @@ export class PosComponent implements OnInit {
               }
             })
           })
+
+          this.POSNewModelRequest.requestKotDetail.forEach((x) => {
+            this.calculateTaxes(x, true, x.quantity);
+          })
+          setTimeout(() => { this.calculateTotals() }, 1000);
           this.tableList = this.tableList.slice(0, -2);
           this.closeTablesModal["first"].nativeElement.click();
         }
@@ -1016,13 +1468,34 @@ export class PosComponent implements OnInit {
   orderType(val: any) {
     if (val == 1) {
       this.orderTypeValue = "Dine In";
+      if (this.OutletInfo.serviceCharges > 0) {
+        this.chargesValue = this.OutletInfo.serviceCharges;
+      }
+      else {
+        this.chargesValuePercentage = this.OutletInfo.serviceChargesPer;
+      }
+      this.calculateTotals();
     }
     else if (val == 2) {
       this.orderTypeValue = "Take Away";
+      if (this.OutletInfo.takeawayCharges > 0) {
+        this.chargesValue = this.OutletInfo.takeawayCharges;
+      }
+      else {
+        this.chargesValuePercentage = this.OutletInfo.takeawayChargesPer;
+      }
+      this.calculateTotals();
     }
     else {
       this.submitted = false;
       this.orderTypeValue = "Delivery";
+      if (this.OutletInfo.deliveryCharges > 0) {
+        this.chargesValue = this.OutletInfo.deliveryCharges;
+      }
+      else {
+        this.chargesValuePercentage = this.OutletInfo.deliveryChargesPer;
+      }
+      this.calculateTotals();
       var customer: any = this.responseCustomer.find((x) => x.refCode == this.SearchForm.controls.searchCustomerByCode.value);
       if (customer != undefined) {
         this.CustomerForm.controls.customerName.setValue(customer.customerName);
@@ -1108,6 +1581,7 @@ export class PosComponent implements OnInit {
     this.viewMode = false;
     this.submitted = false;
     this.CustomerForm.reset();
+    this.CustomerForm.controls.isActive.setValue(true);
   }
 
   viewCustomer() {
@@ -1291,9 +1765,6 @@ export class PosComponent implements OnInit {
     }
     this.submitted = true;
     if (this.CustomerForm.valid) {
-      if (this.CustomerForm.controls.isActive.value == "" || this.CustomerForm.controls.isActive.value == null) {
-        this.CustomerForm.controls.isActive.setValue(false);
-      }
       if (this.CustomerForm.controls.customerID.value == "" || this.CustomerForm.controls.customerID.value == null) {
         this.CustomerForm.controls.customerID.setValue(0);
       }
@@ -1368,4 +1839,130 @@ export class PosComponent implements OnInit {
   setAddress(newAdd: any) {
     this.customerModel.requestCustomerInfo.Adress = newAdd.value;
   }
+
+
+
+
+  //.............................
+  calBalanceDue() {
+    this.balanceDue = this.total - this.paidAmount;
+    if (this.balanceDue < 0) {
+      this.changeAmount = (this.balanceDue < 0) ? this.balanceDue * -1 : this.balanceDue;
+      this.balanceDue = 0;
+    }
+    else {
+      this.changeAmount = 0;
+    }
+  }
+  // updateView(val: any) {
+  //   if (val == 1) {
+  //     this.showCart = true;
+  //     this.showItems = false;
+  //   }
+  //   else {
+  //     this.showCart = false;
+  //     this.showItems = true;
+  //   }
+  // }
+
+  getPaymentModes() {
+    this.API.getdata('/Generic/getPaymentMode').subscribe(c => {
+      if (c != null) {
+        this.paymentTypesResponse = c.responsePaymentMode;
+        if (this.OutletInfo.paymentModeID > 0) {
+          var index = this.paymentTypesResponse.findIndex((x) => x.paymentModeID == this.OutletInfo.paymentModeID);
+          this.payModeID = this.paymentTypesResponse[index].paymentModeID;
+          this.PaymentModeName = this.paymentTypesResponse[index].paymentModeName;
+        }
+        else {
+          this.payModeID = 0;
+          this.PaymentModeName = '';
+        }
+      }
+    },
+      error => {
+        this.toastr.error(error.statusText, 'Error', {
+          timeOut: 3000,
+          'progressBar': true,
+        });
+      });
+  }
+
+  payModeChanged() {
+    var optionSelected: any = document.getElementById("payOption");
+    var index = optionSelected.selectedIndex;
+    this.payModeID = this.paymentTypesResponse[index].paymentModeID;
+  }
+
+  changePaymentMode(p: any, isActive: any) {
+    if (isActive.checked == true) {
+      this.payModeID = p.paymentModeID;
+      this.PaymentModeName = p.paymentModeName;
+    }
+    else {
+      this.payModeID = this.paymentTypesResponse[0].paymentModeID;
+      this.PaymentModeName = this.paymentTypesResponse[0].paymentModeName;
+    }
+  }
+  destroyDT = (tableIndex: any, clearData: any): Promise<boolean> => {
+    return new Promise((resolve) => {
+      if (this.datatableElement)
+        this.datatableElement.forEach((dtElement: DataTableDirective, index) => {
+          if (index == tableIndex) {
+            if (dtElement.dtInstance) {
+
+              if (tableIndex == 0) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+              }
+              else if (tableIndex == 1) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+
+              } else if (tableIndex == 2) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+              }
+              else if (tableIndex == 3) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+
+              }
+              else if (tableIndex == 4) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+              }
+            }
+            else {
+              resolve(true);
+            }
+          }
+        });
+    });
+  };
 }

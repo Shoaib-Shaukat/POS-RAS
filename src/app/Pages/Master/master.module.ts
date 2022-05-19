@@ -1,22 +1,21 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MasterRoutingModule } from './master-routing.module';
-import { UnitsComponent } from './IngredientUnits/units.component';
-import { FoodcategoryComponent } from './FoodMenuCategory/foodcategory.component';
-import { CustomerComponent } from './Customers/customer.component';
-import { ExpenseitemComponent } from './ExpenseItems/expenseitem.component';
+import { FoodcategoryComponent } from './MenuCategories/foodcategory.component';
 import { PaymentmethodComponent } from './PaymentMethod/paymentmethod.component';
 import { TableComponent } from './Tables/table.component';
 import { MasterComponent } from './master.component';
 import { SharedModule } from '../Shared/shared/shared.module';
-import { FoodItemsComponent } from './FoodItems/food-items.component';
+import { FoodItemsComponent } from './MenuItems/food-items.component';
 import { DataTablesModule } from 'angular-datatables';
 import { DealsComponent } from './Deals/deals.component';
-import { StaffComponent } from './Staff/staff.component';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
-import { IngredientcompaniesComponent } from './IngredientCompanies/ingredientcompanies.component';
-import { IngredientSubCatComponent } from './IngredientsSubCategory/ingredient-sub-cat.component';
-import { IngcategoriesComponent } from './IngredientCategories/ingcategories.component';
+import { SectionComponent } from './Sections/section.component';
+import { VendorsComponent } from './Vendors/vendors.component';
+import { LocationsComponent } from './Locations/locations.component';
+import { PurchaseComponent } from './Purchase/purchase.component';
+import { MenulistComponent } from './MenuList/menulist.component';
+import { TaxesComponent } from './Taxes/taxes.component';
 
 
 
@@ -24,17 +23,16 @@ import { IngcategoriesComponent } from './IngredientCategories/ingcategories.com
   declarations: [
     MasterComponent,
     FoodcategoryComponent,
-    CustomerComponent,
-    ExpenseitemComponent,
     PaymentmethodComponent,
     TableComponent,
     FoodItemsComponent,
     DealsComponent,
-    StaffComponent,
-    IngcategoriesComponent,
-    UnitsComponent,
-    IngredientSubCatComponent,
-    IngredientcompaniesComponent
+    SectionComponent,
+    VendorsComponent,
+    LocationsComponent,
+    PurchaseComponent,
+    MenulistComponent,
+    TaxesComponent
   ],
   imports: [
     CommonModule,
@@ -45,7 +43,6 @@ import { IngcategoriesComponent } from './IngredientCategories/ingcategories.com
   ]
 })
 export class MasterModule {
-
   moduleIn: string = "I am in Master Module";
   constructor() {
     console.log(this.moduleIn);

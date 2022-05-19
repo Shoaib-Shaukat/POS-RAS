@@ -1356,8 +1356,6 @@ aside#pos__sidebar .pos__menu__list>li:nth-child(17)>a>svg {
     align-items: center;
 }
 
-
-
 @-webkit-keyframes load6 {
     0% {
         box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
@@ -1438,7 +1436,8 @@ aside#pos__sidebar .pos__menu__list>li:nth-child(17)>a>svg {
     }
 }
 
-input, textarea {
+input,
+textarea {
     width: 60px;
     height: 25px;
     background-color: #fff;
@@ -1449,4 +1448,80 @@ input, textarea {
     padding: 2px 5px;
 }
 
+input[type="radio"] {
+    cursor: pointer;
+}
+
+input[type="radio"] {
+    width: 50px;
+    height: 20px;
+    background-color: #fff;
+    border: 1px solid #bcbdbe;
+    outline: none !important;
+    border-radius: 5px !important;
+    transition: all 0.3s;
+    /* padding: 2px 5px; */
+}
+.bg-blue-btn[disabled]{
+    background-color: #9e2800;
+}
+
+.headingLabel {
+    min-width: 200px !important;
+    color: white !important;
+    background-color: #4e4e4e;
+    text-decoration: none;
+    padding: 8.5px 21px !important;
+    text-transform: uppercase;
+    border-radius: 15px 50px;
+    font-weight: 500;
+    font-size: 17px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    background: linear-gradient(to right, rgb(255, 255, 0), #f15a29, rgb(175, 0, 0));
+}
+.topBarLabel {
+    min-width: 50px !important;
+    color: white !important;
+    background-color: #4e4e4e;
+    text-decoration: none;
+    padding: 8.5px 21px !important;
+    text-transform: uppercase;
+    border-radius: 5px 50px 52px 0px;
+    font-weight: 500;
+    font-size: 17px;
+    display: initial;
+    align-items: center;
+    transition: all 0.3s;
+    background: linear-gradient(to right, #f15a29, rgb(0, 7, 199));
+}
+.top-left-header {
+    /* font-family: "Montserrat", Helvetica, Arial sans-serif;
+    margin-top: 0px;
+    font-size: x-large;
+    color: #6b6b6b;
+    font-weight: 500; */
+    font-family: "Montserrat", Helvetica, Arial sans-serif;
+    margin-top: 0px;
+    font-size: 23px;
+    color: #6b6b6b;
+    font-weight: 600;
+}
+.wrapper .main-content-wrapper .box-wrapper {
+    padding: 20px;
+    border-radius: 7px;
+    box-shadow: 0 4px 24px 0 rgb(0 0 0 / 7%);
+    background-color: white;
+    animation: fadeIn 1s both;
+}
+.icon {
+    margin-right: 5px;
+}
+
+
+input[readonly]{
+    background-color: #e9ecef;
+}
 /*# sourceMappingURL=style2.css.map */

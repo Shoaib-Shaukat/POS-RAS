@@ -7,7 +7,7 @@ import { Subject } from 'rxjs';
 import { ApiService } from 'src/app/Services/API/api.service';
 import { GvarService } from 'src/app/Services/Globel/gvar.service';
 import Swal from 'sweetalert2';
-import { FoodCatResponseModel, MenuItemsModel, requestVariant } from '../FoodItems/ItemsModel';
+import { FoodCatResponseModel, MenuItemsModel, requestVariant } from '../MenuItems/ItemsModel';
 import { DealModelRequest, responseDealsModel, responseFoodMenuItem, responseVariant } from './dealsModel';
 
 
@@ -155,6 +155,7 @@ export class DealsComponent implements OnInit {
     this.resetDeals();
     this.isShow = !this.isShow;
     this.addMode = !this.addMode;
+    this.DealForm.controls.isActive.setValue(true);
   }
 
   GetFoodMenuCategory() {
@@ -208,7 +209,6 @@ export class DealsComponent implements OnInit {
         this.responseFoodMenuItem = c.responseFoodMenuItems;
         this.ItemsResponseModelReplica = c.responseFoodMenuItems;
         this.dtTrigger.next();
-
         this.ItemsResponseModelReplica.forEach((element) => { element.Quantity = 1 });
         this.ItemsResponseModelReplica.forEach((element) => { element.Checked = false });
       }
@@ -324,7 +324,8 @@ export class DealsComponent implements OnInit {
         variantName: p.variantName,
         variantPrice: p.variantPrice,
         hasVariant: p.hasVariant,
-        Quantity: p.Quantity
+        Quantity: p.Quantity,
+        sectionID: p.sectionID
       }
       if (body.DealID == undefined || body.DealID == null) {
         body.DealID = 0;
@@ -355,6 +356,9 @@ export class DealsComponent implements OnInit {
       }
       if (body.hasVariant == undefined || body.hasVariant == null) {
         body.hasVariant = true;
+      }
+      if (body.sectionID == undefined || body.sectionID == null) {
+        body.sectionID = 0;
       }
       this.DealModelRequest.DealsArray.push(body);
       this.totalAmount = 0;
@@ -450,6 +454,7 @@ export class DealsComponent implements OnInit {
       button.click();
       this.DealForm.reset();
       this.DealForm.controls.totalAmountRs.setValue(this.totalAmount);
+      this.DealForm.controls.isActive.setValue(true);
     }
   }
 
@@ -492,9 +497,6 @@ export class DealsComponent implements OnInit {
     if (this.DealForm.valid) {
       if (this.DealForm.controls.DealID.value == null || this.DealForm.controls.DealID.value == "") {
         this.DealForm.controls.DealID.setValue(0);
-      }
-      if (this.DealForm.controls.isActive.value == null || this.DealForm.controls.isActive.value == "") {
-        this.DealForm.controls.isActive.setValue(false);
       }
       this.DealModelRequest.DealObject = this.DealForm.value;
       if (this.imageUrl == null || this.imageUrl == "" || this.imageUrl == undefined) {

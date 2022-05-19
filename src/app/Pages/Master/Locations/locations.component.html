@@ -1,0 +1,97 @@
+<section class="main-content-wrapper" [hidden]="isShow==true">
+    <section class="content-header">
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="top-left-header">Locations</h2>
+                <input type="hidden" class="datatable_name" data-title="Section" data-id_name="datatable">
+            </div>
+            <div class="col-md-6">
+                <a class="btn_list m-right bg-blue-btn btn" (click)=addLocation()>
+                    <i class="fa fa-plus icon"></i> Add Location</a>
+            </div>
+        </div>
+    </section>
+    <div class="box-wrapper">
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+            <thead>
+                <tr>
+                    <th>SN</th>
+                    <th>Location Name</th>
+                    <th>Is Active</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let p of LocationModelResponse let ndx=index;">
+                    <td>{{ndx+1}}</td>
+                    <td>{{p.locationName}}</td>
+                    <td><input readonly type="checkbox" name="isActive" [checked]="p.isActive" value="{{p.isActive}}"
+                            onClick="return false"></td>
+                    <td>
+                        <button class="btn btn-success color text-white btn-sm m-1" title="Edit"
+                            (click)="editLocations(p)">
+                            <i class="fa fa-pencil" aria-hidden="true"></i></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="main-content-wrapper" [hidden]="isShow==false">
+    <section class="content-header">
+        <h3 *ngIf="addMode == false" class="top-left-header">
+            Add Location </h3>
+        <h3 *ngIf="addMode == true" class="top-left-header">
+            Edit Location </h3>
+    </section>
+    <section class="box-wrapper">
+        <form [formGroup]="LocationForm" (ngSubmit)="saveLocation()">
+            <div class="row">
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group">
+                        <label>Location Name<span class="required_star">*</span></label>
+                        <input minlength="3" autocomplete="off" type="text" formControlName="locationName"
+                            class="form-control" placeholder="Location Name" value=""
+                            [ngClass]="{ 'is-invalid': submitted && f.locationName.errors }" />
+                        <div *ngIf="submitted && f.locationName.errors" class="invalid-feedback">
+                            <div *ngIf="f.locationName.errors.required">Location Name is required</div>
+                            <small
+                                *ngIf="LocationForm.controls['locationName'].errors?.minlength && !f.locationName.errors.whitespace"
+                                class="text-danger">Location
+                                Name must be at
+                                least 3 characters long.</small>
+                            <small *ngIf="f.locationName.errors.whitespace && !f.locationName.errors.required">Please
+                                enter
+                                valid
+                                data</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-6">
+                    <div class="form-group float-start">
+                        <label class="col-sm-12">Is Active?</label>
+                        <div class="col-sm-6">
+                            <input type="checkbox" class="form-control " formControlName="isActive"
+                                (click)="isActiveCheck(IsActive.checked)" #IsActive />
+                        </div>
+                    </div>
+                </div>
+                <div class="row my-3">
+                    <div class="col-sm-12 col-md-2">
+                        <button *ngIf="addMode == false" type="submit" name="submit" value="submit"
+                            class="w-100 btn bg-blue-btn">
+                            Submit </button>
+                        <button *ngIf="addMode == true" type="submit" name="submit" value="submit"
+                            class="w-100 btn bg-blue-btn">
+                            Update </button>
+                    </div>
+                    <div class="col-sm-12 col-md-2">
+                        <button type="button" class="w-100 btn bg-blue-btn" (click)="addLocation()">
+                            Back </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </section>
+</section>

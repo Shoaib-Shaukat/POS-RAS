@@ -1,0 +1,275 @@
+<section class="main-content-wrapper" [hidden]="isShow==true">
+    <section class="content-header">
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="top-left-header">Users</h2>
+                <input type="hidden" class="datatable_name" data-title="Tables" data-id_name="datatable">
+            </div>
+            <div class="col-md-6">
+                <a class="btn_list m-right bg-blue-btn btn" (click)=addNewUser()>
+                    <i class="fa fa-plus icon"></i>Add User</a>
+            </div>
+        </div>
+    </section>
+    <div class="box-wrapper">
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+            <thead>
+                <tr>
+                    <th>SN</th>
+                    <th>User Name</th>
+                    <th>Designation</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let p of UserModelResponse let ndx=index;">
+                    <td>{{ndx+1}}</td>
+                    <td>{{p.name}}</td>
+                    <td>{{p.designation}}</td>
+                    <td>
+                        <button class="btn btn-success color text-white btn-sm m-1" title="Edit" (click)="editUser(p)">
+                            <i class="fa fa-pencil" aria-hidden="true"></i></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="main-content-wrapper" [hidden]="isShow==false">
+    <section class="content-header">
+        <div class="row">
+            <div class="col-md-10">
+                <h3 *ngIf="addMode == false" class="top-left-header">
+                    Add User </h3>
+                <h3 *ngIf="addMode == true" class="top-left-header">
+                    Edit User </h3>
+            </div>
+            <div class="col-md-2">
+                <a class="btn_list m-right bg-grey-btn btn" (click)="resetAll()">
+                    <i class="fa fa-redo" style="margin-right: 5px;" aria-hidden="true"></i> Reset</a>
+            </div>
+        </div>
+    </section>
+    <section class="box-wrapper">
+        <form [formGroup]="UserForm" (ngSubmit)="saveUser()">
+            <div class="row">
+                <div class="col-sm-12 mb-2 col-md-4">
+                    <div class="form-group">
+                        <label>User Name<span class="required_star">*</span></label>
+                        <input minlength="3" maxlength="30" autocomplete="off" type="text" formControlName="Name"
+                            class="form-control" placeholder="User Name" value=""
+                            [ngClass]="{ 'is-invalid': submitted && f.Name.errors }" />
+                        <div *ngIf="submitted && f.Name.errors" class="invalid-feedback">
+                            <div *ngIf="f.Name.errors.required">User Name is required!</div>
+                            <small *ngIf="UserForm.controls['Name'].errors?.minlength && !f.Name.errors.whitespace"
+                                class="text-danger">User Name must be greater than 3 and less than 30
+                                characters!</small>
+                            <small *ngIf="f.Name.errors.whitespace && !f.Name.errors.required">Please enter
+                                valid data</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-4">
+                    <div class="form-group"><label>Designation<span class="required_star">*</span></label>
+                        <select class="form-control" formControlName="Designation"
+                            [ngClass]="{ 'is-invalid': submitted && f.Designation.errors }" (change)="setDesignation()">
+                            <option selected="true">Select Designation</option>
+                            <option>Manager</option>
+                            <option>Chef</option>
+                            <option>Waiter</option>
+                            <option>Cashier</option>
+                            <option>Sweeper</option>
+                            <option>Other</option>
+                        </select>
+                        <div *ngIf="submitted && f.Designation.errors" class="invalid-feedback">
+                            <div *ngIf="f.Designation.errors.required">Select Designation</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 mb-2 col-md-4">
+                    <div class="form-group"><label>User Mobile No. <span class="required_star">*</span></label>
+                        <input type="text" class="form-control" mask='0000-0000000' placeholder="Mobile No."
+                            formControlName="MobileNo" [ngClass]="{ 'is-invalid': submitted && f.MobileNo.errors }">
+                        <div *ngIf="submitted && f.MobileNo.errors" class="invalid-feedback">
+                            <div *ngIf="f.MobileNo.errors.required">Mobile No is required</div>
+                            <small *ngIf="f.MobileNo.errors.pattern">Mobile No format not correct!</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-4">
+                    <div class="form-group">
+                        <label>User Employee No.</label>
+                        <input type="Email" class="form-control" placeholder="Employee No." formControlName="Email"
+                            [ngClass]="{ 'is-invalid': submitted && f.Email.errors }" minlength='3' maxlength="20">
+                        <div *ngIf="submitted && f.Email.errors" class="invalid-feedback">
+                            <div *ngIf="f.Email.errors.required">Employee No. is required!</div>
+                            <small *ngIf="UserForm.controls['Email'].errors?.minlength && !f.Email.errors.whitespace"
+                                class="text-danger">Employee No must be greater than 2 and less than 20
+                                characters!</small>
+                            <small *ngIf="f.Email.errors.whitespace && !f.Email.errors.required">Please enter
+                                valid
+                                data</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-4">
+                    <div class="form-group"><label>CNIC</label>
+                        <input type="text" class="form-control" placeholder="CNIC" formControlName="Cnic"
+                            mask="00000-0000000-0">
+                        <div *ngIf="(UserForm.controls['Cnic'].invalid && UserForm.controls['Cnic'].touched) || UserForm.controls['Cnic'].dirty"
+                            class="text-left">
+                            <small *ngIf="UserForm.controls['Cnic'].errors?.pattern" class="text-danger">
+                                CNIC format not correct!</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-4">
+                    <div class="form-group">
+                        <label>Date of Birth</label>
+                        <input type="date" class="form-control" placeholder="Date of Birth" formControlName="DOB">
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-4">
+                    <div class="form-group">
+                        <label>Address</label>
+                        <textarea formControlName="Address" maxlength="250" class="form-control"
+                            autocomplete="off"></textarea>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-8">
+                    <div class="form-group">
+                        <label>Outlets<span class="required_star">*</span></label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="row" *ngFor="let p of OutletResponseModelOne">
+                                    <input class="col-md-1" type="checkbox"
+                                        (click)="outletSelected(IsChecked.checked,p)" #IsChecked [checked]="p.selected">
+                                    <p class="col-md-8">{{p.outletName}}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="row" *ngFor="let p of OutletResponseModelTwo">
+                                    <input class="col-md-1" type="checkbox"
+                                        (click)="outletSelected(IsChecked.checked,p)" #IsChecked [checked]="p.selected">
+                                    <p class="col-md-8">{{p.outletName}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-4">
+                    <div class="form-group">
+                        <label>Gender <span class="required_star">*</span></label>
+                        <div class="row">
+                            <div class="col-sm">
+                                <input type="radio" id="Radio1" value="Male" formControlName="Gender" class="col-sm-4">
+                                <label class="col-sm-4" for="Radio1" style="margin-left: 5px;">Male</label>
+                            </div>
+                            <div class="col-sm" [ngClass]="{ 'is-invalid': submitted && f.Gender.errors }">
+                                <input type="radio" id="Radio2" value="Female" formControlName="Gender"
+                                    class="col-sm-4">
+                                <label class="col-sm-4" for="Radio2" style="margin-left: 5px;">Female</label>
+                            </div>
+                            <div *ngIf="submitted && f.Gender.errors" class="invalid-feedback">
+                                <div *ngIf="f.Gender.errors.required">Gender is required</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-8">
+                    <div class="form-group float-start">
+                        <label class="col-sm-12">Is Active?</label>
+                        <div class="col-sm-6">
+                            <input type="checkbox" class="form-control " formControlName="isActive"
+                                (click)="isActiveCheck(IsActive.checked)" #IsActive />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 mb-2 col-md-12">
+                    <div class="form-group">
+                        <label class="col-sm-12">Will Login?<span class="required_star">*</span></label>
+                        <div class="row">
+                            <div class="col-md-1">
+                                <input #op1 type="radio" id="options1" name="function" value="Yes"
+                                    class="custom-control-input" (click)="seeInput(op1.value)"
+                                    [checked]="WillLogin == true">
+                                <label class="custom-control-label" for="Yes">Yes</label>
+                            </div>
+                            <div class="col-md-1">
+                                <input #op2 type="radio" id="options2" name="function" value="No"
+                                    class="custom-control-input" (click)="seeInput(op2.value)"
+                                    [checked]="WillLogin == false">
+                                <label class="custom-control-label" for="No">No</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <ng-container *ngIf="WillLogin == true">
+                    <div class="col-sm-12 mb-2 col-md-4">
+                        <div class="form-group">
+                            <label>Password <span class="required_star">*</span></label>
+                            <input type="password" formControlName="Password" class="form-control"
+                                placeholder="Password" [required]="WillLogin"
+                                [ngClass]="{ 'is-invalid': submitted && UserForm.controls['Password'].errors?.required}">
+                            <div *ngIf="UserForm.controls['Password'].errors?.required" class="invalid-feedback">
+                                Password is required!
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 mb-2 col-md-4">
+                        <div class="form-group">
+                            <label>Confirm Password <span class="required_star">*</span></label>
+                            <input type="password" formControlName="confirmPassword" class="form-control"
+                                (change)="passVerify()" placeholder="Confirm Password" [required]="WillLogin"
+                                [ngClass]="{ 'is-invalid': submitted && UserForm.controls['confirmPassword'].errors?.required}">
+                            <div *ngIf="UserForm.controls['confirmPassword'].errors?.required" class="invalid-feedback">
+                                Confirm Password is required!
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label style="margin-bottom: 20px;">Menu Access<span class="required_star">*</span></label>
+                        <div class="col-sm-6 mb-2 col-md-6">
+                            <div class="row">
+                                <input class="col-md-1" type="checkbox"
+                                    (click)="menuSelected(IsCheckedMenu.checked, 'All')" #IsCheckedMenu
+                                    [checked]="AllSelect">
+                                <p class="col-md-8">Select All</p>
+                            </div>
+                        </div>
+                        <hr style="margin: 15px;">
+                        <div class="col-sm-6 mb-2 col-md-6">
+                            <div class="row" *ngFor="let p of MenuResponseArrOne">
+                                <input class="col-md-1" type="checkbox" (click)="menuSelected(IsCheckedMenu.checked, p)"
+                                    #IsCheckedMenu [checked]="p.selected">
+                                <p class="col-md-8">{{p.menuName}}</p>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 mb-2 col-md-6">
+                            <div class="row" *ngFor="let p of MenuResponseArrTwo">
+                                <input class="col-md-1" type="checkbox" (click)="menuSelected(IsCheckedMenu.checked, p)"
+                                    #IsCheckedMenu [checked]="p.selected">
+                                <p class="col-md-8">{{p.menuName}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+                <div class="row my-3">
+                    <div class="col-sm-12 col-md-2">
+                        <button *ngIf="addMode == false" type="submit" name="submit" value="submit"
+                            class="w-100 btn bg-blue-btn">
+                            Submit </button>
+                        <button *ngIf="addMode == true" type="submit" name="submit" value="submit"
+                            class="w-100 btn bg-blue-btn">
+                            Update </button>
+                    </div>
+                    <div class="col-sm-6 col-md-2">
+                        <button type="button" class="w-100 btn bg-blue-btn" (click)=addNewUser()>
+                            Back </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </section>
+</section>

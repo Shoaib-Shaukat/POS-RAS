@@ -14,6 +14,11 @@ export class responseFoodMenuItem {
     refCode: string;
     outletID: number;
     newStr: string;
+    currencyID: number;
+    generalRemarks: string;
+    prepRemarks: string;
+    preparationTime: number;
+    sectionID: number;
 }
 export class responseCustomer {
     customerName: string;
@@ -138,6 +143,7 @@ export class responseOrder {
     outletID: number = 0;
     UserID: number;
     statusID: number = 0;
+    invoiceDiscount: number = 0;
 }
 
 
@@ -229,6 +235,7 @@ export class POSNewModelRequest {
     requestKotDetail: requestKotDetail[];
     requestCustomerTable: requestCustomerTable[];
     requestCustomerDetail: requestCustomerDetail;
+    FBRRequestObject: FBRRequestObject;
 
     constructor() {
         this.requestKotSR = new requestKotSR();
@@ -236,6 +243,7 @@ export class POSNewModelRequest {
         this.requestKotDetail = [];
         this.requestCustomerTable = [];
         this.requestCustomerDetail = new requestCustomerDetail();
+        this.FBRRequestObject = new FBRRequestObject();
     }
 }
 export class requestKotSR {
@@ -252,6 +260,13 @@ export class requestKot {
     remarks: string;
     orderType: string;
     Timer: string;
+    code: string;
+    invoiceNumber: string;
+    paymentModeName: string;
+    taxOffice: string;
+    outletNTNNumber: number;
+    outletSTRNumber: number;
+    invoiceDiscount: number;
 }
 
 export class requestKotDetail {
@@ -277,6 +292,8 @@ export class requestKotDetail {
     itemsDescription: string;
     dealPrice: number = 0;
     kotID: number = 0;
+    status: number = 0;
+    sectionID: number = 0;
 }
 
 export class requestCustomerTable {
@@ -377,4 +394,67 @@ export class responseAddress {
     customerInfoID: number = 0;
     phone: string = "";
     checked: boolean = false;
+}
+
+export class FBRRequestObject {
+    InvoiceNumber: string;
+    POSID: number;
+    USIN: string;
+    RefUSIN: string;
+    DateTime: string;
+    BuyerName: string;
+    BuyerNTN: string;
+    BuyerCNIC: string;
+    BuyerPhoneNumber: string;
+    TotalSaleValue: number;
+    TotalTaxCharged: number;
+    TotalQuantity: number;
+    Discount: number;
+    FurtherTax: number;
+    TotalBillAmount: number;
+    PaymentMode: number;
+    InvoiceType: number;
+    Items: Items[];
+    constructor() {
+        this.Items = [];
+    }
+}
+
+export class Items {
+    ItemCode: string;
+    ItemName: string;
+    PCTCode: string;
+    Quantity: number;
+    TaxRate: number;
+    SaleValue: number;
+    Discount: number;
+    FurtherTax: number;
+    TaxCharged: number;
+    TotalAmount: number;
+    InvoiceType: number;
+    RefUSIN: string;
+}
+
+
+
+export class taxesResponseModel {
+    taxID: number;
+    taxName: string;
+    taxRate: number;
+    isActive: boolean;
+    outletID: number;
+}
+
+export class taxResponseModel {
+    foodItemID: number;
+    foodItemtaxID: number;
+    isActive: boolean;
+    outletID: number;
+    taxName: string;
+    taxRate: number;
+}
+
+export class paymentTypesResponse {
+    paymentModeID: number;
+    paymentModeName: string;
 }

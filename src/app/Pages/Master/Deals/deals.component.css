@@ -22,3 +22,33 @@
     white-space: nowrap;
     overflow: hidden;
 }
+
+.readOnlyField {
+    height: 34px;
+    background-color: #e9ecef;
+    width: 120px;
+    margin-right: 20px;
+    margin-top: 3px;
+}
+
+.totalClass {
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
+.backButton {
+    margin-bottom: 10px;
+    cursor: pointer;
+    color: white;
+    background-color: #644fa1;
+    text-decoration: none;
+    padding: 8.5px 21px !important;
+    border-radius: 0.358rem !important;
+    font-weight: 500;
+    font-size: 14px;
+    text-transform: capitalize;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}

@@ -7,7 +7,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { ApiService } from 'src/app/Services/API/api.service';
 import { GvarService } from 'src/app/Services/Globel/gvar.service';
-import { CurrencyModelRequest, CurrencyModelResponse } from '../../Master/Currency/currencyModel';
+import { CurrencyModelRequest, CurrencyModelResponse } from '../../Main/Currency/currencyModel';
 import { POSNewModelRequest, requestCustomerTable, responseCustomer, responseOrder, responseTable } from './ordersModel';
 
 @Component({

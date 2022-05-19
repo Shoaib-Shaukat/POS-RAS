@@ -1,0 +1,582 @@
+<section class="main-content-wrapper" [hidden]="isShow==true">
+    <section class="content-header">
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="top-left-header">Menu Items</h2>
+                <input type="hidden" class="datatable_name" data-title="Food Menu Categories" data-id_name="datatable">
+            </div>
+            <div class="col-md-6">
+                <a class="btn_list m-right bg-blue-btn btn" (click)=addNewFoodCategory()>
+                    <i class="fa fa-plus icon"></i> Add Menu Item</a>
+            </div>
+        </div>
+    </section>
+    <div class="box-wrapper">
+        <form [formGroup]="SearchForm">
+            <div class="row my-3">
+                <div class="col-md-6 col-sm-8 mb-2">
+                    <div class="form-group">
+                        <label>Menu Category</label>
+                        <select class="form-control" formControlName="foodMenuID" (change)="filterCategories()">
+                            <option *ngFor="let p of FoodCatResponseModel" [value]="p.foodMenuID">
+                                {{ p.foodMenuName }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+            <thead>
+                <tr>
+                    <th>SN</th>
+                    <th></th>
+                    <th>Item Name</th>
+                    <th style="text-align: center;">Menu Category</th>
+                    <th style="text-align: right;">Price</th>
+                    <th>Variant</th>
+                    <th>Is Active</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let p of ItemsResponseModelReplica  let ndx=index;">
+                    <td>{{ndx+1}}</td>
+                    <td *ngIf="p.imageURl == null">
+                        <div class="d-inline-block align-middle"><img src="../../../../assets/img/image_thumb.png"
+                                alt="user image" class="img-radius align-top" style="width: 50px;height: 50px;">
+                        </div>
+                    </td>
+                    <td *ngIf="p.imageURl != null">
+                        <div class="d-inline-block align-middle"><img src="{{p.imageURl}}" alt="user image"
+                                class="img-radius align-top" style="width: 50px;height: 50px;">
+                        </div>
+                    </td>
+                    <td>{{p.foodItemName}} <span *ngIf="p.refCode" style="font-style: italic;"> - ({{p.refCode}})</span>
+                    </td>
+                    <td style="text-align: center;">{{p.foodMenuName}}</td>
+                    <td *ngIf="p.hasVariant == true" style="text-align: right;">-</td>
+                    <td *ngIf="p.discount == 0 && p.hasVariant == false" style="text-align: right;">{{symbol}} {{p.price
+                        |
+                        number}}</td>
+                    <td *ngIf="p.discount != 0 && p.hasVariant == false" style="text-align: right;">{{symbol}}
+                        {{p.calculatedPrice
+                        | number}} / <del class="text-danger">{{p.price |
+                            number}}</del>
+                    </td>
+                    <td><input readonly type="checkbox" name="hasVariant" [checked]="p.hasVariant"
+                            value="{{p.hasVariant}}" onClick="return false"></td>
+                    <td><input readonly type="checkbox" name="isActive" [checked]="p.isActive" value="{{p.isActive}}"
+                            onClick="return false"></td>
+                    <td>
+                        <button class="btn btn-success color text-white btn-sm m-1" title="Edit"
+                            (click)="EditFoodMenuCategory(p)"> <i class="fa fa-pencil" aria-hidden="true"></i></button>
+                        <button [disabled]="p.hasVariant == false" class="btn btn-primary color text-white btn-sm m-1"
+                            title="View Variants" data-toggle="modal" data-target=".viewVariantsModal"
+                            (click)="getVariants(p)"> <i class="fa fa-eye" aria-hidden="true"></i></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="main-content-wrapper" [hidden]="isShow==false">
+    <section class="content-header">
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="top-left-header" *ngIf="addMode == false">Add Menu Item</h2>
+                <h2 class="top-left-header" *ngIf="addMode == true">Edit Menu Item</h2>
+                <input type="hidden" class="datatable_name" data-title="Food Menu Categories" data-id_name="datatable">
+            </div>
+            <div class="col-md-6">
+                <a class="btn_list m-right bg-grey-btn btn" (click)="resetAll()">
+                    <i class="fa fa-redo" style="margin-right: 5px;" aria-hidden="true"></i> Reset</a>
+                <!-- <a class="btn_list m-right bg-blue-btn btn" (click)="addVariant()" data-toggle="modal"
+                    data-target=".VariantModal">
+                    <i class="fa fa-plus icon"></i> Add Variant</a> -->
+            </div>
+        </div>
+    </section>
+    <div class="box-wrapper">
+        <div class="table-box">
+            <form [formGroup]="MenuItemsForm" (ngSubmit)="SaveMenuItems()">
+                <div class="row">
+                    <label class=" headerClass">Item Info</label>
+                    <div class="col-sm-6 mb-2 col-md-4">
+                        <div class="form-group">
+                            <label>Item Name<span class="required_star">*</span></label>
+                            <input minlength="3" autocomplete="off" type="text" formControlName="foodItemName"
+                                class="form-control" placeholder="Item Name" value=""
+                                [ngClass]="{ 'is-invalid': submitted && f.foodItemName.errors }" />
+                            <div *ngIf="submitted && f.foodItemName.errors" class="invalid-feedback">
+                                <div *ngIf="f.foodItemName.errors.required">Item
+                                    Name is
+                                    required</div>
+                                <small
+                                    *ngIf="MenuItemsForm.controls['foodItemName'].errors?.minlength && !f.foodItemName.errors.whitespace"
+                                    class="text-danger">Item
+                                    Name must be at
+                                    least 3 characters long.</small>
+                                <small
+                                    *ngIf="f.foodItemName.errors.whitespace && !f.foodItemName.errors.required">Please
+                                    enter valid data</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-2 col-md-2">
+                        <div class="form-group">
+                            <label>Item Code</label>
+                            <input minlength="3" maxlength="10" autocomplete="off" type="text" formControlName="refCode"
+                                class="form-control" placeholder="Ref Code" value=""
+                                [ngClass]="{ 'is-invalid': submitted && f.refCode.errors }" />
+                            <div *ngIf="submitted && f.refCode.errors" class="invalid-feedback">
+                                <div *ngIf="f.refCode.errors.required">Item
+                                    Code is
+                                    required</div>
+                                <small
+                                    *ngIf="MenuItemsForm.controls['refCode'].errors?.minlength && !f.refCode.errors.whitespace"
+                                    class="text-danger">Item
+                                    Code must be at
+                                    least 3 characters long.</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 mb-2 col-md-6">
+                        <div class="form-group">
+                            <label>Menu Category</label>
+                            <select class="form-control" formControlName="foodMenuID"
+                                [ngClass]="{ 'is-invalid': submitted && f.foodMenuID.errors }">
+                                <option *ngFor="let p of FoodCatResponseModel" [value]="p.foodMenuID">
+                                    {{ p.foodMenuName }}
+                                </option>
+                            </select>
+                            <div *ngIf="submitted && f.foodMenuID.errors" class="invalid-feedback">
+                                <div *ngIf="f.foodMenuID.errors.pattern">Food Menu Category is required</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 mb-2 col-md-6">
+                        <div class="form-group">
+                            <label>Section</label>
+                            <select class="form-control" formControlName="sectionID" 
+                            [ngClass]="{ 'is-invalid': submitted && f.sectionID.errors }">
+                                <option *ngFor="let c of SectionModelResponse" [value]="c.sectionID">
+                                    {{ c.sectionName }}
+                                </option>
+                            </select>
+                            <div *ngIf="submitted && f.sectionID.errors" class="invalid-feedback">
+                                <div *ngIf="f.sectionID.errors.pattern">Section is required</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 mb-2 col-md-6">
+                        <div class="form-group">
+                            <label>Currency</label>
+                            <select class="form-control" formControlName="currencyID">
+                                <option *ngFor="let c of CurrencyModelResponse" [value]="c.currencyID">
+                                    {{ c.currencyName }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 mb-2 col-md-6">
+                        <div class="form-group">
+                            <label>Item Price</label>
+                            <input type="number" formControlName="price" class="form-control"
+                                (change)="resetDiscounts()" [readonly]="ItemPrice == true" placeholder="Item Price" />
+                        </div>
+                    </div>
+                    <div class="col-sm-12 mb-2 col-md-6">
+                        <div class="form-group">
+                            <label>Prep Time (Min)</label>
+                            <input type="text" formControlName="preparationTime" class="form-control"
+                                placeholder="Prep Time in Minutes" maxlength="10" value=""
+                                onkeypress="return event.charCode >= 48 && event.charCode <= 57 " />
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-2 col-md-3">
+                        <div class="form-group">
+                            <label>Discount in Percentage</label>
+                            <input type="number" (change)="calDiscountRupees()" formControlName="discountPercentage"
+                                class="form-control" step="1"
+                                onkeypress="return event.charCode >= 48 && event.charCode <= 57 "
+                                [readonly]="ItemPrice == true || showDiscount == true" placeholder="Discount %" />
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-2 col-md-3">
+                        <div class="form-group">
+                            <label>Discount in Rupees</label>
+                            <input type="number" (change)="calDiscountPercentage()" formControlName="discountRupees"
+                                class="form-control" step="1"
+                                onkeypress="return event.charCode >= 48 && event.charCode <= 57 "
+                                [readonly]="ItemPrice == true || showDiscount == true" placeholder="Discount Rs." />
+                        </div>
+                    </div>
+                    <div class="col-sm-12 mb-2 col-md-6">
+                        <div class="form-group">
+                            <label>Prep Remarks</label>
+                            <input type="text" formControlName="prepRemarks" class="form-control" step="1"
+                                maxlength="100" placeholder="Prep Remarks" />
+                        </div>
+                    </div>
+                    <div class="col-sm-12 mb-2 col-md-6">
+                        <div class="form-group">
+                            <label>Calculated Price</label>
+                            <input type="number" formControlName="calculatedPrice" class="form-control" readonly />
+                        </div>
+                    </div>
+                    <div class="col-sm-12 mb-2 col-md-6">
+                        <div class="form-group">
+                            <label>Remarks</label>
+                            <input type="text" formControlName="generalRemarks" class="form-control" step="1"
+                                maxlength="100" placeholder="Remarks" />
+                        </div>
+                    </div>
+                    <div class="col-sm-12 mb-2 col-md-6">
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea formControlName="description" maxlength="250" class="form-control"
+                                autocomplete="off"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 mb-2 col-md-6">
+                        <div class="form-group">
+                            <label>Upload File </label>
+                            <input type="file" accept="image/*" #myInput class="form-control"
+                                [disabled]="ItemPrice == true" placeholder="Upload File"
+                                (change)="attachImage($event);">
+                        </div>
+                    </div>
+                    <div class="col-sm-12 mb-2 col-md-6">
+                        <div class="form-group float-start">
+                            <label class="col-sm-12">Is Active?</label>
+                            <div class="col-sm-6">
+                                <input type="checkbox" class="form-control " formControlName="isActive"
+                                    (click)="isActiveCheck(IsActive.checked)" #IsActive />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="headerClass mb-3">Variants Info</label>
+                    <div class="col-md-6">
+                    </div>
+                    <div class="col-md-6">
+                        <a class="btn_list m-right bg-blue-btn btn float-end mt-2" (click)="addVariant()"
+                            data-toggle="modal" data-target="#VariantModal">
+                            <i class="fa fa-plus icon"></i> Add Variant</a>
+                    </div>
+                </div>
+                <section class="main-content-wrapper">
+                    <div class="table-box">
+                        <div class="table-responsive">
+                            <table id="datatable" class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>SN</th>
+                                        <th>Variant Name</th>
+                                        <th style="text-align: right;">Price</th>
+                                        <th style="text-align: right;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let p of foodMenuItemModel.requestVariants let ndx=index;">
+                                        <td>{{ndx+1}}</td>
+                                        <td>{{p.variantName}} <span *ngIf="p.RefCode" style="font-style: italic;"> -
+                                                ({{p.RefCode}})</span>
+                                        </td>
+                                        <td *ngIf="p.discount == 0" style="text-align: right;">{{p.variantPrice |
+                                            number}}</td>
+                                        <td *ngIf="p.discount != 0" style="text-align: right;">{{p.calculatedPrice
+                                            | number}} / <del class="text-danger">{{p.variantPrice |
+                                                number}}</del>
+                                        </td>
+                                        <td style="text-align: right;">
+                                            <a class="btn btn-success color text-white btn-sm m-1" title="Edit"
+                                                (click)="editVariant(p)" data-toggle="modal"
+                                                data-target="#VariantModal"><i class="fa fa-pencil"
+                                                    aria-hidden="true"></i></a>
+                                            <a class="btn btn-secondary color text-white btn-sm m-1" title="Remove"
+                                                (click)="removeVariant(p)"><i class="fas fa-minus-circle"
+                                                    aria-hidden="true"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <div class="row mt-3 mb-5">
+                    <label class="headerClass mb-3">Ingredients Info</label>
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label>Select Ingredients</label>
+                            <ng-multiselect-dropdown [placeholder]="'Select Ingredients'" [data]="ProductModelResponse"
+                                [(ngModel)]="selectedIngredients" [settings]="dropdownSettings"
+                                (onSelect)="onIngredientSelect($event)" (onSelectAll)="onSelectAll($event)"
+                                (onDeSelect)="onItemDeSelect($event)" (onDeSelectAll)="onItemDeSelectAll($event)"
+                                [ngModelOptions]="{standalone: true}">
+                            </ng-multiselect-dropdown>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <section class="main-content-wrapper" [hidden]="selectedIngredientsArray.length == 0">
+                            <div class="table-box">
+                                <div class="table-responsive">
+                                    <table id="datatable" class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>SN</th>
+                                                <th>Description</th>
+                                                <th>Quantity</th>
+                                                <th>UOM</th>
+                                                <th>Cost Price</th>
+                                                <th>Amount</th>
+                                                <th>Instructions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let p of selectedIngredientsArray let ndx=index;">
+                                                <td>{{ndx+1}}</td>
+                                                <td>{{p.description}}</td>
+                                                <td><input type="text" #quantity value="{{p.quantity}}"
+                                                        style="width: 100px;" (change)="quantityChanged(p, quantity)"
+                                                        onkeypress="return event.charCode >= 48 && event.charCode <= 57 ">
+                                                </td>
+                                                <td>{{p.unitName}}</td>
+                                                <td>{{p.costPrice}}</td>
+                                                <td><input type="text" id="amount" #amount name="amount"
+                                                        style="width: 100px; background-color: #e9ecef;" readonly
+                                                        value="{{p.amount}}">
+                                                </td>
+                                                <td>
+                                                    <textarea id="instructions" #instructions name="instructions" max
+                                                        maxlength="250" class="form-control" autocomplete="off"
+                                                        value="{{p.instructions}}"
+                                                        (change)="instructionsChanged(p, instructions)"></textarea>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+                <div class="row mb-5">
+                    <label class="headerClass mb-3">Tax Info</label>
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label>Select Tax</label>
+                            <ng-multiselect-dropdown [placeholder]="'Select Tax'" [data]="taxesResponseModel"
+                                [(ngModel)]="selectedTaxes" [settings]="dropdownSettings1"
+                                (onSelect)="onTaxSelect($event)" (onSelectAll)="onSelectAllTaxes($event)"
+                                (onDeSelect)="onTaxDeSelect($event)" (onDeSelectAll)="onTaxDeSelectAll($event)"
+                                [ngModelOptions]="{standalone: true}">
+                            </ng-multiselect-dropdown>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <section class="main-content-wrapper" [hidden]="selectedTaxesArray.length == 0">
+                            <div class="table-box">
+                                <div class="table-responsive">
+                                    <table id="datatable" class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>SN</th>
+                                                <th>Tax Name</th>
+                                                <th>Tax Rate</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let p of selectedTaxesArray let ndx=index;">
+                                                <td>{{ndx+1}}</td>
+                                                <td>{{p.taxName}}</td>
+                                                <td><input type="number" #TaxRate value="{{p.taxRate}}"
+                                                        style="width: 100px;" (change)="taxRateChanged(p, TaxRate)">
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+                <div class="row my-3">
+                    <div class="col-sm-12 col-md-2">
+                        <button *ngIf="addMode == false" type="submit" name="submit" value="submit"
+                            class="w-100 btn bg-blue-btn">
+                            Submit </button>
+                        <button *ngIf="addMode == true" type="submit" name="submit" value="submit"
+                            class="w-100 btn bg-blue-btn">
+                            Update </button>
+                    </div>
+                    <div class="col-sm-12 col-md-2">
+                        <button type="button" class="w-100 btn bg-blue-btn" (click)="addNewFoodCategory()">
+                            Back </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+<div class="modal fade come-from-modal right" id="VariantModal" data-backdrop="static" data-keyboard="false"
+    tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Variant</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" #closeVariantModal>
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="VariantForm" (ngSubmit)="pushVariant()">
+                    <div class="row">
+                        <div class="col-sm-12 mb-2 col-md-4">
+                            <div class="form-group">
+                                <label>Variant Name<span class="required_star">*</span></label>
+                                <input minlength="3" autocomplete="off" type="text" formControlName="variantName"
+                                    class="form-control" placeholder="Variant Name" value=""
+                                    [ngClass]="{ 'is-invalid': Vsubmitted && g.variantName.errors }" />
+                                <div *ngIf="Vsubmitted && g.variantName.errors" class="invalid-feedback">
+                                    <div *ngIf="g.variantName.errors.required">Variant
+                                        Name is
+                                        required</div>
+                                    <small
+                                        *ngIf="MenuItemsForm.controls['variantName'].errors?.minlength && !g.variantName.errors.whitespace"
+                                        class="text-danger">Variant
+                                        Name must be at
+                                        least 3 characters long.</small>
+                                    <small
+                                        *ngIf="g.variantName.errors.whitespace && !g.variantName.errors.required">Please
+                                        enter valid data</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 mb-2 col-md-2">
+                            <div class="form-group">
+                                <label>Reference Code</label>
+                                <input autocomplete="off" type="text" formControlName="RefCode" class="form-control"
+                                    value="" />
+                            </div>
+                        </div>
+                        <div class="col-sm-12 mb-2 col-md-6">
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea formControlName="description" maxlength="250" class="form-control"
+                                    autocomplete="off"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 mb-2 col-md-6">
+                            <div class="form-group">
+                                <label>Variant Price</label>
+                                <input type="number" formControlName="variantPrice" class="form-control"
+                                    (change)="resetDiscountsV()" placeholder="Variant Price"
+                                    [ngClass]="{ 'is-invalid': Vsubmitted && g.variantPrice.errors }" />
+                                <div *ngIf="Vsubmitted && g.variantPrice.errors" class="invalid-feedback">
+                                    <div *ngIf="g.variantPrice.errors.required">Variant Price is required</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 mb-2 col-md-3">
+                            <div class="form-group">
+                                <label>Discount in Percentage</label>
+                                <input type="number" (change)="calDiscountRupeesV()"
+                                    formControlName="discountPercentage" class="form-control" step="1"
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57 "
+                                    [readonly]=" showVDiscount == true" placeholder="Discount %" />
+                            </div>
+                        </div>
+                        <div class="col-sm-6 mb-2 col-md-3">
+                            <div class="form-group">
+                                <label>Discount in Rupees</label>
+                                <input type="number" (change)="calDiscountPercentageV()"
+                                    formControlName="discountRupees" class="form-control" step="1"
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57 "
+                                    [readonly]="showVDiscount == true" placeholder="Discount Rs." />
+                            </div>
+                        </div>
+                        <div class="col-sm-12 mb-2 col-md-6">
+                            <div class="form-group">
+                                <label>Calculated Price</label>
+                                <input type="number" formControlName="calculatedPrice" class="form-control" readonly />
+                            </div>
+                        </div>
+                        <div class="col-sm-12 mb-2 col-md-6">
+                            <div class="form-group">
+                                <label>Upload File </label>
+                                <input type="file" accept="image/*" #myInputV class="form-control"
+                                    placeholder="Upload File" (change)="attachImageV($event);">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" (click)="pushVariant()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade viewVariantsModal" id="view-assigned-group-role-modal" data-backdrop="static"
+    data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Variants</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" #closeViewVariantModal>
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="table-box">
+                    <div class="table-responsive">
+                        <table id="datatable" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>SN</th>
+                                    <th></th>
+                                    <th>Variant Name</th>
+                                    <th style="text-align: right;">Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let p of responseVariant let ndx=index;">
+                                    <td>{{ndx+1}}</td>
+                                    <td *ngIf="p.imageURL == null">
+                                        <div class="d-inline-block align-middle"><img
+                                                src="../../../../assets/img/image_thumb.png" alt="user image"
+                                                class="img-radius align-top" style="width: 50px;height: 50px;">
+                                        </div>
+                                    </td>
+                                    <td *ngIf="p.imageURL != null">
+                                        <div class="d-inline-block align-middle"><img src="{{p.imageURL}}"
+                                                alt="user image" class="img-radius align-top"
+                                                style="width: 50px;height: 50px;">
+                                        </div>
+                                    </td>
+                                    <td>{{p.variantName}} <span *ngIf="p.RefCode" style="font-style: italic;"> -
+                                            ({{p.RefCode}})</span>
+                                    </td>
+                                    <td *ngIf="p.discount == 0" style="text-align: right;">{{symbol}} {{p.variantPrice |
+                                        number}}</td>
+                                    <td *ngIf="p.discount != 0" style="text-align: right;">{{symbol}}
+                                        {{p.calculatedPrice
+                                        | number}} / <del class="text-danger">{{p.variantPrice |
+                                            number}}</del>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

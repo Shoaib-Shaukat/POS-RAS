@@ -1,0 +1,164 @@
+.come-from-modal.left .modal-dialog,
+.come-from-modal.right .modal-dialog {
+    position: fixed;
+    margin: auto;
+    width: 1100px;
+    height: 100%;
+    -webkit-transform: translate3d(0%, 0, 0);
+    -ms-transform: translate3d(0%, 0, 0);
+    -o-transform: translate3d(0%, 0, 0);
+    transform: translate3d(0%, 0, 0);
+}
+
+.come-from-modal.left .modal-content,
+.come-from-modal.right .modal-content {
+    height: 100%;
+    overflow-y: auto;
+    border-radius: 0px;
+}
+
+.come-from-modal.left .modal-body,
+.come-from-modal.right .modal-body {
+    padding: 15px 15px 20px;
+}
+
+.come-from-modal.right.fade .modal-dialog {
+    right: -320px;
+    -webkit-transition: opacity 0.3s linear, right 0.3s ease-out;
+    -moz-transition: opacity 0.3s linear, right 0.3s ease-out;
+    -o-transition: opacity 0.3s linear, right 0.3s ease-out;
+    transition: opacity 0.3s linear, right 0.3s ease-out;
+}
+
+.modal.left.fade .modal-dialog {
+    left: -320px;
+    -webkit-transition: opacity 0.3s linear, left 0.3s ease-out;
+    -moz-transition: opacity 0.3s linear, left 0.3s ease-out;
+    -o-transition: opacity 0.3s linear, left 0.3s ease-out;
+    transition: opacity 0.3s linear, left 0.3s ease-out;
+}
+
+.modal.left.fade.in .modal-dialog {
+    left: 0;
+}
+
+.come-from-modal.right.fade.in .modal-dialog {
+    right: 0;
+}
+
+@media (min-width: 768px) {}
+
+.col-md-3 {
+    cursor: not-allowed;
+    flex: 0 0 auto;
+    width: 25%;
+}
+
+@media (min-width: 900px) {
+    .modal-dialog {
+        max-width: 900px;
+        margin: 1.75rem auto;
+    }
+}
+
+.title {
+    color: white;
+}
+
+.card-text:last-child {
+    font-size: 16px;
+    font-family: initial;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+.card-body {
+    border-radius: 5px;
+    color: white;
+    flex: 1 1 auto;
+    padding: 1rem 1rem;
+
+}
+
+.card-title {
+    margin-bottom: 0.5rem;
+    font-size: large;
+}
+
+.card {
+    border-radius: 10px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0, 0, 0, .125);
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+
+}
+
+.card:hover {
+    transform: scale(1.02);
+    box-shadow: 5px 10px 18px #888888;
+}
+
+.col-md-3 {
+    padding: 2px;
+}
+
+.newOrderClass {
+    background-color: rgb(0 207 0);
+}
+
+.inQueueClass {
+    background-color: rgb(23 161 175);
+}
+
+.readyClass {
+    background-color: #f15a29;
+}
+
+.ir_h15_m_w91[disabled], .ir_h15_m_w91[readonly], .ir_h15_m_w91[readonly]:focus {
+    background-color: #e9ecef;
+    opacity: 1;
+}
+
+.startButton {
+    min-width: 70px;
+    background-color: rgb(0, 138, 0);
+    color: white;
+    margin: 2px;
+    cursor: pointer !important;
+}
+
+.readyButton {
+    min-width: 70px;
+    background-color: rgb(199, 0, 209);
+    color: white;
+    margin: 2px;
+    cursor: pointer !important;
+}
+
+.collectButton {
+    min-width: 70px;
+    background-color: #f15a29;
+    color: white;
+    margin: 2px;
+    cursor: pointer !important;
+}
+
+.cancelButton {
+    min-width: 70px;
+    background-color: rgb(0, 0, 0);
+    color: white;
+    margin: 2px;
+    cursor: pointer !important;
+}
+
+.collectButton[disabled], .cancelButton[disabled], .readyButton[disabled], .startButton[disabled] {
+    cursor: not-allowed !important;
+}

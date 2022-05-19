@@ -1,0 +1,175 @@
+<section class="main-content-wrapper" [hidden]="isShow==true">
+    <section class="content-header">
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="top-left-header">Purchases</h2>
+                <input type="hidden" class="datatable_name" data-title="Food Menu Categories" data-id_name="datatable">
+            </div>
+            <div class="col-md-6">
+                <a class="btn_list m-right bg-blue-btn btn" (click)=addPurchase()>
+                    <i class="fa fa-plus icon"></i> Add Purchase</a>
+            </div>
+        </div>
+    </section>
+    <div class="box-wrapper">
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+            <thead>
+                <tr>
+                    <th>SN</th>
+                    <th>Vendor</th>
+                    <th>Date</th>
+                    <th>G.Total</th>
+                    <th>Due</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let p of purchaseModelResponse  let ndx=index;">
+                    <td>{{ndx+1}}</td>
+                    <td>{{p.vendorName}}</td>
+                    <td>{{p.purchaseDate}}</td>
+                    <td>{{p.gTotal}}</td>
+                    <td>{{p.due}}</td>
+                    <td>
+                        <button class="btn btn-success color text-white btn-sm m-1" title="Edit"
+                            (click)="editPurchaseInfo(p)"> <i class="fa fa-pencil" aria-hidden="true"></i></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="main-content-wrapper" [hidden]="isShow==false">
+    <section class="content-header">
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="top-left-header" *ngIf="addMode == false">Add Purchase</h2>
+                <h2 class="top-left-header" *ngIf="addMode == true">Edit Purchase</h2>
+                <input type="hidden" class="datatable_name" data-title="Food Menu Categories" data-id_name="datatable">
+            </div>
+            <div class="col-md-6">
+                <a class="btn_list m-right bg-grey-btn btn" (click)="resetAll()">
+                    <i class="fa fa-redo" style="margin-right: 5px;" aria-hidden="true"></i> Reset</a>
+            </div>
+        </div>
+    </section>
+    <div class="box-wrapper">
+        <div class="table-box">
+            <form [formGroup]="PurchaseForm" (ngSubmit)="savePurchaseInfo()">
+                <div class="row">
+                    <div class="col-sm-6 mb-2 col-md-6">
+                        <div class="form-group">
+                            <label>Select Vendor<span class="required_star">*</span></label>
+                            <select class="form-control" formControlName="vendorID">
+                                <option *ngFor="let p of VendorModelResponse" [value]="p.vendorID">
+                                    {{ p.vendorName }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-2 col-md-6">
+                        <div class="form-group">
+                            <label>Select Date<span class="required_star">*</span></label>
+                            <input type="date" class="form-control" formControlName="purchaseDate">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 mb-2 col-md-6">
+                        <div class="form-group">
+                            <label>Select Ingredients<span class="required_star">*</span></label>
+                            <ng-multiselect-dropdown [placeholder]="'Select Ingredients'" [data]="ProductModelResponse"
+                                [(ngModel)]="selectedIngredients" [settings]="dropdownSettings"
+                                (onSelect)="onIngredientSelect($event)" (onSelectAll)="onSelectAll($event)"
+                                (onDeSelect)="onItemDeSelect($event)" (onDeSelectAll)="onItemDeSelectAll($event)"
+                                [ngModelOptions]="{standalone: true}">
+                            </ng-multiselect-dropdown>
+                        </div>
+                    </div>
+                </div>
+                <section class="main-content-wrapper">
+                    <div class="table-box">
+                        <div class="table-responsive">
+                            <table id="datatable" class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>SN</th>
+                                        <th>Description</th>
+                                        <th>Unit Price</th>
+                                        <th>Quantity/Amount</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let p of selectedIngredientsArray let ndx=index;">
+                                        <td>{{ndx+1}}</td>
+                                        <td>{{p.description}}</td>
+                                        <td><input type="text" value="{{p.costPrice}}" style="width: 100px;" readonly>
+                                        </td>
+                                        <td><input type="text" id="quantity" #quantity name="quantity"
+                                                value="{{p.quantity}}" style="width: 100px;"
+                                                (input)="quantityChanged(p, quantity)"
+                                                onkeypress="return event.charCode >= 48 && event.charCode <= 57 ">
+                                        </td>
+                                        <td><input type="text" value="{{p.total}}" style="width: 100px;" readonly>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <ng-container *ngIf="selectedIngredientsArray.length > 0">
+                                <div class="row">
+                                    <div class="col-sm-4 mb-2 col-md-8"></div>
+                                    <div class="col-sm-8 mb-2 col-md-4">
+                                        <div class="form-group">
+                                            <label>G. Total<span class="required_star">*</span></label>
+                                            <input type="text" class="form-control" [(ngModel)]="GrandValue"
+                                                [ngModelOptions]="{standalone: true}"
+                                                onkeypress="return event.charCode >= 48 && event.charCode <= 57 ">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-4 mb-2 col-md-8"></div>
+                                    <div class="col-sm-8 mb-2 col-md-4">
+                                        <div class="form-group">
+                                            <label>Paid<span class="required_star">*</span></label>
+                                            <input type="text" class="form-control" type="text"
+                                                (input)="paidValueChanged()" [(ngModel)]="PaidValue"
+                                                [ngModelOptions]="{standalone: true}"
+                                                onkeypress="return event.charCode >= 48 && event.charCode <= 57 ">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-4 mb-2 col-md-8"></div>
+                                    <div class="col-sm-8 mb-2 col-md-4">
+                                        <div class="form-group">
+                                            <label>Due</label>
+                                            <input type="text" class="form-control" type="text" [(ngModel)]="DueValue"
+                                                [ngModelOptions]="{standalone: true}"
+                                                onkeypress="return event.charCode >= 48 && event.charCode <= 57 ">
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </div>
+                    </div>
+                </section>
+                <div class="row my-3">
+                    <div class="col-sm-12 col-md-2">
+                        <button *ngIf="addMode == false" type="submit" name="submit" value="submit"
+                            class="w-100 btn bg-blue-btn">
+                            Submit </button>
+                        <button *ngIf="addMode == true" type="submit" name="submit" value="submit"
+                            class="w-100 btn bg-blue-btn">
+                            Update </button>
+                    </div>
+                    <div class="col-sm-12 col-md-2">
+                        <button type="button" class="w-100 btn bg-blue-btn" (click)="addPurchase()">
+                            Back </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>

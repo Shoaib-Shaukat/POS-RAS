@@ -1,33 +1,44 @@
+<!-- hello -->
 <div class="wrapper">
+    <div class="top_header_for_mobile">
+        <button type="button" data-isactive="false" id="show_running_order" class="bg__red">
+            <i class="far fa-bags-shopping"></i> <span>Running Order</span></button>
+        <button type="button" id="show_cart_list" class="bg__purple">
+            <i class="far fa-list-alt"></i> <span>Cart</span></button>
+        <button type="button" id="show_product" class="bg__grey">
+            <i class="far fa-th"></i> <span>Items</span></button>
+        <button type="button" id="show_all_menu" class="bg__green">
+            <i class="fal fa-bars"></i> <span>Others</span></button>
+    </div>
     <div id="main_part" (keypress)="handleInput($event)" tabindex="1">
         <div class="left_item">
             <!-- <div class="main_left" style="height: 540px;">
-                <div class="holder">
-                    <div id="running_order_header">
-                        <h3>Orders</h3>
-                        <span id="refresh_order" (click)="getAllOrders()"><i class="fas fa-sync-alt"></i></span>
-                        <input type="text" (input)="searchOrder()" name=" search_running_orders"
-                            id="search_running_orders" autocomplete="off" class="ir_h15_m_w90"
-                            placeholder="Order Number">
-                    </div>
-                    <div class="anyClassTwo order_details " style="position: relative; height: 30px;">
-                        <div class="order_details" id="order_details_holder"
-                            style="margin-bottom: 0px; margin-right: 0px;max-height: 278px;">
-                            <div data-started-cooking="0" data-done-cooking="2" *ngFor="let p of responseOrderReplica"
-                                class="txt_14 single_order fix new_order_22" data-selected="unselected" id="order_22">
-                                <div class="inside_single_order_container" data-toggle="modal"
-                                    data-target="#OrderViewModal" (click)="viewOrder(p)">
-                                    <div class="single_order_content_holder_inside fix"><span
-                                            id="open_orders_order_status_22" class="ir_display_none">2</span>
-                                        <p><span class="running_order_customer_name">Order No: {{p.kotID}}</span>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
+              <div class="holder">
+                  <div id="running_order_header">
+                      <h3>Orders</h3>
+                      <span id="refresh_order" (click)="getAllOrders()"><i class="fas fa-sync-alt"></i></span>
+                      <input type="text" (input)="searchOrder()" name=" search_running_orders"
+                          id="search_running_orders" autocomplete="off" class="ir_h15_m_w90"
+                          placeholder="Order Number">
+                  </div>
+                  <div class="anyClassTwo order_details " style="position: relative; height: 30px;">
+                      <div class="order_details" id="order_details_holder"
+                          style="margin-bottom: 0px; margin-right: 0px;max-height: 278px;">
+                          <div data-started-cooking="0" data-done-cooking="2" *ngFor="let p of responseOrderReplica"
+                              class="txt_14 single_order fix new_order_22" data-selected="unselected" id="order_22">
+                              <div class="inside_single_order_container" data-toggle="modal"
+                                  data-target="#OrderViewModal" (click)="viewOrder(p)">
+                                  <div class="single_order_content_holder_inside fix"><span
+                                          id="open_orders_order_status_22" class="ir_display_none">2</span>
+                                      <p><span class="running_order_customer_name">Order No: {{p.kotID}}</span>
+                                      </p>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div> -->
             <div class="main_middle" style="height: 540px; width: 620px;">
                 <div class="main_top fix">
                     <!-- Top Btns -->
@@ -39,22 +50,24 @@
                         <button class="selected__btn_c"
                             [ngStyle]="{'background-color': orderTypeValue == 'Dine In' ? '#82C0CF ' : '#64e1ff' }"
                             data-selected="" id="dine_in_button" (click)="orderType(1)">
-                            <i class="fal fa-table"></i> Dine In </button>
+                            Dine In </button>
                         <button class="selected__btn_c"
                             [ngStyle]="{'background-color': orderTypeValue == 'Take Away' ? '#82C0CF ' : '#64e1ff' }"
-                            id="take_away_button" (click)="orderType(2)"><i class="fal fa-shopping-bag"></i>
+                            id="take_away_button" (click)="orderType(2)">
                             Take Away</button>
                         <button class="selected__btn_c"
                             [ngStyle]="{'background-color': orderTypeValue == 'Delivery' ? '#82C0CF ' : '#64e1ff' }"
                             id="delivery_button" data-toggle="modal" data-target="#addDeliveryModal"
-                            (click)="orderType(3)"><i class="fal fa-truck"></i>
+                            (click)="orderType(3)">
                             Delivery</button>
                     </div>
+
 
                     <div class="waiter_customer">
                         <form [formGroup]="SearchForm">
                             <div class="row">
-                                <div class="col-md-3">
+
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Select Table</label>
                                         <ng-multiselect-dropdown [placeholder]="'Select Table'" [data]="responseTable"
@@ -72,27 +85,29 @@
                                         <input type="text" (change)="searchCustomer()"
                                             formControlName="searchCustomerByCode" autocomplete="off"
                                             class="form-control" placeholder="Customer Code">
-                                        <button style="border-radius: 4px !important; " type="submit"
-                                            class="searchButtonTwo" (click)="searchCustomer()"><i
-                                                class="fa fa-search"></i></button>
+                                        <!-- <button style="border-radius: 4px !important; " type="submit" class="searchButtonTwo" (click)="searchCustomer()"><i
+                                          class="fa fa-search"></i></button> -->
                                     </div>
+                                    <!-- <div class="form-group">
+                                        <label>Search Customer</label>
+                                        <input type="search" class="form-control" placeholder="Search Assets ..." name="search" style="border: 1px solid;width: 151px;height: 38px;background-color: #ffffff;color: black;">
+                                        <span class="input-group-btn"><button type="submit" class="btn submit" style="background-color: #d9dedb;border-radius: initial;height: 38px;"><i class="fa fa-search"></i></button></span>
+                                    </div> -->
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Customer Name</label>
-                                        <input type="text" style="margin-left: 18px;" formControlName="CustomerName"
-                                            readonly autocomplete="off" class="form-control">
+                                        <input type="text" formControlName="CustomerName" readonly autocomplete="off"
+                                            class="form-control">
                                     </div>
                                 </div>
-                                <div class="col-md-3">
-                                    <label class="mt-5"></label>
+                                <div class="col-md-2 mt-4">
                                     <button [disabled]="!customerFound" class="tags" gloss="View Customer Detail"
                                         title="View Customer Detail" data-toggle="modal" data-target="#addCustomerModal"
-                                        (click)="viewCustomer()"><i class="fa fa-eye"></i></button>
-                                    <label class="mt-5"></label>
-                                    <button class="tags" style="margin-left: 60px;" gloss="Add Customer"
-                                        title="Add Customer" data-toggle="modal" data-target="#addCustomerModal"
-                                        (click)="addCustomer()"><i class="fal fa-plus"></i></button>
+                                        (click)="viewCustomer()"><i class="fa fa-eye"></i></button> &nbsp;
+                                    <button class="tags" gloss="Add Customer" title="Add Customer" data-toggle="modal"
+                                        data-target="#addCustomerModal" (click)="addCustomer()"><i
+                                            class="fal fa-plus"></i></button>
                                 </div>
                             </div>
                         </form>
@@ -102,7 +117,7 @@
                 <div class="table-box anyClassFour" #scrollMe [scrollTop]="scrollMe.scrollHeight">
                     <div class="table-responsive">
                         <table id="datatable" class="table table-striped">
-                            <thead style="background-color: #ff6060">
+                            <thead style="background-color: #f15a29">
                                 <tr>
                                     <th></th>
                                     <th>Items</th>
@@ -114,8 +129,8 @@
                             </thead>
                             <tbody>
                                 <tr *ngFor="let p of POSNewModelRequest.requestKotDetail">
-                                    <td class="ir_w_1 ir_txt_center"><button
-                                            class="btn btn-danger color text-white btn-sm m-1" (click)="removeItem(p)"
+                                    <td class="ir_w_1 ir_txt_center"><button style="background-color: #f15a29;"
+                                            class="btn btn-danger color text-white btn-sm" (click)="removeItem(p)"
                                             title="Remove">
                                             <i class="fa fa-trash" aria-hidden="true"></i></button>
                                     </td>
@@ -125,25 +140,18 @@
                                         {{p.foodItemName}} ({{p.variantName}})
                                     </td>
                                     <td class="ir_w_30" *ngIf="p.dealID">{{p.dealName}}</td>
-                                    <td *ngIf="!p.variantID && !p.dealID && p.discount == 0" style="text-align: right;">
+                                    <td *ngIf="!p.variantID && !p.dealID" style="text-align: right;">
                                         {{GV.Currency}} {{p.price | number}}
                                     </td>
-                                    <td *ngIf="!p.variantID && !p.dealID && p.discount != 0" style="text-align: right;">
-                                        {{GV.Currency}} {{p.calculatedPrice | number}}
-                                    </td>
-                                    <td *ngIf="p.variantID && !p.dealID && p.discount == 0" style="text-align: right;">
+                                    <td *ngIf="p.variantID && !p.dealID" style="text-align: right;">
                                         {{GV.Currency}} {{p.variantPrice | number}}
-                                    </td>
-                                    <td *ngIf="p.variantID && !p.dealID && p.discount != 0" style="text-align: right;">
-                                        {{GV.Currency}} {{p.calculatedPrice | number}}
                                     </td>
                                     <td *ngIf="p.dealID" style="text-align: right;">
                                         {{GV.Currency}} {{p.dealPrice | number}}
                                     </td>
                                     <td>
                                         <button class="btn btn-success color text-white btn-sm" (click)="decrement(p)">
-                                            <i class="fa fa-minus" aria-hidden="true"></i></button>
-                                        {{p.quantity}}
+                                            <i class="fa fa-minus" aria-hidden="true"></i></button> {{p.quantity}}
                                         <button class="btn btn-success color text-white btn-sm" (click)="increment(p)">
                                             <i class="fa fa-plus" aria-hidden="true"></i></button>
                                     </td>
@@ -151,30 +159,25 @@
                                     <td *ngIf="p.discount == 0">0</td>
                                     <td *ngIf="p.variantID && !p.dealID && p.discount != 0">{{ p.quantity *
                                         (p.variantPrice - p.calculatedPrice)}}</td>
-                                    <td *ngIf="!p.variantID && !p.dealID && p.discount != 0">{{ p.quantity *
-                                        (p.price - p.calculatedPrice)}}</td>
-                                    <td *ngIf="!p.variantID && p.dealID && p.discount != 0">{{ p.quantity *
-                                        (p.dealPrice - p.calculatedPrice)}}</td>
+                                    <td *ngIf="!p.variantID && !p.dealID && p.discount != 0">{{ p.quantity * (p.price -
+                                        p.calculatedPrice)}}</td>
+                                    <td *ngIf="!p.variantID && p.dealID && p.discount != 0">{{ p.quantity * (p.dealPrice
+                                        - p.calculatedPrice)}}</td>
 
                                     <td *ngIf="!p.variantID && !p.dealID && p.discount == 0" style="text-align: right;">
-                                        {{GV.Currency}} {{p.quantity * p.price
-                                        |
-                                        number}}</td>
+                                        {{GV.Currency}} {{p.quantity * p.price | number}}
+                                    </td>
                                     <td *ngIf="!p.variantID && !p.dealID && p.discount != 0" style="text-align: right;">
-                                        {{GV.Currency}} {{p.quantity *
-                                        p.calculatedPrice |
-                                        number}}</td>
+                                        {{GV.Currency}} {{p.quantity * p.calculatedPrice | number}}
+                                    </td>
                                     <td *ngIf="p.variantID && !p.dealID && p.discount == 0" style="text-align: right;">
-                                        {{GV.Currency}} {{p.quantity *
-                                        p.variantPrice |
-                                        number}}</td>
+                                        {{GV.Currency}} {{p.quantity * p.variantPrice | number}}
+                                    </td>
                                     <td *ngIf="p.variantID && !p.dealID && p.discount != 0" style="text-align: right;">
-                                        {{GV.Currency}} {{p.quantity *
-                                        p.calculatedPrice
-                                        | number}}</td>
+                                        {{GV.Currency}} {{p.quantity * p.calculatedPrice | number}}</td>
                                     <td *ngIf="p.dealID" style="text-align: right;">{{GV.Currency}} {{p.quantity *
-                                        p.dealPrice |
-                                        number}}</td>
+                                        p.dealPrice | number}}
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -196,43 +199,61 @@
                                     {{subTotal | number}}</span>
                             </div>
                             <div class="item">
-                                <span>Discount: <i class="fal fa-edit no-need-for-waiter" id="open_charge_modal"></i>
+                                <span>Discount: <i class="fal fa-edit no-need-for-waiter" id="open_charge_modal"
+                                        data-toggle="modal" data-target="#showInvDisModal"
+                                        (click)="setTotalinInvDis()"></i>
                                     <span id="show_charge_amount">{{GV.Currency}}
-                                        {{discount |
+                                        {{totalDiscount |
                                         number}}</span></span>
                             </div>
                             <div class="item">
                                 <span>Tax: </span>
-                                <i class="fal fa-eye no-need-for-waiter" id="open_tax_modal"></i>
-                                <span id="show_vat_modal">{{GV.Currency}}
-                                    {{salesTax |
-                                    number}}</span>
+                                <i [hidden]="totalTax == 0" class="fal fa-eye no-need-for-waiter" id="open_tax_modal"
+                                    data-toggle="modal" data-target="#showTaxModal"></i>
+                                <span id="show_vat_modal">
+                                    {{totalTax}}</span>
                             </div>
                             <div class="item">
-                                <span>Charge: <i class="fal fa-edit no-need-for-waiter" id="open_charge_modal"></i>
-                                    <span id="show_charge_amount">0.00</span></span>
+                                <span>Charge: </span>
+                                <i class="fal fa-eye no-need-for-waiter" id="open_tax_modal" data-toggle="modal"
+                                    data-target="#showChargeModal"></i>
+                                <span id="show_vat_modal" *ngIf="chargesValue >0"> {{chargesValue}}</span>
+                                <span id="show_vat_modal" *ngIf="chargesValuePercentage >0">
+                                    {{chargesValuePercentage}}</span>
+                                <span id="show_vat_modal" *ngIf="chargesValue == 0 && chargesValuePercentage ==0">
+                                    0</span>
                             </div>
+                            <div class="item">
+                                <span>{{PaymentModeName}} </span>
+                                <i class="fal fa-eye no-need-for-waiter" id="open_tax_modal" data-toggle="modal"
+                                    data-target="#showPaymentModes"></i>
+                            </div>
+                            <!-- <div class="item">
+                                <select (change)="payModeChanged()" id="payOption">
+                                    <option *ngFor="let p of paymentTypesResponse"
+                                        [selected]="p.paymentModeID == payModeID">
+                                        {{ p.paymentModeName }}
+                                    </option>
+                                </select>
+                            </div> -->
                         </div>
                         <div class="payable">
                             <h1>Total Payable: <span id="total_payable">{{GV.Currency}}
-                                    {{total |
-                                    number}}</span></h1>
+                                    {{total - totalDiscount}}</span></h1>
                         </div>
                         <div class="main_bottom">
                             <div class="button_group">
-                                <button id="cancel_button" (click)="resetOrder()"><i class="fas fa-redo"></i>
+                                <button id="cancel_button" (click)="resetOrder()"
+                                    style="background-color: rgb(70, 70, 70);"><i class="fas fa-redo"></i>
                                     Reset</button>
-                                <button id="cancel_button" data-toggle="modal"
-                                    [disabled]="POSNewModelRequest.requestKotDetail.length == 0"
+                                <button id="cancel_button" style="background-color: rgb(131, 0, 120);"
+                                    data-toggle="modal" [disabled]="POSNewModelRequest.requestKotDetail.length == 0"
                                     data-target="#addRemarksModal"><i class="fas fa-comment"></i>
                                     Remarks</button>
                                 <button id="direct_invoice" style="background-color: rgb(4, 0, 223);"
+                                    data-toggle="modal" data-target="#InvoiceModal"
                                     [disabled]="POSNewModelRequest.requestKotDetail.length == 0"
-                                    class="no-need-for-waiter" [printStyle]="{h1 : {'color': 'black'}, 
-                                h2 : {'border': 'solid 2px'}, 
-                                    th:{'border-bottom': 'solid 1px'}, table:{'border': 'solid 1px'}, 
-                                    td:{'border-bottom': 'solid 0.5px', 'border-right': 'solid 0.5px'}}"
-                                    printSectionId="InvoicePrint" ngxPrint><i class="fas fa-file-invoice"></i>
+                                    class="no-need-for-waiter"><i class="fas fa-file-invoice"></i>
                                     <span id="place_edit_order_direct_invoice"> Invoice</span></button>
                                 <button style="background-color: rgb(0, 208, 0);" title="Shift+P"
                                     [disabled]="POSNewModelRequest.requestKotDetail.length == 0" class="placeOrderSound"
@@ -246,18 +267,25 @@
                 </div>
             </div>
         </div>
-
-
-        <button [hidden]="true" type="button" id="KOTReciept" #KOTReciept [printStyle]="{h1 : {'color': 'black'}, 
-        h2 : {'border': 'solid 2px'}, 
-            th:{'border-bottom': 'solid 1px'}, table:{'border': 'solid 1px'},
-            td:{'border-bottom': 'solid 0.5px', 'border-right': 'solid 0.5px'}}" printSectionId="KOTPrint"
+        <button [hidden]="true" type="button" id="KOTReciept" #KOTReciept class="btn btn-secondary"
+            [useExistingCss]="true" [printStyle]="{h1 : {'color': 'black'},
+                h2 : {'border': 'solid 2px'}, body : {'width': '300px'},
+                    th:{'border-bottom': 'solid 0px'}, table:{'border': 'solid 0px'},
+                    td:{'border-bottom': 'solid 0px', 'border-right': 'solid 0px'}}" printSectionId="KOTPrint"
             ngxPrint></button>
 
-        <button [hidden]="true" type="button" id="InvoiceReciept" #InvoiceReciept [printStyle]="{h1 : {'color': 'black'}, 
-            h2 : {'border': 'solid 2px'}, 
-                th:{'border-bottom': 'solid 1px'}, table:{'border': 'solid 1px'}, 
-                td:{'border-bottom': 'solid 0.5px', 'border-right': 'solid 0.5px'}}" printSectionId="InvoicePrint"
+        <button [hidden]="true" type="button" id="BillReciept" #BillReciept class="btn btn-secondary"
+            [useExistingCss]="true" [printStyle]="{h1 : {'color': 'black'},
+                h2 : {'border': 'solid 2px'}, body : {'width': '300px'},
+                    th:{'border-bottom': 'solid 0px'}, table:{'border': 'solid 0px'},
+                    td:{'border-bottom': 'solid 0px', 'border-right': 'solid 0px'}}" printSectionId="BillPrint"
+            ngxPrint></button>
+
+        <button [hidden]="true" type="button" id="InvoiceReciept" #InvoiceReciept class="btn btn-secondary"
+            [useExistingCss]="true" [printStyle]="{h1 : {'color': 'black'},
+                h2 : {'border': 'solid 2px'}, body : {'width': '300px'},
+                    th:{'border-bottom': 'solid 0px'}, table:{'border': 'solid 0px'},
+                    td:{'border-bottom': 'solid 0px', 'border-right': 'solid 0px'}}" printSectionId="InvoicePrint"
             ngxPrint></button>
 
         <div class="main_right" style="height: 540px;">
@@ -310,7 +338,7 @@
                                                     <div class="single_item animate__animated all_item_custom"
                                                         id="item_25">
                                                         <ng-container *ngIf="p.imageURl == null">
-                                                            <img src="assets/img/image_thumb.png">
+                                                            <img src="assets/img/image_thumb.png" alt="" width="141">
                                                         </ng-container>
                                                         <ng-container *ngIf="p.imageURl != null">
                                                             <img src="{{p.imageURl}}" alt="" width="141">
@@ -321,13 +349,11 @@
                                                         </p>
                                                         <p class="item_price"
                                                             *ngIf="p.discount == 0 && p.hasVariant == false">
-                                                            {{symbol}}
-                                                            {{p.price |
-                                                            number}}</p>
+                                                            {{symbol}} {{p.price | number}}
+                                                        </p>
                                                         <p class="item_price"
                                                             *ngIf="p.discount != 0 && p.hasVariant == false">
-                                                            {{symbol}}
-                                                            {{p.calculatedPrice | number}} / <del
+                                                            {{symbol}} {{p.calculatedPrice | number}} / <del
                                                                 style="color: black;">{{p.price
                                                                 |
                                                                 number}}</del></p>
@@ -344,7 +370,8 @@
                                                             data-veg_status="yes" data-beverage_status="no"
                                                             id="item_25">
                                                             <ng-container *ngIf="p.imageURl == null">
-                                                                <img src="assets/img/image_thumb.png">
+                                                                <img src="assets/img/image_thumb.png" alt=""
+                                                                    width="141">
                                                             </ng-container>
                                                             <ng-container *ngIf="p.imageURl != null">
                                                                 <img src="{{p.imageURl}}" alt="" width="141">
@@ -390,6 +417,9 @@
 </div>
 
 
+
+
+<!--End-->
 <div class="modal fade come-from-modal right" id="addDeliveryModal" tabindex="-1" role="dialog" data-backdrop="static"
     data-keyboard="false" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
@@ -405,9 +435,9 @@
                         <div class="col-sm-12 mb-2 col-md-6">
                             <div class="form-group">
                                 <label>Customer Name<span class="required_star">*</span></label>
-                                <input minlength="3" autocomplete="off" type="text"
-                                    formControlName="customerName" class="form-control" placeholder="Customer Name"
-                                    value="" [ngClass]="{ 'is-invalid': submitted && h.customerName.errors }" />
+                                <input minlength="3" autocomplete="off" type="text" formControlName="customerName"
+                                    class="form-control" placeholder="Customer Name" value=""
+                                    [ngClass]="{ 'is-invalid': submitted && h.customerName.errors }" />
                                 <div *ngIf="submitted && h.customerName.errors" class="invalid-feedback">
                                     <div *ngIf="h.customerName.errors.required">Customer Name is required</div>
                                     <small
@@ -425,8 +455,8 @@
                         <div class="col-sm-12 mb-2 col-md-6">
                             <div class="form-group">
                                 <label>Refrence Code<span class="required_star">*</span></label>
-                                <input autocomplete="off" type="text" formControlName="refCode"
-                                    class="form-control" placeholder="Customer Name" value=""
+                                <input autocomplete="off" type="text" formControlName="refCode" class="form-control"
+                                    placeholder="Customer Name" value=""
                                     [ngClass]="{ 'is-invalid': submitted && h.refCode.errors }" />
                                 <div *ngIf="submitted && h.refCode.errors" class="invalid-feedback">
                                     <div *ngIf="h.refCode.errors.required">Refrence Code is required</div>
@@ -559,7 +589,7 @@
                             <ng-container>
                                 <div class="single_item animate__animated all_item_custom" id="item_25">
                                     <ng-container *ngIf="p.imageURL == null">
-                                        <img src="assets/img/image_thumb.png">
+                                        <img src="assets/img/image_thumb.png" alt="" width="141">
                                     </ng-container>
                                     <ng-container *ngIf="p.imageURL != null">
                                         <img src="{{p.imageURL}}" alt="" width="141">
@@ -568,12 +598,11 @@
                                         {{p.variantName}}
                                     </p>
                                     <p class="item_price" *ngIf="p.discount == 0 ">
-                                        {{symbol}}
-                                        {{p.variantPrice |
-                                        number}}</p>
+                                        {{symbol}} {{p.variantPrice | number}}
+                                    </p>
                                     <p class="item_price" *ngIf="p.discount != 0 ">
-                                        {{symbol}}
-                                        {{p.calculatedPrice | number}} / <del style="color: black;">{{p.variantPrice
+                                        {{symbol}} {{p.calculatedPrice | number}} / <del
+                                            style="color: black;">{{p.variantPrice
                                             |
                                             number}}</del></p>
                                 </div>
@@ -589,6 +618,179 @@
     </div>
 </div>
 
+<div class="modal fade" id="showTaxModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false"
+    aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" #closeTaxModal><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Taxes</h4>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table id="datatable" class="table table-striped">
+                        <thead>
+                            <tr style="background-color: rgb(138, 138, 138); color: white;">
+                                <th></th>
+                                <th><b>Is Active</b></th>
+                                <th><b>Name</b></th>
+                                <th style="text-align: right;"><b>Rate</b></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let p of taxArr let ndx=index;">
+                                <td>{{ndx+1}}</td>
+                                <td><input readonly type="checkbox" #isActiveVal [checked]="p.isActive"
+                                        value="{{p.isActive}}" (click)="changeActiveStatus(p, isActiveVal)"></td>
+                                <td>{{p.taxName}}</td>
+                                <td style="text-align: right;">{{p.taxRate}}</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td style="background-color: rgb(225, 225, 225);"><b>Total Tax</b></td>
+                                <td style="text-align: right; background-color: rgb(225, 225, 225);"><input readonly
+                                        type="text" value="{{totalTax}}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="showInvDisModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false"
+    aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" #closeInvDisModal><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Invoice Discount</h4>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table id="datatable" class="table table-striped">
+                        <thead>
+                            <tr style="background-color: rgb(138, 138, 138); color: white;">
+                                <th style="text-align: center;"><b>Items Discount</b></th>
+                                <th style="text-align: center;"><b>Invoice Discount</b></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="text-align: center;">
+                                    {{discount}}
+                                </td>
+                                <td style="text-align: center;">
+                                    <input (input)="checkValidInput()" type="number" class="form-control"
+                                        [(ngModel)]="invoiceDiscount">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;">
+                                    Total Payable
+                                </td>
+                                <td style="text-align: right;">
+                                    <input readonly type="number" value="{{total - totalDiscount}}"
+                                        class="form-control">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="saveInvDis()">Save</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="showPaymentModes" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false"
+    aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                    #closePaymentModesModal><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Payment Modes</h4>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table id="datatable" class="table table-striped">
+                        <thead>
+                            <tr style="background-color: rgb(138, 138, 138); color: white;">
+                                <th></th>
+                                <th style="text-align: center;"><b>Payment Mode Name</b></th>
+                                <th style="text-align: right;">Is Active</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let p of paymentTypesResponse let ndx=index;">
+                                <td>{{ndx+1}}</td>
+                                <td style="text-align: center;">
+                                    {{ p.paymentModeName }}
+                                </td>
+                                <td style="text-align: right;"><input type="checkbox" #isActiveVal
+                                        [checked]="p.paymentModeID == payModeID"
+                                        (click)="changePaymentMode(p, isActiveVal)">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="showChargeModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false"
+    aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" #closeChargeModal><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Charges</h4>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table id="datatable" class="table table-striped">
+                        <thead>
+                            <tr style="background-color: rgb(138, 138, 138); color: white;">
+                                <th><b>Name</b></th>
+                                <th style="text-align: right;"><b>Charges Amount</b></th>
+                                <th style="text-align: right;"><b>Charges %</b></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let p of chargesArray let ndx=index;"
+                                [ngStyle]="{'background-color': orderTypeValue == p.name ? '#ecf0f1 ' : '#ffff' }">
+                                <td>
+                                    {{p.name}}</td>
+                                <td style="text-align: right;">{{p.chargesAmount}}</td>
+                                <td style="text-align: right;">{{p.chargesPercentage}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="modal fade come-from-modal right" id="addCustomerModal" tabindex="-1" role="dialog" data-backdrop="static"
     data-keyboard="false" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
@@ -604,9 +806,9 @@
                         <div class="col-sm-12 mb-2 col-md-6">
                             <div class="form-group">
                                 <label>Customer Name<span class="required_star">*</span></label>
-                                <input minlength="3" autocomplete="off" type="text"
-                                    formControlName="customerName" class="form-control" placeholder="Customer Name"
-                                    value="" [ngClass]="{ 'is-invalid': submitted && h.customerName.errors }" />
+                                <input minlength="3" autocomplete="off" type="text" formControlName="customerName"
+                                    class="form-control" placeholder="Customer Name" value=""
+                                    [ngClass]="{ 'is-invalid': submitted && h.customerName.errors }" />
                                 <div *ngIf="submitted && h.customerName.errors" class="invalid-feedback">
                                     <div *ngIf="h.customerName.errors.required">Customer Name is required</div>
                                     <small
@@ -624,8 +826,8 @@
                         <div class="col-sm-12 mb-2 col-md-6">
                             <div class="form-group">
                                 <label>Refrence Code<span class="required_star">*</span></label>
-                                <input autocomplete="off" type="text" formControlName="refCode"
-                                    class="form-control" placeholder="Customer Name" value=""
+                                <input autocomplete="off" type="text" formControlName="refCode" class="form-control"
+                                    placeholder="Customer Name" value=""
                                     [ngClass]="{ 'is-invalid': submitted && h.refCode.errors }" />
                                 <div *ngIf="submitted && h.refCode.errors" class="invalid-feedback">
                                     <div *ngIf="h.refCode.errors.required">Refrence Code is required</div>
@@ -719,159 +921,6 @@
     </div>
 </div>
 
-
-<!-- .......................................KOT Receipt............................................. -->
-
-<div class="invoice" id="KOTPrint" [hidden]="true" data-backdrop="static" data-keyboard="false">
-    <h3 class="text-center">ORDER NO: {{POSNewModelRequest.requestKot.kotNO}}
-    </h3>
-    <p class="centered">
-        Table: {{tableList}}
-        <br>
-        <!-- <ng-container *ngIf="POSNewModelRequest.requestOrder.orderID > 0">
-            Order No: {{POSNewModelRequest.requestOrder.orderID}}</ng-container>
-        <ng-container *ngIf="POSNewModelRequest.requestOrder.orderID == 0">
-            Order No: Payment Pending</ng-container> -->
-        Waiter: abc
-        <br>
-        Order Type: {{POSNewModelRequest.requestKot.orderType}}
-        <br>
-    </p>
-    <div class="table-box">
-        <div class="table-responsive">
-            <table id="datatable" class="table table-striped">
-                <thead>
-                    <tr>
-                        <th class="ir_w_30">Name</th>
-                        <th>Qty</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let p of POSNewModelRequest.requestKotDetail let ndx=index;">
-                        <td class="ir_w_30" *ngIf="!p.variantID && !p.dealID">
-                            {{p.foodItemName}}</td>
-                        <td class="ir_w_30" *ngIf="p.variantID && !p.dealID">
-                            {{p.foodItemName}} ({{p.variantName}})
-                        </td>
-                        <td class="ir_w_30" *ngIf="p.dealID">{{p.dealName}}</td>
-                        <td>
-                            {{p.quantity}}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <p class="centered">
-        Remarks: {{POSNewModelRequest.requestKot.remarks}}
-    </p>
-</div>
-
-
-
-<!-- .......................................INVOICE Receipt............................................. -->
-
-<div class="invoice" id="InvoicePrint" [hidden]="true" data-backdrop="static" data-keyboard="false">
-    <h3 class="text-center">{{GV.companyName}}</h3>
-    <p class="centered">
-        Outlet: {{GV.OutletName}}
-        <!-- <br>
-        <ng-container *ngIf="POSNewModelRequest.requestOrder.orderID > 0">
-            Order No: {{POSNewModelRequest.requestOrder.orderID}}</ng-container>
-        <ng-container *ngIf="POSNewModelRequest.requestOrder.orderID == 0">
-            Order No: Payment Pending</ng-container> -->
-    </p>
-    <div class="table-box">
-        <div class="table-responsive">
-            <table id="datatable" class="table table-striped">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th class="ir_w_30">Name</th>
-                        <th>Qty</th>
-                        <th style="text-align: right;">Price</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let p of POSNewModelRequest.requestKotDetail let ndx=index;">
-                        <td class="ir_w_1 ir_txt_center">
-                        </td>
-                        <td class="ir_w_30" *ngIf="!p.variantID && !p.dealID">
-                            {{p.foodItemName}}</td>
-                        <td class="ir_w_30" *ngIf="p.variantID && !p.dealID">
-                            {{p.foodItemName}} ({{p.variantName}})
-                        </td>
-                        <td class="ir_w_30" *ngIf="p.dealID">{{p.dealName}}</td>
-                        <td>
-                            {{p.quantity}}
-                        </td>
-                        <td *ngIf="!p.variantID && !p.dealID && p.discount == 0" style="text-align: right;">
-                            {{GV.Currency}} {{p.price | number}}
-                        </td>
-                        <td *ngIf="!p.variantID && !p.dealID && p.discount != 0" style="text-align: right;">
-                            {{GV.Currency}} {{p.calculatedPrice | number}}
-                        </td>
-                        <td *ngIf="p.variantID && !p.dealID && p.discount == 0" style="text-align: right;">
-                            {{GV.Currency}} {{p.variantPrice | number}}
-                        </td>
-                        <td *ngIf="p.variantID && !p.dealID && p.discount != 0" style="text-align: right;">
-                            {{GV.Currency}} {{p.calculatedPrice | number}}
-                        </td>
-                        <td *ngIf="p.dealID" style="text-align: right;">
-                            {{GV.Currency}} {{p.dealPrice | number}}
-                        </td>
-                    </tr>
-                    <tr *ngIf="POSNewModelRequest.requestKotDetail.length > 0">
-                        <td>SubTotal</td>
-                        <td></td>
-                        <td></td>
-                        <td style="text-align: right;" *ngIf="subTotal == 0">-
-                        </td>
-                        <td class="ir_w_50" style="text-align: right;" *ngIf="subTotal > 0">
-                            {{GV.Currency}}
-                            {{subTotal | number}}
-                        </td>
-                    </tr>
-                    <tr *ngIf="POSNewModelRequest.requestKotDetail.length > 0">
-                        <td>Sales Tax</td>
-                        <td></td>
-                        <td></td>
-                        <td style="text-align: right;" *ngIf="salesTax == 0">-</td>
-                        <td style="text-align: right;" *ngIf="salesTax > 0">
-                            {{GV.Currency}}
-                            {{salesTax |
-                            number}}</td>
-                    </tr>
-                    <tr *ngIf="POSNewModelRequest.requestKotDetail.length > 0">
-                        <td>Discount {{GV.Currency}}</td>
-                        <td></td>
-                        <td></td>
-                        <td style="text-align: right;" *ngIf="discount == 0">-</td>
-                        <td style="text-align: right;" *ngIf="discount > 0">
-                            {{GV.Currency}}
-                            {{discount |
-                            number}}</td>
-                    </tr>
-                    <tr *ngIf="POSNewModelRequest.requestKotDetail.length > 0">
-                        <td><b>Total</b></td>
-                        <td></td>
-                        <td></td>
-                        <td style="text-align: right;" *ngIf="total == 0"><b>-</b></td>
-                        <td style="text-align: right;" *ngIf="total > 0">
-                            <b>{{GV.Currency}}
-                                {{total |
-                                number}}</b>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <p class="centered">Thank You!
-        <br>Powered By: POS Plus
-    </p>
-</div>
-
 <div class="modal fade" id="addRemarksModal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog"
     aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
@@ -913,8 +962,7 @@
                     </div>
                     <div class="row col-md-9">
                         <div class="col-md-4">
-                            <h4 class="modal-title" id="myModalLabel">Total:
-                                {{totalTables}} </h4>
+                            <h4 class="modal-title" id="myModalLabel">Total: {{totalTables}} </h4>
                         </div>
                         <div class="row col-md-4">
                             <div class="col-md-2 fff">
@@ -967,7 +1015,7 @@
             </div>
             <div class="modal-body">
                 <div class="box-wrapper" [hidden]="responseOrder.length == 0">
-                    <table datatable [dtOptions]="dtOptions4" [dtTrigger]="dtTrigger4" class="row-border hover">
+                    <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
                         <thead>
                             <tr>
                                 <th style="color: black;">SR</th>
@@ -982,26 +1030,27 @@
                                     <td>{{ndx+1}}</td>
                                     <td>{{p.kotNO}}</td>
                                     <td *ngIf="p.statusID == 3" style="color: rgb(0, 197, 0);">
-                                        NEW_ORDER
+                                        <b>NEW_ORDER</b>
                                     </td>
                                     <td *ngIf="p.statusID == 4" style="color: rgb(12, 0, 242);">
-                                        IN_QUEUE
+                                        <b>IN_QUEUE</b>
                                     </td>
                                     <td *ngIf="p.statusID == 5" style="color: rgb(199, 0, 209);">
-                                        ORDER_READY
+                                        <b>ORDER_READY</b>
                                     </td>
                                     <td *ngIf="p.statusID == 8" style="color: #f15a29;">
-                                        ORDER_COLLECTED
+                                        <b>ORDER_COLLECTED</b>
                                     </td>
                                     <td>
                                         <button class="btn btn-success color text-white btn-sm m-1" title="Edit"
                                             (click)="viewOrder(p)">
                                             <i class="fa fa-pencil" aria-hidden="true"></i></button>
                                         <button class="btn btn-secondary color text-white btn-sm m-1" title="Bill"
-                                            (click)="getInvoiceReciept(p.kotID)">
+                                            (click)="getInvoiceReciept(p.kotID, 1)">
                                             B</button>
                                         <button class="btn btn-danger color text-white btn-sm m-1" title="Invoice"
-                                            (click)="paymentMade(p); getInvoiceReciept(p.kotID)">
+                                            (click)="getInvoiceReciept(p.kotID, 2)" data-toggle="modal"
+                                            data-target="#InvoiceModal">
                                             I</button>
                                         <button class="btn btn-primary color text-white btn-sm m-1" title="Cancel Order"
                                             (click)="cancelOrderNotConfirm(p)">
@@ -1018,4 +1067,782 @@
             </div>
         </div>
     </div>
+</div>
+
+<!-- <div class="modal fade come-from-modal left" id="InvoiceModal" tabindex="-1" role="dialog" data-backdrop="static"
+    data-keyboard="false" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" #closeInvoiceModal><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Invoice</h4>
+            </div>
+            <div class="modal-body">
+                <div class="table-box anyClassThree">
+                    <div class="table-responsive">
+                        <table id="datatable" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th style="color: black;">Name</th>
+                                    <th style="text-align: right; color: black;">Qty</th>
+                                    <th style="text-align: right; color: black;">Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let p of POSNewModelRequest.requestKotDetail let ndx=index;">
+                                    <td class="ir_w_1 ir_txt_center">
+                                    </td>
+                                    <td class="ir_w_30" *ngIf="!p.variantID && !p.dealID">
+                                        {{p.foodItemName}}</td>
+                                    <td class="ir_w_30" *ngIf="p.variantID && !p.dealID">
+                                        {{p.foodItemName}} ({{p.variantName}})
+                                    </td>
+                                    <td class="ir_w_30" *ngIf="p.dealID">{{p.dealName}}</td>
+                                    <td style="text-align: right;">
+                                        {{p.quantity}}
+                                    </td>
+                                    <td *ngIf="!p.variantID && !p.dealID && p.discount == 0" style="text-align: right;">
+                                        {{GV.Currency}} {{p.price | number}}
+                                    </td>
+                                    <td *ngIf="!p.variantID && !p.dealID && p.discount != 0" style="text-align: right;">
+                                        {{GV.Currency}} {{p.calculatedPrice | number}}
+                                    </td>
+                                    <td *ngIf="p.variantID && !p.dealID && p.discount == 0" style="text-align: right;">
+                                        {{GV.Currency}} {{p.variantPrice | number}}
+                                    </td>
+                                    <td *ngIf="p.variantID && !p.dealID && p.discount != 0" style="text-align: right;">
+                                        {{GV.Currency}} {{p.calculatedPrice | number}}
+                                    </td>
+                                    <td *ngIf="p.dealID" style="text-align: right;">
+                                        {{GV.Currency}} {{p.dealPrice | number}}
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <br>
+                            <tbody>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th style="text-align: right; color: black;">Subtotal: </th>
+                                    <th style="text-align: right; color: black;">{{GV.Currency}} {{subTotal | number}}
+                                    </th>
+                                </tr>
+                            </tbody>
+                            <tbody>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th style="text-align: right; color: black;">Sales Tax: </th>
+                                    <th style="text-align: right; color: black;">{{GV.Currency}} {{salesTax | number}}
+                                    </th>
+                                </tr>
+                            </tbody>
+                            <tbody>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th style="text-align: right; color: black;">Discount: </th>
+                                    <th style="text-align: right; color: black;">{{GV.Currency}} {{discount | number}}
+                                    </th>
+                                </tr>
+                            </tbody>
+                            <tbody>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th style="text-align: right; color: black;">Total: </th>
+                                    <th style="text-align: right; color: black;">{{GV.Currency}} {{total | number}}</th>
+                                </tr>
+                            </tbody>
+                            <tbody>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th style="text-align: right; color: black;">Paid Amount: </th>
+                                    <th style="text-align: right; color: black;">
+                                        <input type="text" [(ngModel)]="paidAmount"
+                                            [ngModelOptions]="{standalone: true}"
+                                            style="width: 100px; background-color: #ffffff;" (input)="calBalanceDue()">
+                                    </th>
+                                </tr>
+                            </tbody>
+                            <tbody>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th style="text-align: right; color: black;">Balance Due: </th>
+                                    <th style="text-align: right; color: black;">{{GV.Currency}} {{balanceDue | number}}
+                                    </th>
+                                </tr>
+                            </tbody>
+                            <tbody>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th style="text-align: right; color: black;">Change: </th>
+                                    <th style="text-align: right; color: black;">{{GV.Currency}} {{changeAmount |
+                                        number}}
+                                    </th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" [printStyle]="{h1 : {'color': 'black'},
+                h2 : {'border': 'solid 2px'},
+                    th:{'border-bottom': 'solid 1px'}, table:{'border': 'solid 1px'},
+                    td:{'border-bottom': 'solid 0.5px', 'border-right': 'solid 0.5px'}}" printSectionId="InvoicePrint"
+                    ngxPrint>Print</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+
+<!-- .......................................Bill Receipt............................................. -->
+
+<div class="invoice" id="BillPrint" [hidden]="true" data-backdrop="static" data-keyboard="false">
+    <h3 class="text-center">{{GV.companyName}}</h3>
+    <p class="centered">
+        Outlet: {{GV.OutletName}}
+    </p>
+    <div class="table-box">
+        <div class="table-responsive">
+            <table id="datatable" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th class="ir_w_30">Name</th>
+                        <th>Qty</th>
+                        <th style="text-align: right;">Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let p of POSNewModelRequest.requestKotDetail let ndx=index;">
+                        <td class="ir_w_1 ir_txt_center">
+                        </td>
+                        <td class="ir_w_30" *ngIf="!p.variantID && !p.dealID">
+                            {{p.foodItemName}}</td>
+                        <td class="ir_w_30" *ngIf="p.variantID && !p.dealID">
+                            {{p.foodItemName}} ({{p.variantName}})
+                        </td>
+                        <td class="ir_w_30" *ngIf="p.dealID">{{p.dealName}}</td>
+                        <td>
+                            {{p.quantity}}
+                        </td>
+                        <td *ngIf="!p.variantID && !p.dealID && p.discount == 0" style="text-align: right;">
+                            {{GV.Currency}} {{p.price | number}}
+                        </td>
+                        <td *ngIf="!p.variantID && !p.dealID && p.discount != 0" style="text-align: right;">
+                            {{GV.Currency}} {{p.calculatedPrice | number}}
+                        </td>
+                        <td *ngIf="p.variantID && !p.dealID && p.discount == 0" style="text-align: right;">
+                            {{GV.Currency}} {{p.variantPrice | number}}
+                        </td>
+                        <td *ngIf="p.variantID && !p.dealID && p.discount != 0" style="text-align: right;">
+                            {{GV.Currency}} {{p.calculatedPrice | number}}
+                        </td>
+                        <td *ngIf="p.dealID" style="text-align: right;">
+                            {{GV.Currency}} {{p.dealPrice | number}}
+                        </td>
+                    </tr>
+                    <tr *ngIf="POSNewModelRequest.requestKotDetail.length > 0">
+                        <td>SubTotal</td>
+                        <td></td>
+                        <td></td>
+                        <td style="text-align: right;" *ngIf="subTotal == 0">-
+                        </td>
+                        <td class="ir_w_50" style="text-align: right;" *ngIf="subTotal > 0">
+                            {{GV.Currency}} {{subTotal | number}}
+                        </td>
+                    </tr>
+                    <tr *ngIf="POSNewModelRequest.requestKotDetail.length > 0">
+                        <td>Sales Tax</td>
+                        <td></td>
+                        <td></td>
+                        <td style="text-align: right;" *ngIf="salesTax == 0">-</td>
+                        <td style="text-align: right;" *ngIf="salesTax > 0">
+                            {{GV.Currency}} {{salesTax | number}}
+                        </td>
+                    </tr>
+                    <tr *ngIf="POSNewModelRequest.requestKotDetail.length > 0">
+                        <td>Discount {{GV.Currency}}</td>
+                        <td></td>
+                        <td></td>
+                        <td style="text-align: right;" *ngIf="discount == 0">-</td>
+                        <td style="text-align: right;" *ngIf="discount > 0">
+                            {{GV.Currency}} {{discount | number}}
+                        </td>
+                    </tr>
+                    <tr *ngIf="POSNewModelRequest.requestKotDetail.length > 0">
+                        <td><b>Total</b></td>
+                        <td></td>
+                        <td></td>
+                        <td style="text-align: right;" *ngIf="total == 0"><b>-</b></td>
+                        <td style="text-align: right;" *ngIf="total > 0">
+                            <b>{{GV.Currency}}
+                                {{total |
+                                number}}</b>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <p class="centered">Thank You!
+        <br>Powered By: POS Plus
+    </p>
+</div>
+
+<!-- .......................................INVOICE Receipt............................................. -->
+
+<div class="modal fade come-from-modal left" id="InvoiceModal" tabindex="-1" role="dialog" data-backdrop="static"
+    data-keyboard="false" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" #closeInvoiceModal><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Invoice</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row textClass">
+                    <div class="col-md-12" *ngIf="OutletInfo.outletLogo">
+                        <img src="{{OutletInfo.outletLogo}}" alt="" width="141">
+                    </div>
+                    <div class="col-md-12" *ngIf="!OutletInfo.outletLogo">
+                        <img src="assets/img/image_thumb.png" alt="" width="141">
+                    </div>
+                    <div class="col-md-12">
+                        <h1 class="fontStyle">{{OutletInfo.outletName}}</h1>
+                    </div>
+                    <div class="col-md-12">
+                        <span class="fontStyle">Address: {{OutletInfo.address}}</span>
+                    </div>
+                    <div class="col-md-12">
+                        <span class="fontStyle">NTN #: {{POSNewModelRequest.requestKot.outletNTNNumber}}</span>
+                    </div>
+                    <div class="col-md-12">
+                        <span class="fontStyle">STRN #: {{POSNewModelRequest.requestKot.outletSTRNumber}}</span>
+                    </div>
+                    <div class="col-md-12">
+                        <span class="fontStyle">Invoice #: {{POSNewModelRequest.requestKot.invoiceNumber}}</span>
+                    </div>
+                    <div class="col-md-12">
+                        <span class="fontStyle">Payment Mode: {{POSNewModelRequest.requestKot.paymentModeName}}</span>
+                    </div>
+                    <div class="col-md-12">
+                        <span class="fontStyle">Tax Office: {{POSNewModelRequest.requestKot.taxOffice}}</span>
+                    </div>
+                    <div class="col-md-12">
+                        <table id="datatable" class="table table-striped">
+                            <tbody>
+                                <tr>
+                                    <th style="color: black;">Description</th>
+                                    <th style="color: black;">Qty</th>
+                                    <th style="text-align: right; color: black;">Price</th>
+                                </tr>
+                            </tbody>
+                            <tbody>
+                                <tr *ngFor="let p of POSNewModelRequest.requestKotDetail let ndx=index;">
+                                    <th class="ir_w_30" *ngIf="!p.variantID && !p.dealID">
+                                        {{p.foodItemName}}</th>
+                                    <th class="ir_w_30" *ngIf="p.variantID && !p.dealID">
+                                        {{p.foodItemName}} ({{p.variantName}})
+                                    </th>
+                                    <th class="ir_w_30" *ngIf="p.dealID">{{p.dealName}}</th>
+                                    <th>
+                                        {{p.quantity}}
+                                    </th>
+                                    <th style="text-align: right;" *ngIf="!p.variantID && !p.dealID && p.discount == 0">
+                                        {{GV.Currency}} {{p.price | number}}
+                                    </th>
+                                    <th style="text-align: right;" *ngIf="!p.variantID && !p.dealID && p.discount != 0">
+                                        {{GV.Currency}} {{p.calculatedPrice | number}}
+                                    </th>
+                                    <th style="text-align: right;" *ngIf="p.variantID && !p.dealID && p.discount == 0">
+                                        {{GV.Currency}} {{p.variantPrice | number}}
+                                    </th>
+                                    <th style="text-align: right;" *ngIf="p.variantID && !p.dealID && p.discount != 0">
+                                        {{GV.Currency}} {{p.calculatedPrice | number}}
+                                    </th>
+                                    <th style="text-align: right;" *ngIf="p.dealID">
+                                        {{GV.Currency}} {{p.dealPrice | number}}
+                                    </th>
+                                </tr>
+                            </tbody>
+                            <tbody>
+                                <tr>
+                                    <th></th>
+                                    <th style="text-align: right; color: black;">Subtotal: </th>
+                                    <th style="text-align: right; color: black;">{{GV.Currency}} {{subTotal | number}}
+                                    </th>
+                                </tr>
+                            </tbody>
+                            <tbody>
+                                <tr>
+                                    <th></th>
+                                    <th style="text-align: right; color: black;">Sales Tax: </th>
+                                    <th style="text-align: right; color: black;">{{GV.Currency}} {{salesTax | number}}
+                                    </th>
+                                </tr>
+                            </tbody>
+                            <tbody>
+                                <tr>
+                                    <th></th>
+                                    <th style="text-align: right; color: black;">Discount: </th>
+                                    <th style="text-align: right; color: black;">{{GV.Currency}} {{discount | number}}
+                                    </th>
+                                </tr>
+                            </tbody>
+                            <tbody *ngIf="POSNewModelRequest.requestKot.invoiceDiscount > 0">
+                                <tr>
+                                    <th></th>
+                                    <th style="text-align: right; color: black;">Invoice Discount: </th>
+                                    <th style="text-align: right; color: black;">{{GV.Currency}}
+                                        {{POSNewModelRequest.requestKot.invoiceDiscount | number}}
+                                    </th>
+                                </tr>
+                            </tbody>
+                            <tbody>
+                                <tr>
+                                    <th></th>
+                                    <th style="text-align: right; color: black;">Total: </th>
+                                    <th style="text-align: right; color: black;">{{GV.Currency}} {{total | number}}</th>
+                                </tr>
+                            </tbody>
+                            <tbody>
+                                <tr>
+                                    <th></th>
+                                    <th style="text-align: right; color: black;">Paid Amount: </th>
+                                    <th style="text-align: right; color: black;">
+                                        <input type="text" [(ngModel)]="paidAmount"
+                                            [ngModelOptions]="{standalone: true}"
+                                            style="width: 100px; background-color: #ffffff;" (input)="calBalanceDue()">
+                                    </th>
+                                </tr>
+                            </tbody>
+                            <tbody>
+                                <tr>
+                                    <th></th>
+                                    <th style="text-align: right; color: black;">Balance Due: </th>
+                                    <th style="text-align: right; color: black;">{{GV.Currency}} {{balanceDue | number}}
+                                    </th>
+                                </tr>
+                            </tbody>
+                            <tbody>
+                                <tr>
+                                    <th></th>
+                                    <th style="text-align: right; color: black;">Change: </th>
+                                    <th style="text-align: right; color: black;">{{GV.Currency}} {{changeAmount |
+                                        number}}
+                                    </th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row textClass">
+                    <span> <b>FBR Invoice #</b> {{POSNewModelRequest.requestKot.invoiceNumber}}</span>
+                </div>
+                <div class="row textClass">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4">
+                        <img src="assets/img/fbrLogo.jpg" alt="" width="141">
+                    </div>
+                    <div class="col-md-4">
+                        <ngx-qrcode [elementType]="elementType" [errorCorrectionLevel]="correctionLevel"
+                            [value]="POSNewModelRequest.requestKot.invoiceNumber" cssClass="bshadow">
+                        </ngx-qrcode>
+                    </div>
+                    <div class="col-md-2"></div>
+                </div>
+                <div class="row textClass">
+                    <p>Verify this invoice through FBR TaxAsaan MobileApp or
+                        SMS at 9966 and win exciting prizes in draw</p>
+                </div>
+                <div class="row textClass mt-5">
+                    <p>POS Software By: POS Plus</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" [useExistingCss]="true" [printStyle]="{h1 : {'color': 'black'},
+                h2 : {'border': 'solid 2px'}, body : {'width': '300px'},
+                    th:{'border-bottom': 'solid 0px'}, table:{'border': 'solid 0px'},
+                    td:{'border-bottom': 'solid 0px', 'border-right': 'solid 0px'}}" printSectionId="InvoicePrint"
+                    ngxPrint>Print</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- .......................................KOT Receipt............................................. -->
+
+<div class="invoice" id="KOTPrint" [hidden]="true" data-backdrop="static" data-keyboard="false">
+    <body>
+        <div class="row textClass">
+            <div class="col-md-12" *ngIf="OutletInfo.outletLogo">
+                <img src="{{OutletInfo.outletLogo}}" alt="" width="141">
+            </div>
+            <div class="col-md-12" *ngIf="!OutletInfo.outletLogo">
+                <img src="assets/img/image_thumb.png" alt="" width="141">
+            </div>
+            <div class="col-md-12">
+                <h1 class="fontStyle">{{OutletInfo.outletName}}</h1>
+            </div>
+            <div class="col-md-12">
+                <h5 class="fontStyle">ORDER NO: {{KOTNumber}}</h5>
+            </div>
+            <div class="col-md-12">
+                <span class="fontStyle"> Table: {{tableList}}</span>
+            </div>
+            <div class="col-md-12">
+                <span class="fontStyle">Waiter: abc</span>
+            </div>
+            <div class="col-md-12">
+                <span class="fontStyle">Order Type: {{POSNewModelRequest.requestKot.orderType}}</span>
+            </div>
+            <div class="col-md-12">
+                <table id="datatable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th style="text-align: right;">Qty</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let p of POSNewModelRequest.requestKotDetail let ndx=index;">
+                            <th *ngIf="!p.variantID && !p.dealID">
+                                {{p.foodItemName}}</th>
+                            <th *ngIf="p.variantID && !p.dealID">
+                                {{p.foodItemName}} ({{p.variantName}})
+                            </th>
+                            <th *ngIf="p.dealID">{{p.dealName}}</th>
+                            <th style="text-align: right;">
+                                {{p.quantity}}
+                            </th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-12">
+                <span class="fontStyle">Remarks: {{POSNewModelRequest.requestKot.remarks}}</span>
+            </div>
+        </div>
+    </body>
+</div>
+<!-- ...............................................Bill Recipt........................................................ -->
+<div class="invoice" id="BillPrint" [hidden]="true" data-backdrop="static" data-keyboard="false">
+    <body>
+        <div class="row textClass">
+            <div class="col-md-12" *ngIf="OutletInfo.outletLogo">
+                <img src="{{OutletInfo.outletLogo}}" alt="" width="141">
+            </div>
+            <div class="col-md-12" *ngIf="!OutletInfo.outletLogo">
+                <img src="assets/img/image_thumb.png" alt="" width="141">
+            </div>
+            <div class="col-md-12">
+                <h1 class="fontStyle">{{OutletInfo.outletName}}</h1>
+            </div>
+            <div class="col-md-12">
+                <span class="fontStyle">Address: {{OutletInfo.address}}</span>
+            </div>
+            <div class="col-md-12">
+                <span class="fontStyle">STRN/NTN: 12345678</span>
+            </div>
+            <div class="col-md-12">
+                <span class="fontStyle">Invoice #: {{POSNewModelRequest.requestKot.invoiceNumber}}</span>
+            </div>
+            <div class="col-md-12">
+                <table id="datatable" class="table table-striped">
+                    <tbody>
+                        <tr>
+                            <th style="color: black;">Description</th>
+                            <th style="color: black;">Qty</th>
+                            <th style="text-align: right; color: black;">Price</th>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr *ngFor="let p of POSNewModelRequest.requestKotDetail let ndx=index;">
+                            <th class="ir_w_30" *ngIf="!p.variantID && !p.dealID">
+                                {{p.foodItemName}}</th>
+                            <th class="ir_w_30" *ngIf="p.variantID && !p.dealID">
+                                {{p.foodItemName}} ({{p.variantName}})
+                            </th>
+                            <th class="ir_w_30" *ngIf="p.dealID">{{p.dealName}}</th>
+                            <th>
+                                {{p.quantity}}
+                            </th>
+                            <th style="text-align: right;" *ngIf="!p.variantID && !p.dealID && p.discount == 0">
+                                {{GV.Currency}} {{p.price | number}}
+                            </th>
+                            <th style="text-align: right;" *ngIf="!p.variantID && !p.dealID && p.discount != 0">
+                                {{GV.Currency}} {{p.calculatedPrice | number}}
+                            </th>
+                            <th style="text-align: right;" *ngIf="p.variantID && !p.dealID && p.discount == 0">
+                                {{GV.Currency}} {{p.variantPrice | number}}
+                            </th>
+                            <th style="text-align: right;" *ngIf="p.variantID && !p.dealID && p.discount != 0">
+                                {{GV.Currency}} {{p.calculatedPrice | number}}
+                            </th>
+                            <th style="text-align: right;" *ngIf="p.dealID">
+                                {{GV.Currency}} {{p.dealPrice | number}}
+                            </th>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr>
+                            <th></th>
+                            <th style="color: black;">Subtotal: </th>
+                            <th style="text-align: right; color: black;">{{GV.Currency}} {{subTotal | number}}
+                            </th>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr>
+                            <th></th>
+                            <th style="color: black;">Sales Tax: </th>
+                            <th style="text-align: right; color: black;">{{GV.Currency}} {{salesTax | number}}
+                            </th>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr>
+                            <th></th>
+                            <th style="color: black;">Discount: </th>
+                            <th style="text-align: right; color: black;">{{GV.Currency}} {{discount | number}}
+                            </th>
+                        </tr>
+                    </tbody>
+                    <tbody *ngIf="POSNewModelRequest.requestKot.invoiceDiscount > 0">
+                        <tr>
+                            <th></th>
+                            <th style="text-align: right; color: black;">Invoice Discount: </th>
+                            <th style="text-align: right; color: black;">{{GV.Currency}}
+                                {{POSNewModelRequest.requestKot.invoiceDiscount | number}}
+                            </th>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr>
+                            <th></th>
+                            <th style="color: black;">Total: </th>
+                            <th style="text-align: right; color: black;">{{GV.Currency}} {{total | number}}</th>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr>
+                            <th></th>
+                            <th style="color: black;">Paid Amount: </th>
+                            <th style="text-align: right; color: black;">
+                                <input type="text" [(ngModel)]="paidAmount" [ngModelOptions]="{standalone: true}"
+                                    style="width: 100px; background-color: #ffffff;" (input)="calBalanceDue()">
+                            </th>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr>
+                            <th></th>
+                            <th style="color: black;">Balance Due: </th>
+                            <th style="text-align: right; color: black;">{{GV.Currency}} {{balanceDue | number}}
+                            </th>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr>
+                            <th></th>
+                            <th style="color: black;">Change: </th>
+                            <th style="text-align: right; color: black;">{{GV.Currency}} {{changeAmount |
+                                number}}
+                            </th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row textClass">
+            <span> <b>FBR Invoice #</b> {{POSNewModelRequest.requestKot.invoiceNumber}}</span>
+        </div>
+        <div class="row textClass">
+            <div class="col-md-6 col-sm-4">
+                <img src="assets/img/fbrLogo.jpg" alt="" width="141">
+            </div>
+            <div class="col-md-6 col-sm-4">
+                <ngx-qrcode [elementType]="elementType" [errorCorrectionLevel]="correctionLevel"
+                    [value]="POSNewModelRequest.requestKot.invoiceNumber" cssClass="bshadow">
+                </ngx-qrcode>
+            </div>
+        </div>
+        <div class="row textClass">
+            <p>Verify this invoice through FBR TaxAsaan MobileApp or
+                SMS at 9966 and win exciting prizes in draw</p>
+        </div>
+        <div class="row textClass mt-5">
+            <p>POS Software By: POS Plus</p>
+        </div>
+    </body>
+</div>
+
+<!-- ...............................................Invoice Recipt........................................................ -->
+<div class="invoice" id="InvoicePrint" [hidden]="true" data-backdrop="static" data-keyboard="false">
+    <body>
+        <div class="row textClass">
+            <div class="col-md-12" *ngIf="OutletInfo.outletLogo">
+                <img src="{{OutletInfo.outletLogo}}" alt="" width="141">
+            </div>
+            <div class="col-md-12" *ngIf="!OutletInfo.outletLogo">
+                <img src="assets/img/image_thumb.png" alt="" width="141">
+            </div>
+            <div class="col-md-12">
+                <h1 class="fontStyle">{{OutletInfo.outletName}}</h1>
+            </div>
+            <div class="col-md-12">
+                <span class="fontStyle">Address: {{OutletInfo.address}}</span>
+            </div>
+            <div class="col-md-12">
+                <span class="fontStyle">NTN #: {{POSNewModelRequest.requestKot.outletNTNNumber}}</span>
+            </div>
+            <div class="col-md-12">
+                <span class="fontStyle">STRN #: {{POSNewModelRequest.requestKot.outletSTRNumber}}</span>
+            </div>
+            <div class="col-md-12">
+                <span class="fontStyle">Invoice #: {{POSNewModelRequest.requestKot.invoiceNumber}}</span>
+            </div>
+            <div class="col-md-12">
+                <span class="fontStyle">Payment Mode: {{POSNewModelRequest.requestKot.paymentModeName}}</span>
+            </div>
+            <div class="col-md-12">
+                <span class="fontStyle">Tax Office: {{POSNewModelRequest.requestKot.taxOffice}}</span>
+            </div>
+            <div class="col-md-12">
+                <table id="datatable" class="table table-striped">
+                    <tbody>
+                        <tr>
+                            <th style="color: black;">Description</th>
+                            <th style="color: black;">Qty</th>
+                            <th style="text-align: right; color: black;">Price</th>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr *ngFor="let p of POSNewModelRequest.requestKotDetail let ndx=index;">
+                            <th class="ir_w_30" *ngIf="!p.variantID && !p.dealID">
+                                {{p.foodItemName}}</th>
+                            <th class="ir_w_30" *ngIf="p.variantID && !p.dealID">
+                                {{p.foodItemName}} ({{p.variantName}})
+                            </th>
+                            <th class="ir_w_30" *ngIf="p.dealID">{{p.dealName}}</th>
+                            <th>
+                                {{p.quantity}}
+                            </th>
+                            <th style="text-align: right;" *ngIf="!p.variantID && !p.dealID && p.discount == 0">
+                                {{GV.Currency}} {{p.price | number}}
+                            </th>
+                            <th style="text-align: right;" *ngIf="!p.variantID && !p.dealID && p.discount != 0">
+                                {{GV.Currency}} {{p.calculatedPrice | number}}
+                            </th>
+                            <th style="text-align: right;" *ngIf="p.variantID && !p.dealID && p.discount == 0">
+                                {{GV.Currency}} {{p.variantPrice | number}}
+                            </th>
+                            <th style="text-align: right;" *ngIf="p.variantID && !p.dealID && p.discount != 0">
+                                {{GV.Currency}} {{p.calculatedPrice | number}}
+                            </th>
+                            <th style="text-align: right;" *ngIf="p.dealID">
+                                {{GV.Currency}} {{p.dealPrice | number}}
+                            </th>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr>
+                            <th></th>
+                            <th style="color: black;">Subtotal: </th>
+                            <th style="text-align: right; color: black;">{{GV.Currency}} {{subTotal | number}}
+                            </th>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr>
+                            <th></th>
+                            <th style="color: black;">Sales Tax: </th>
+                            <th style="text-align: right; color: black;">{{GV.Currency}} {{salesTax | number}}
+                            </th>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr>
+                            <th></th>
+                            <th style="color: black;">Items Discount: </th>
+                            <th style="text-align: right; color: black;">{{GV.Currency}} {{discount | number}}
+                            </th>
+                        </tr>
+                    </tbody>
+                    <tbody *ngIf="POSNewModelRequest.requestKot.invoiceDiscount > 0">
+                        <tr>
+                            <th></th>
+                            <th style="text-align: right; color: black;">Invoice Discount: </th>
+                            <th style="text-align: right; color: black;">{{GV.Currency}}
+                                {{POSNewModelRequest.requestKot.invoiceDiscount | number}}
+                            </th>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr>
+                            <th></th>
+                            <th style="color: black;">Total: </th>
+                            <th style="text-align: right; color: black;">{{GV.Currency}} {{total | number}}</th>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr>
+                            <th></th>
+                            <th style="color: black;">Paid Amount: </th>
+                            <th style="text-align: right; color: black;">{{GV.Currency}} {{paidAmount | number}}
+                            </th>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr>
+                            <th></th>
+                            <th style="color: black;">Balance Due: </th>
+                            <th style="text-align: right; color: black;">{{GV.Currency}} {{balanceDue | number}}
+                            </th>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr>
+                            <th></th>
+                            <th style="color: black;">Change: </th>
+                            <th style="text-align: right; color: black;">{{GV.Currency}} {{changeAmount |
+                                number}}
+                            </th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row textClass">
+            <span> <b>FBR Invoice #</b> {{POSNewModelRequest.requestKot.invoiceNumber}}</span>
+        </div>
+        <div class="row textClass">
+            <div class="col-md-6 col-sm-4">
+                <img src="assets/img/fbrLogo.jpg" alt="" width="141">
+            </div>
+            <div class="col-md-6 col-sm-4">
+                <ngx-qrcode [elementType]="elementType" [errorCorrectionLevel]="correctionLevel"
+                    [value]="POSNewModelRequest.requestKot.invoiceNumber" cssClass="bshadow">
+                </ngx-qrcode>
+            </div>
+        </div>
+        <div class="row textClass">
+            <p>Verify this invoice through FBR TaxAsaan MobileApp or
+                SMS at 9966 and win exciting prizes in draw</p>
+        </div>
+        <div class="row textClass mt-5">
+            <p>POS Software By: POS Plus</p>
+        </div>
+    </body>
 </div>

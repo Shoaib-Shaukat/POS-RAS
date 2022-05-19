@@ -5,22 +5,24 @@ import { Subscription, interval } from 'rxjs';
 import { ApiService } from 'src/app/Services/API/api.service';
 import { GvarService } from 'src/app/Services/Globel/gvar.service';
 import Swal from 'sweetalert2';
-import { changeOrderStatus, POSNewModelRequest, requestCustomerTable, responseCustomer, responseOrder, tablesResponse } from './kitchenModel';
+import { changeOrderStatus, POSNewModelRequest, requestCustomerTable, responseCustomer, responseOrder, responseSection, tablesResponse } from './kitchenModel';
 
 @Component({
   selector: 'app-kitchen',
   templateUrl: './kitchen.component.html',
   styleUrls: ['./kitchen.component.css']
 })
-export class KitchenComponent implements OnInit, OnDestroy {
+export class KitchenComponent implements OnInit {
   mySubscription: Subscription
 
   changeOrderStatus: changeOrderStatus;
   responseOrder: responseOrder[];
+  responseOrderReplica: responseOrder[];
   tablesResponse: tablesResponse[];
   POSNewModelRequest: POSNewModelRequest;
   responseCustomer: responseCustomer[];
   selectedTables: requestCustomerTable[];
+  responseSection: responseSection[];
   orderRemarks: string = "";
   viewMode: boolean = false;
   customerName: string = "";
@@ -37,11 +39,15 @@ export class KitchenComponent implements OnInit, OnDestroy {
     this.POSNewModelRequest = new POSNewModelRequest();
     this.responseCustomer = [];
     this.changeOrderStatus = new changeOrderStatus();
+    this.responseSection = [];
+    this.responseOrderReplica = [];
   }
 
   ngOnInit(): void {
     this.getAllOrders();
     this.GV.OutletID = Number(localStorage.getItem('outletID'));
+    this.getSections();
+    this.getCustomers();
     this.SearchForm = new FormGroup({
       foodMenuID: new FormControl(""),
       searchByRefCode: new FormControl(""),
@@ -49,11 +55,47 @@ export class KitchenComponent implements OnInit, OnDestroy {
       CustomerName: new FormControl(""),
     });
   }
-
-  ngOnDestroy() {
-    console.log("Destroy timer");
-    this.mySubscription.unsubscribe();
+  searchOrder(OrderNumber: any) {
+    var orderNo = OrderNumber.value;
+    if (orderNo == "" || orderNo == null || orderNo == undefined) {
+      this.responseOrderReplica = this.responseOrder;
+      return
+    }
+    else {
+      //this.responseOrderReplica = this.responseOrder.filter((c) => c.kotNO == orderNo);
+      this.responseOrderReplica = this.responseOrder.filter((c) => c.kotNO.indexOf(orderNo) > -1);
+      if (this.responseOrderReplica.length == 0) {
+        this.responseOrderReplica = this.responseOrder;
+      }
+      else {
+        return
+      }
+    }
   }
+  getSections() {
+    if (this.GV.OutletID == 0) {
+      this.toastr.warning('Select Outlet First', '', {
+        timeOut: 3000,
+        'progressBar': true,
+      });
+      return;
+    }
+    this.API.getdata('/FoodMenu/getSection?outletID=' + this.GV.OutletID).subscribe(c => {
+      if (c != null) {
+        this.responseSection = c.responseSections;
+      }
+    },
+      error => {
+        this.toastr.error(error.statusText, 'Error', {
+          timeOut: 3000,
+          'progressBar': true,
+        });
+      });
+  }
+  // ngOnDestroy() {
+  //   console.log("Destroy timer");
+  //   this.mySubscription.unsubscribe();
+  // }
   getCustomers() {
     this.API.getdata('/FoodMenu/getCustomer?companyID=' + this.GV.companyID).subscribe(c => {
       if (c != null) {
@@ -71,6 +113,7 @@ export class KitchenComponent implements OnInit, OnDestroy {
     this.responseOrder = [];
     this.API.getdata('/Pos/getOrderByOutletID?outletID=' + this.GV.OutletID).subscribe(c => {
       if (c != null) {
+        this.responseOrderReplica = c.responseKot;
         this.responseOrder = c.responseKot;
         this.responseOrder.forEach((c) => {
           if ((c.minute.minutes.toString().length) == 1) {

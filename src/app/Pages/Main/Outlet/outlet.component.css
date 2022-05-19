@@ -1,0 +1,13 @@
+.wrapper .main-content-wrapper .box-wrapper {
+    padding: 10px;
+    border-radius: 7px;
+    box-shadow: 0 4px 24px 0 rgb(0 0 0 / 7%);
+    background-color: white;
+    animation: fadeIn 1s both;
+}
+
+.fas {
+    font-size: x-large;
+    font-family: "Font Awesome 5 Pro";
+    font-weight: 600;
+}
