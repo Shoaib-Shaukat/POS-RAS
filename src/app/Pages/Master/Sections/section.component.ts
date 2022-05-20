@@ -124,14 +124,6 @@ export class SectionComponent implements OnInit {
       this.SectionForm.controls.userID.setValue(this.GV.userID);
       this.SectionForm.controls.outletID.setValue(this.GV.OutletID);
       this.requestSectionModel.requestSection = this.SectionForm.value;
-      this.requestSectionModel.requestPrinter.forEach((x)=> {
-        if(!x.printerIP){
-          x.printerIP=0;
-        }
-        if(!x.printerPort){
-          x.printerPort=0;
-        }
-      })
       this.API.PostData('/FoodMenu/AddEditSection', this.requestSectionModel).subscribe(c => {
         if (c != null) {
           if (c.status == "Failed") {
@@ -157,7 +149,6 @@ export class SectionComponent implements OnInit {
         });
     }
   }
-
   getSections() {
     if (this.GV.OutletID == 0) {
       this.toastr.warning('Select Outlet First', '', {

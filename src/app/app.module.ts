@@ -38,6 +38,7 @@ import { GenericComponent } from './Pages/All Screens/Generic/generic.component'
 import { DayOpenCloseComponent } from './Pages/Main/DayOpenClose/day-open-close.component';
 import { EmailmoduleComponent } from './Pages/Main/EmailModule/emailmodule.component';
 import { NgxQRCodeModule } from '@techiediaries/ngx-qrcode';
+import { NguiAutoCompleteModule } from '@ngui/auto-complete';
 const maskConfig: Partial<IConfig> = {
   validation: false,
 };
@@ -80,6 +81,7 @@ const maskConfig: Partial<IConfig> = {
     DataTablesModule,
     NgxPrintModule,
     NgxQRCodeModule,
+    NguiAutoCompleteModule,
     NgxMaskModule.forRoot(maskConfig),
     NgMultiSelectDropDownModule.forRoot(),
   ],

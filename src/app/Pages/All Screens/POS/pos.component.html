@@ -82,22 +82,20 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Search Customer</label>
-                                        <input type="text" (change)="searchCustomer()"
+                                        <input ngui-auto-complete formControlName="CustomerName"
+                                            [source]="responseCustomer" [list-formatter]="autocompleListFormatter"
+                                            select-value-of="CustomerName" display-property-name="CustomerName"
+                                            placeholder="Enter Name" class="form-control col-sm-12"
+                                            (valueChanged)="valueChanged($event)">
+                                        <!-- <input type="text" (change)="searchCustomer()"
                                             formControlName="searchCustomerByCode" autocomplete="off"
-                                            class="form-control" placeholder="Customer Code">
-                                        <!-- <button style="border-radius: 4px !important; " type="submit" class="searchButtonTwo" (click)="searchCustomer()"><i
-                                          class="fa fa-search"></i></button> -->
+                                            class="form-control" placeholder="Customer Code"> -->
                                     </div>
-                                    <!-- <div class="form-group">
-                                        <label>Search Customer</label>
-                                        <input type="search" class="form-control" placeholder="Search Assets ..." name="search" style="border: 1px solid;width: 151px;height: 38px;background-color: #ffffff;color: black;">
-                                        <span class="input-group-btn"><button type="submit" class="btn submit" style="background-color: #d9dedb;border-radius: initial;height: 38px;"><i class="fa fa-search"></i></button></span>
-                                    </div> -->
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label>Customer Name</label>
-                                        <input type="text" formControlName="CustomerName" readonly autocomplete="off"
+                                        <label>Customer Code</label>
+                                        <input type="text" formControlName="customerCode" readonly autocomplete="off"
                                             class="form-control">
                                     </div>
                                 </div>
@@ -122,8 +120,9 @@
                                     <th></th>
                                     <th>Items</th>
                                     <th style="text-align: right;">Price</th>
-                                    <th>Qty</th>
-                                    <th title="Discount">Discount</th>
+                                    <th title="Quantity" style="text-align: center;">Qty</th>
+                                    <th title="Discount">Dis</th>
+                                    <th>Tax</th>
                                     <th style="text-align: right;">Total</th>
                                 </tr>
                             </thead>
@@ -149,7 +148,7 @@
                                     <td *ngIf="p.dealID" style="text-align: right;">
                                         {{GV.Currency}} {{p.dealPrice | number}}
                                     </td>
-                                    <td>
+                                    <td style="text-align: center;">
                                         <button class="btn btn-success color text-white btn-sm" (click)="decrement(p)">
                                             <i class="fa fa-minus" aria-hidden="true"></i></button> {{p.quantity}}
                                         <button class="btn btn-success color text-white btn-sm" (click)="increment(p)">
@@ -163,6 +162,9 @@
                                         p.calculatedPrice)}}</td>
                                     <td *ngIf="!p.variantID && p.dealID && p.discount != 0">{{ p.quantity * (p.dealPrice
                                         - p.calculatedPrice)}}</td>
+
+                                    <td *ngIf="p.totalTax == 0">0</td>
+                                    <td *ngIf="p.totalTax > 0">{{p.totalTax}}</td>
 
                                     <td *ngIf="!p.variantID && !p.dealID && p.discount == 0" style="text-align: right;">
                                         {{GV.Currency}} {{p.quantity * p.price | number}}
@@ -208,10 +210,10 @@
                             </div>
                             <div class="item">
                                 <span>Tax: </span>
-                                <i [hidden]="totalTax == 0" class="fal fa-eye no-need-for-waiter" id="open_tax_modal"
-                                    data-toggle="modal" data-target="#showTaxModal"></i>
+                                <i [hidden]="totalTaxInAmount == 0" class="fal fa-eye no-need-for-waiter"
+                                    id="open_tax_modal" data-toggle="modal" data-target="#showTaxModal"></i>
                                 <span id="show_vat_modal">
-                                    {{totalTax}}</span>
+                                    {{totalTaxInAmount}}</span>
                             </div>
                             <div class="item">
                                 <span>Charge: </span>
@@ -633,7 +635,7 @@
                         <thead>
                             <tr style="background-color: rgb(138, 138, 138); color: white;">
                                 <th></th>
-                                <th><b>Is Active</b></th>
+                                <!-- <th><b>Is Active</b></th> -->
                                 <th><b>Name</b></th>
                                 <th style="text-align: right;"><b>Rate</b></th>
                             </tr>
@@ -641,17 +643,17 @@
                         <tbody>
                             <tr *ngFor="let p of taxArr let ndx=index;">
                                 <td>{{ndx+1}}</td>
-                                <td><input readonly type="checkbox" #isActiveVal [checked]="p.isActive"
-                                        value="{{p.isActive}}" (click)="changeActiveStatus(p, isActiveVal)"></td>
+                                <!-- <td><input readonly type="checkbox" #isActiveVal [checked]="p.isActive"
+                                        value="{{p.isActive}}" (click)="changeActiveStatus(p, isActiveVal)"></td> -->
                                 <td>{{p.taxName}}</td>
                                 <td style="text-align: right;">{{p.taxRate}}</td>
                             </tr>
                             <tr>
                                 <td></td>
-                                <td></td>
+                                <!-- <td></td> -->
                                 <td style="background-color: rgb(225, 225, 225);"><b>Total Tax</b></td>
                                 <td style="text-align: right; background-color: rgb(225, 225, 225);"><input readonly
-                                        type="text" value="{{totalTax}}"></td>
+                                        type="text" value="{{totalTaxInAmount}}"></td>
                             </tr>
                         </tbody>
                     </table>
@@ -1218,7 +1220,7 @@
                     <tr>
                         <th></th>
                         <th class="ir_w_30">Name</th>
-                        <th>Qty</th>
+                        <th title="Quantity" title="Quantity">Qty</th>
                         <th style="text-align: right;">Price</th>
                     </tr>
                 </thead>
@@ -1344,7 +1346,7 @@
                             <tbody>
                                 <tr>
                                     <th style="color: black;">Description</th>
-                                    <th style="color: black;">Qty</th>
+                                    <th style="color: black;" title="Quantity">Qty</th>
                                     <th style="text-align: right; color: black;">Price</th>
                                 </tr>
                             </tbody>
@@ -1451,16 +1453,14 @@
                     <span> <b>FBR Invoice #</b> {{POSNewModelRequest.requestKot.invoiceNumber}}</span>
                 </div>
                 <div class="row textClass">
-                    <div class="col-md-2"></div>
-                    <div class="col-md-4">
+                    <div class="col-md-6 col-sm-4">
                         <img src="assets/img/fbrLogo.jpg" alt="" width="141">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6 col-sm-4">
                         <ngx-qrcode [elementType]="elementType" [errorCorrectionLevel]="correctionLevel"
                             [value]="POSNewModelRequest.requestKot.invoiceNumber" cssClass="bshadow">
                         </ngx-qrcode>
                     </div>
-                    <div class="col-md-2"></div>
                 </div>
                 <div class="row textClass">
                     <p>Verify this invoice through FBR TaxAsaan MobileApp or
@@ -1484,6 +1484,7 @@
 <!-- .......................................KOT Receipt............................................. -->
 
 <div class="invoice" id="KOTPrint" [hidden]="true" data-backdrop="static" data-keyboard="false">
+
     <body>
         <div class="row textClass">
             <div class="col-md-12" *ngIf="OutletInfo.outletLogo">
@@ -1512,7 +1513,7 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th style="text-align: right;">Qty</th>
+                            <th style="text-align: right;" title="Quantity">Qty</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1538,6 +1539,7 @@
 </div>
 <!-- ...............................................Bill Recipt........................................................ -->
 <div class="invoice" id="BillPrint" [hidden]="true" data-backdrop="static" data-keyboard="false">
+
     <body>
         <div class="row textClass">
             <div class="col-md-12" *ngIf="OutletInfo.outletLogo">
@@ -1563,7 +1565,7 @@
                     <tbody>
                         <tr>
                             <th style="color: black;">Description</th>
-                            <th style="color: black;">Qty</th>
+                            <th style="color: black;" title="Quantity">Qty</th>
                             <th style="text-align: right; color: black;">Price</th>
                         </tr>
                     </tbody>
@@ -1668,15 +1670,25 @@
         <div class="row textClass">
             <span> <b>FBR Invoice #</b> {{POSNewModelRequest.requestKot.invoiceNumber}}</span>
         </div>
-        <div class="row textClass">
-            <div class="col-md-6 col-sm-4">
-                <img src="assets/img/fbrLogo.jpg" alt="" width="141">
-            </div>
-            <div class="col-md-6 col-sm-4">
-                <ngx-qrcode [elementType]="elementType" [errorCorrectionLevel]="correctionLevel"
-                    [value]="POSNewModelRequest.requestKot.invoiceNumber" cssClass="bshadow">
-                </ngx-qrcode>
-            </div>
+        <div class="box-wrapper">
+            <table datatable class="row-border hover">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><img src="assets/img/fbrLogo.jpg" alt="" width="141"></td>
+                        <td>
+                            <ngx-qrcode [elementType]="elementType" [errorCorrectionLevel]="correctionLevel"
+                                [value]="POSNewModelRequest.requestKot.invoiceNumber" cssClass="bshadow">
+                            </ngx-qrcode>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
         <div class="row textClass">
             <p>Verify this invoice through FBR TaxAsaan MobileApp or
@@ -1690,6 +1702,7 @@
 
 <!-- ...............................................Invoice Recipt........................................................ -->
 <div class="invoice" id="InvoicePrint" [hidden]="true" data-backdrop="static" data-keyboard="false">
+
     <body>
         <div class="row textClass">
             <div class="col-md-12" *ngIf="OutletInfo.outletLogo">
@@ -1724,7 +1737,7 @@
                     <tbody>
                         <tr>
                             <th style="color: black;">Description</th>
-                            <th style="color: black;">Qty</th>
+                            <th style="color: black;" title="Quantity">Qty</th>
                             <th style="text-align: right; color: black;">Price</th>
                         </tr>
                     </tbody>
@@ -1753,6 +1766,14 @@
                             </th>
                             <th style="text-align: right;" *ngIf="p.dealID">
                                 {{GV.Currency}} {{p.dealPrice | number}}
+                            </th>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr>
+                            <th></th>
+                            <th style="color: black;">POS Fee: </th>
+                            <th style="text-align: right; color: black;">{{OutletInfo.posFee | number}}
                             </th>
                         </tr>
                     </tbody>
@@ -1793,7 +1814,8 @@
                         <tr>
                             <th></th>
                             <th style="color: black;">Total: </th>
-                            <th style="text-align: right; color: black;">{{GV.Currency}} {{total | number}}</th>
+                            <th style="text-align: right; color: black;">{{GV.Currency}} {{total + OutletInfo.posFee |
+                                number}}</th>
                         </tr>
                     </tbody>
                     <tbody>
@@ -1828,13 +1850,25 @@
             <span> <b>FBR Invoice #</b> {{POSNewModelRequest.requestKot.invoiceNumber}}</span>
         </div>
         <div class="row textClass">
-            <div class="col-md-6 col-sm-4">
-                <img src="assets/img/fbrLogo.jpg" alt="" width="141">
-            </div>
-            <div class="col-md-6 col-sm-4">
-                <ngx-qrcode [elementType]="elementType" [errorCorrectionLevel]="correctionLevel"
-                    [value]="POSNewModelRequest.requestKot.invoiceNumber" cssClass="bshadow">
-                </ngx-qrcode>
+            <div class="box-wrapper">
+                <table class="row-border hover">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><img src="assets/img/fbrLogo.jpg" alt="" width="141"></td>
+                            <td>
+                                <ngx-qrcode [elementType]="elementType" [errorCorrectionLevel]="correctionLevel"
+                                    [value]="POSNewModelRequest.requestKot.invoiceNumber" cssClass="bshadow">
+                                </ngx-qrcode>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
         <div class="row textClass">

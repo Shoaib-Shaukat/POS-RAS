@@ -45,12 +45,16 @@ export class LoginComponent implements OnInit {
             timeOut: 3000,
             'progressBar': true,
           });
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
           localStorage.setItem('token', data.token);
           localStorage.setItem('userRoles', data.roles);
           localStorage.setItem('userName', data.name);
           Number(localStorage.setItem('companyID', data.companyID));
           Number(localStorage.setItem('userID', data.userID));
           localStorage.setItem('isOwner', data.owner);
+          sessionStorage.setItem('loggedinUser', data.name);
           localStorage.setItem('userMenus', data.menuID);
           if (data.companyID > 0) {
             this.GV.SetCompany(data.companyName);
@@ -64,11 +68,15 @@ export class LoginComponent implements OnInit {
           this.GV.isOwner = data.owner;
           if (data.companyID == 0) {
             this.GV.companyID = 0;
+
             this.router.navigate(['/Companies']);
+
           }
           else {
             this.GV.companyID = data.companyID;
+
             this.router.navigate(['/Outlet']);
+
           }
           // if (this.GV.canGetOwner) {
           //   this.router.navigate(['/Register']);

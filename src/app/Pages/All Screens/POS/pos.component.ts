@@ -11,6 +11,7 @@ import { allVariantsResponse, changeOrderStatus, customerFavResponse, customerMo
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import Swal from 'sweetalert2';
 import { DataTableDirective } from 'angular-datatables';
+import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 import { NgxQrcodeElementTypes, NgxQrcodeErrorCorrectionLevels } from '@techiediaries/ngx-qrcode';
 @Component({
   selector: 'app-pos',
@@ -18,6 +19,7 @@ import { NgxQrcodeElementTypes, NgxQrcodeErrorCorrectionLevels } from '@techiedi
   styleUrls: ['./pos.component.css']
 })
 export class PosComponent implements OnInit {
+  totalTaxInAmount: number = 0;
   OpeningDate: any;
   totalDiscount: number = 0;
   invoiceDiscount: number = 0;
@@ -135,7 +137,7 @@ export class PosComponent implements OnInit {
   showVDiscount: boolean = false;
   dropdownSettings: IDropdownSettings = {};
 
-  constructor(private API: ApiService,
+  constructor(private API: ApiService, private _sanitizer: DomSanitizer,
     public GV: GvarService,
     public toastr: ToastrService,
     private route: ActivatedRoute,
@@ -249,6 +251,7 @@ export class PosComponent implements OnInit {
       searchByRefCode: new FormControl(""),
       searchCustomerByCode: new FormControl(""),
       CustomerName: new FormControl(""),
+      customerCode: new FormControl(""),
     });
     this.CustomerForm = new FormGroup({
       customerName: new FormControl("", [Validators.required, this.noWhitespaceValidator]),
@@ -511,7 +514,8 @@ export class PosComponent implements OnInit {
       dealPrice: p.dealPrice,
       kotID: 0,
       status: 1,
-      sectionID: sectionID
+      sectionID: sectionID,
+      totalTax: 0
     }
     if (body.sectionID == undefined) {
       body.sectionID = 0;
@@ -552,7 +556,7 @@ export class PosComponent implements OnInit {
         this.POSNewModelRequest.requestKotDetail[index].quantity += 1;
       }
     }
-    this.calculateTaxes(p, true, 1);
+    this.calculateTaxes(p);
     this.calculateTotals();
     this.closeVariantsModal["first"].nativeElement.click();
   }
@@ -574,93 +578,153 @@ export class PosComponent implements OnInit {
       });
   }
 
-  calculateTaxes(itemObj: any, bool: any, quantity: any) {
-    if (bool == true) {
-      //adding tax case
-      let arr = this.taxResponseModel.filter((c) => c.foodItemID == itemObj.foodItemID);
-      if (arr.length > 0) {
-        var loop = 0;
-        while (loop < quantity) {
-          //item with Taxes
-          arr.forEach((element) => {
-            var count = 0;
-            var obj: any = this.taxResponseModel.find((x: any) => (x.foodItemID == element.foodItemID) && (x.foodItemtaxID == element.foodItemtaxID));
-            var ind = this.taxArr.findIndex((y: any) => y.taxName == obj.taxName);
-            if (ind == -1) {
-              let body = {
-                taxName: obj.taxName,
-                taxRate: obj.taxRate,
-                count: count + 1,
-                isActive: true
-              }
-              this.taxArr.push(body);
-            }
-            else {
-              this.taxArr[ind].taxRate += obj.taxRate;
-              this.taxArr[ind].count += 1;
-            }
-          })
-          loop++;
+  calculateTaxes(itemObj: any) {
+    let arr = this.taxResponseModel.filter((c) => c.foodItemID == itemObj.foodItemID);
+    var indexOfItem = this.POSNewModelRequest.requestKotDetail.findIndex((x) => x.foodItemID == itemObj.foodItemID);
+    var quantity: any = this.POSNewModelRequest.requestKotDetail[indexOfItem].quantity;
+    if (arr.length > 0) {
+      var taxPercentageTotal = 0;
+      arr.forEach((element) => {
+        taxPercentageTotal += element.taxRate;
+      })
+      var index = this.POSNewModelRequest.requestKotDetail.findIndex((x) => x.foodItemID == itemObj.foodItemID);
+      this.POSNewModelRequest.requestKotDetail[index].totalTax = ((itemObj.price * taxPercentageTotal) * quantity) / 100;
+
+      this.taxResponseModel.forEach((y) => {
+        if (y.foodItemID == itemObj.foodItemID) {
+          let body = {
+            taxName: y.taxName,
+            taxRate: y.taxRate,
+          }
+          var index = this.taxArr.findIndex((el: any) => el.taxName == body.taxName);
+          if (index == -1) {
+            this.taxArr.push(body);
+          }
+          else {
+            this.taxArr[index].taxRate += body.taxRate;
+          }
         }
-      }
-      else {
-        var loop = 0;
-        //item with No Taxes
-        while (loop < quantity) {
-          this.taxesResponseModel.forEach((el: any) => {
-            var count = 0;
-            var index = this.taxArr.findIndex((y: any) => y.taxName == el.taxName);
-            if (index == -1) {
-              let body = {
-                taxName: el.taxName,
-                taxRate: el.taxRate,
-                count: count + 1,
-                isActive: true
-              }
-              this.taxArr.push(body);
-            }
-            else {
-              this.taxArr[index].taxRate += el.taxRate;
-              this.taxArr[index].count += 1;
-            }
-          })
-          loop++;
-        }
-      }
+      })
     }
     else {
-      //removing tax case
-      var index = this.taxResponseModel.findIndex((c) => c.foodItemID == itemObj.foodItemID);
-      if (index != -1) {
-        //item with Taxes
-        let arr = this.taxResponseModel.filter((c) => c.foodItemID == itemObj.foodItemID);
-        arr.forEach((item) => {
-          var ind = this.taxArr.findIndex((y: any) => y.taxName == item.taxName);
-          this.taxArr[ind].taxRate -= item.taxRate * quantity;
-          this.taxArr[ind].count -= 1;
-          if (this.taxArr[ind].taxRate == 0) {
-            this.taxArr.splice(index, 1);
-          }
-        });
-      }
-      else {
-        //item with No Taxes
-        this.taxesResponseModel.forEach((el: any) => {
-          var index = this.taxArr.findIndex((y: any) => y.taxName == el.taxName);
-          this.taxArr[index].taxRate -= el.taxRate * quantity;
-          this.taxArr[index].count -= 1;
-          if (this.taxArr[index].taxRate == 0) {
-            this.taxArr.splice(index, 1);
-          }
-        })
-      }
-    }
+      var taxPercentageTotal = 0;
+      this.taxesResponseModel.forEach((element) => {
+        taxPercentageTotal += element.taxRate;
+      })
+      var index = this.POSNewModelRequest.requestKotDetail.findIndex((x) => x.foodItemID == itemObj.foodItemID);
+      this.POSNewModelRequest.requestKotDetail[index].totalTax = ((itemObj.price * taxPercentageTotal) * quantity) / 100;
 
-    this.totalTax = 0;
-    this.taxArr.forEach((p: any) => {
-      this.totalTax += p.taxRate;
+      this.taxesResponseModel.forEach((y) => {
+        let body = {
+          taxName: y.taxName,
+          taxRate: y.taxRate,
+        }
+        var index = this.taxArr.findIndex((el: any) => el.taxName == body.taxName);
+        if (index == -1) {
+          this.taxArr.push(body);
+        }
+        else {
+          this.taxArr[index].taxRate += body.taxRate;
+        }
+      })
+    }
+    this.calculateTotals();
+    this.calculateTotalTax();
+  }
+
+  calculateTotalTax() {
+    this.totalTaxInAmount = 0;
+    this.POSNewModelRequest.requestKotDetail.forEach((x) => {
+      this.totalTaxInAmount += x.totalTax;
     });
   }
+  // calculateTaxes(itemObj: any, bool: any, quantity: any) {
+  //   if (bool == true) {
+  //     //adding tax case
+  //     let arr = this.taxResponseModel.filter((c) => c.foodItemID == itemObj.foodItemID);
+  //     if (arr.length > 0) {
+  //       var loop = 0;
+  //       while (loop < quantity) {
+  //         //item with Taxes
+  //         arr.forEach((element) => {
+  //           var count = 0;
+  //           var obj: any = this.taxResponseModel.find((x: any) => (x.foodItemID == element.foodItemID) && (x.foodItemtaxID == element.foodItemtaxID));
+  //           var ind = this.taxArr.findIndex((y: any) => y.taxName == obj.taxName);
+  //           if (ind == -1) {
+  //             let body = {
+  //               taxName: obj.taxName,
+  //               taxRate: obj.taxRate,
+  //               count: count + 1,
+  //               isActive: true
+  //             }
+  //             this.taxArr.push(body);
+  //           }
+  //           else {
+  //             this.taxArr[ind].taxRate += obj.taxRate;
+  //             this.taxArr[ind].count += 1;
+  //           }
+  //         })
+  //         loop++;
+  //       }
+  //     }
+  //     else {
+  //       var loop = 0;
+  //       //item with No Taxes
+  //       while (loop < quantity) {
+  //         this.taxesResponseModel.forEach((el: any) => {
+  //           var count = 0;
+  //           var index = this.taxArr.findIndex((y: any) => y.taxName == el.taxName);
+  //           if (index == -1) {
+  //             let body = {
+  //               taxName: el.taxName,
+  //               taxRate: el.taxRate,
+  //               count: count + 1,
+  //               isActive: true
+  //             }
+  //             this.taxArr.push(body);
+  //           }
+  //           else {
+  //             this.taxArr[index].taxRate += el.taxRate;
+  //             this.taxArr[index].count += 1;
+  //           }
+  //         })
+  //         loop++;
+  //       }
+  //     }
+  //   }
+  //   else {
+  //     //removing tax case
+  //     var index = this.taxResponseModel.findIndex((c) => c.foodItemID == itemObj.foodItemID);
+  //     if (index != -1) {
+  //       //item with Taxes
+  //       let arr = this.taxResponseModel.filter((c) => c.foodItemID == itemObj.foodItemID);
+  //       arr.forEach((item) => {
+  //         var ind = this.taxArr.findIndex((y: any) => y.taxName == item.taxName);
+  //         this.taxArr[ind].taxRate -= item.taxRate * quantity;
+  //         this.taxArr[ind].count -= 1;
+  //         if (this.taxArr[ind].taxRate == 0) {
+  //           this.taxArr.splice(index, 1);
+  //         }
+  //       });
+  //     }
+  //     else {
+  //       //item with No Taxes
+  //       this.taxesResponseModel.forEach((el: any) => {
+  //         var index = this.taxArr.findIndex((y: any) => y.taxName == el.taxName);
+  //         this.taxArr[index].taxRate -= el.taxRate * quantity;
+  //         this.taxArr[index].count -= 1;
+  //         if (this.taxArr[index].taxRate == 0) {
+  //           this.taxArr.splice(index, 1);
+  //         }
+  //       })
+  //     }
+  //   }
+
+  //   this.totalTax = 0;
+  //   this.taxArr.forEach((p: any) => {
+  //     this.totalTax += p.taxRate;
+  //   });
+  // }
   // attachOutletTaxes() {
   //   this.taxesResponseModel.forEach((el) => {
   //     let body = {
@@ -676,19 +740,19 @@ export class PosComponent implements OnInit {
   //   });
   //   this.total = this.subTotal + this.salesTax + this.chargesValue + this.totalTax;
   // }
-  changeActiveStatus(p: any, val: any) {
-    if (val.checked == false) {
-      var index = this.taxArr.findIndex((x: any) => x.taxName == p.taxName);
-      this.taxArr[index].isActive = false;
-      this.totalTax -= this.taxArr[index].taxRate;
-    }
-    else {
-      var index = this.taxArr.findIndex((x: any) => x.taxName == p.taxName);
-      this.taxArr[index].isActive = true;
-      this.totalTax += this.taxArr[index].taxRate;
-    }
-    this.calculateTotals();
-  }
+  // changeActiveStatus(p: any, val: any) {
+  //   if (val.checked == false) {
+  //     var index = this.taxArr.findIndex((x: any) => x.taxName == p.taxName);
+  //     this.taxArr[index].isActive = false;
+  //     this.totalTax -= this.taxArr[index].taxRate;
+  //   }
+  //   else {
+  //     var index = this.taxArr.findIndex((x: any) => x.taxName == p.taxName);
+  //     this.taxArr[index].isActive = true;
+  //     this.totalTax += this.taxArr[index].taxRate;
+  //   }
+  //   this.calculateTotals();
+  // }
   calculateTotals() {
     this.subTotal = 0;
     this.salesTax = 0;
@@ -703,75 +767,130 @@ export class PosComponent implements OnInit {
         if (x.discount > 0) {
           this.discount += (x.variantPrice - x.calculatedPrice) * x.quantity;
         }
-        // if (x.discount == 0) {
-        //   this.subTotal += x.variantPrice * x.quantity;
-        // }
-        // else {
-        //   this.discount += (x.variantPrice - x.calculatedPrice) * x.quantity;
-        //   this.subTotal += x.calculatedPrice * x.quantity;
-        // }
       }
       else if (x.foodItemID) {
         this.subTotal += x.price * x.quantity;
         if (x.discount > 0) {
           this.discount += (x.price - x.calculatedPrice) * x.quantity;
         }
-
-        // if (x.discount == 0) {
-        //   this.subTotal += x.price * x.quantity;
-        // }
-        // else {
-        //   this.discount += (x.price - x.calculatedPrice) * x.quantity;
-        //   this.subTotal += x.calculatedPrice * x.quantity;
-        // }
       }
       else if (x.dealID) {
         this.subTotal += x.dealPrice * x.quantity;
       }
     })
 
-    if (this.POSNewModelRequest.requestKotDetail.length == 0) {
-      this.total = 0;
+    if (this.POSNewModelRequest.requestKotDetail.length > 0) {
+      if (this.chargesValue > 0) {
+        this.total += this.chargesValue;
+      }
+      //finding percentage value according to subtotal
+      if (this.chargesValuePercentage > 0) {
+        let ChargesValuePercentage = 0;
+        ChargesValuePercentage = (this.chargesValuePercentage * this.subTotal) / 100;
+        this.total += ChargesValuePercentage;
+      }
+      this.total += this.totalTaxInAmount;
+      this.total += this.subTotal;
+      this.total = (Math.ceil(this.total));
+      this.totalDiscount = this.discount + this.invoiceDiscount;
+      //Total discount gets minus from total payable in HTML
+
+      this.balanceDue = this.subTotal + this.totalTaxInAmount + this.chargesValue;
+      if (this.balanceDue < 0) {
+        this.changeAmount = (this.balanceDue < 0) ? this.balanceDue * -1 : this.balanceDue;
+        this.balanceDue = 0;
+      }
+      else {
+        this.changeAmount = 0;
+      }
     }
-    // else {
-    //   this.total = this.subTotal + this.salesTax + this.chargesValue;
-    // }
 
 
-    //finding tax percentage value according to subtotal
-    var taxPercentagewrtSubtotal = 0;
-    taxPercentagewrtSubtotal = (this.totalTax / 100) * this.subTotal;
-    //finding percentage value according to subtotal
-    let ChargesValuePercentage = 0;
-    ChargesValuePercentage = (this.chargesValuePercentage / 100) * this.subTotal;
-    if (this.chargesValue > 0) {
-      this.total += this.chargesValue;
-    }
-    if (this.chargesValuePercentage > 0) {
-      this.total += ChargesValuePercentage;
-    }
-    this.total += taxPercentagewrtSubtotal;
-    this.total += this.subTotal;
-    this.totalDiscount = this.discount + this.invoiceDiscount;
-    //this.total -= this.discount;
-    //this.total -= this.invoiceDiscount;
 
-    this.balanceDue = this.subTotal + this.salesTax + this.chargesValue;
-    if (this.balanceDue < 0) {
-      this.changeAmount = (this.balanceDue < 0) ? this.balanceDue * -1 : this.balanceDue;
-      this.balanceDue = 0;
-    }
-    else {
-      this.changeAmount = 0;
-    }
-    this.total = (Math.ceil(this.total));
-    //............Discount......................
-    // var one = this.subTotal - this.discount;
-    // var two = this.subTotal - one;
-    // var three = two / this.subTotal;
-    // var four = three * 100;
-    // this.discount = Math.floor(four);
   }
+  // calculateTotals() {
+  //   this.subTotal = 0;
+  //   this.salesTax = 0;
+  //   this.discount = 0;
+  //   this.total = 0;
+  //   this.balanceDue = 0;
+  //   this.paidAmount = 0;
+  //   this.changeAmount = 0;
+  //   this.POSNewModelRequest.requestKotDetail.forEach((x) => {
+  //     if (x.variantID) {
+  //       this.subTotal += x.variantPrice * x.quantity;
+  //       if (x.discount > 0) {
+  //         this.discount += (x.variantPrice - x.calculatedPrice) * x.quantity;
+  //       }
+  //       // if (x.discount == 0) {
+  //       //   this.subTotal += x.variantPrice * x.quantity;
+  //       // }
+  //       // else {
+  //       //   this.discount += (x.variantPrice - x.calculatedPrice) * x.quantity;
+  //       //   this.subTotal += x.calculatedPrice * x.quantity;
+  //       // }
+  //     }
+  //     else if (x.foodItemID) {
+  //       this.subTotal += x.price * x.quantity;
+  //       if (x.discount > 0) {
+  //         this.discount += (x.price - x.calculatedPrice) * x.quantity;
+  //       }
+
+  //       // if (x.discount == 0) {
+  //       //   this.subTotal += x.price * x.quantity;
+  //       // }
+  //       // else {
+  //       //   this.discount += (x.price - x.calculatedPrice) * x.quantity;
+  //       //   this.subTotal += x.calculatedPrice * x.quantity;
+  //       // }
+  //     }
+  //     else if (x.dealID) {
+  //       this.subTotal += x.dealPrice * x.quantity;
+  //     }
+  //   })
+
+  //   if (this.POSNewModelRequest.requestKotDetail.length == 0) {
+  //     this.total = 0;
+  //   }
+  //   // else {
+  //   //   this.total = this.subTotal + this.salesTax + this.chargesValue;
+  //   // }
+
+
+  //   //finding tax percentage value according to subtotal
+  //   var taxPercentagewrtSubtotal = 0;
+  //   taxPercentagewrtSubtotal = (this.totalTax * this.subTotal) / 100;
+  //   //finding percentage value according to subtotal
+  //   let ChargesValuePercentage = 0;
+  //   ChargesValuePercentage = (this.chargesValuePercentage * this.subTotal) / 100;
+  //   if (this.chargesValue > 0) {
+  //     this.total += this.chargesValue;
+  //   }
+  //   if (this.chargesValuePercentage > 0) {
+  //     this.total += ChargesValuePercentage;
+  //   }
+  //   this.total += taxPercentagewrtSubtotal;
+  //   this.total += this.subTotal;
+  //   this.totalDiscount = this.discount + this.invoiceDiscount;
+  //   //this.total -= this.discount;
+  //   //this.total -= this.invoiceDiscount;
+
+  //   this.balanceDue = this.subTotal + this.totalTaxInAmount + this.chargesValue;
+  //   if (this.balanceDue < 0) {
+  //     this.changeAmount = (this.balanceDue < 0) ? this.balanceDue * -1 : this.balanceDue;
+  //     this.balanceDue = 0;
+  //   }
+  //   else {
+  //     this.changeAmount = 0;
+  //   }
+  //   this.total = (Math.ceil(this.total));
+  //   //............Discount......................
+  //   // var one = this.subTotal - this.discount;
+  //   // var two = this.subTotal - one;
+  //   // var three = two / this.subTotal;
+  //   // var four = three * 100;
+  //   // this.discount = Math.floor(four);
+  // }
   setTotalinInvDis() {
     this.totalDiscount = this.discount + this.invoiceDiscount;
     this.totalMinusInvDis = this.total - this.discount;
@@ -816,15 +935,6 @@ export class PosComponent implements OnInit {
     // this.total = this.totalMinusInvDis;
   }
   decrement(p: any) {
-    if (p.quantity > 1) {
-      if (this.POSNewModelRequest.requestKotDetail.length > 0) {
-        this.calculateTaxes(p, false, 1);
-      }
-      else {
-        this.totalTax = 0;
-        this.taxArr = [];
-      }
-    }
     if (p.variantID) {
       var index = this.POSNewModelRequest.requestKotDetail.findIndex((x) => x.variantID == p.variantID);
       if (this.POSNewModelRequest.requestKotDetail[index].quantity > 1) {
@@ -852,17 +962,11 @@ export class PosComponent implements OnInit {
         return
       }
     }
+    this.calculateTaxes(p);
     this.calculateTotals();
     return
   }
   increment(p: any) {
-    if (this.POSNewModelRequest.requestKotDetail.length > 0) {
-      this.calculateTaxes(p, true, 1);
-    }
-    else {
-      this.totalTax = 0;
-      this.taxArr = [];
-    }
     if (p.variantID) {
       var index = this.POSNewModelRequest.requestKotDetail.findIndex((x) => x.variantID == p.variantID);
       this.POSNewModelRequest.requestKotDetail[index].quantity += 1;
@@ -875,18 +979,12 @@ export class PosComponent implements OnInit {
       var index = this.POSNewModelRequest.requestKotDetail.findIndex((x) => x.dealID == p.dealID);
       this.POSNewModelRequest.requestKotDetail[index].quantity += 1;
     }
+    this.calculateTaxes(p);
     this.calculateTotals();
     return
   }
 
   removeItem(p: any) {
-    if (this.POSNewModelRequest.requestKotDetail.length > 0) {
-      this.calculateTaxes(p, false, p.quantity);
-    }
-    else {
-      this.totalTax = 0;
-      this.taxArr = [];
-    }
     if (p.variantID) {
       var index = this.POSNewModelRequest.requestKotDetail.findIndex((x) => x.variantID == p.variantID);
       this.POSNewModelRequest.requestKotDetail[index].quantity = 0;
@@ -1017,6 +1115,57 @@ export class PosComponent implements OnInit {
     this.CustomerForm.reset();
     this.responseAddress = [];
   }
+  autocompleListFormatter = (data: any): SafeHtml => {
+    let html = `<span>${data.customerName} </span>`;
+    return this._sanitizer.bypassSecurityTrustHtml(html);
+  }
+
+  valueChanged(newVal: any) {
+    this.POSNewModelRequest.requestCustomerDetail.customerID = newVal.customerID;
+    this.SearchForm.controls.CustomerName.setValue(newVal.customerName);
+    this.SearchForm.controls.customerCode.setValue(newVal.refCode);
+
+    // this.SearchForm = new FormGroup({
+    //   foodMenuID: new FormControl(""),
+    //   searchByRefCode: new FormControl(""),
+    //   searchCustomerByCode: new FormControl(""),
+    //   CustomerName: new FormControl(""),
+    //   customerCode: new FormControl(""),
+    // });
+
+
+    // var com = this.responseCustomer.find(c => c.customerName == newVal);
+    // if (com != null) {
+    //   this.customerFound = true;
+    //   this.SearchForm.controls.CustomerName.setValue(com.customerName);
+    //   this.POSNewModelRequest.requestCustomerDetail.customerID = com.customerID;
+    //   return
+    // }
+    // else {
+    //   var customer: any = this.responseCustomer.find((x) => x.mobileNO == this.SearchForm.controls.searchCustomerByCode.value);
+    //   if (customer) {
+    //     this.customerFound = true;
+    //     this.SearchForm.controls.CustomerName.setValue(customer.customerName);
+    //     this.POSNewModelRequest.requestCustomerDetail.customerID = customer.customerID;
+    //     return
+    //   }
+    //   if (this.SearchForm.controls.searchCustomerByCode.value == "") {
+    //     this.customerFound = false;
+    //     this.SearchForm.controls.CustomerName.setValue("");
+    //     this.POSNewModelRequest.requestCustomerDetail.customerID = 0;
+    //     return
+    //   }
+    //   else {
+    //     this.customerFound = false;
+    //     this.SearchForm.controls.CustomerName.setValue("");
+    //     this.POSNewModelRequest.requestCustomerDetail.customerID = 0;
+    //     this.toastr.error('Customer not found', '', {
+    //       timeOut: 3000,
+    //       'progressBar': true,
+    //     });
+    //   }
+    // }
+  }
   resetOrder() {
     this.orderTypeValue = "Dine In";
     this.addMoborAdd = false;
@@ -1043,6 +1192,7 @@ export class PosComponent implements OnInit {
     this.invoiceDiscount = 0;
     this.totalMinusInvDis = 0;
     this.totalDiscount = 0;
+    this.totalTaxInAmount = 0;
   }
   private formatDate(date: any) {
     const d = new Date(date);
@@ -1176,16 +1326,18 @@ export class PosComponent implements OnInit {
           this.POSNewModelRequest.requestKotDetail = c.responseKotDetail;
           this.selectedTables = c.responseCustomerTable;
           if (this.POSNewModelRequest.requestCustomerDetail.customerID > 0) {
-            var index = this.responseCustomer.findIndex((c) => c.customerID == this.POSNewModelRequest.requestCustomerDetail.customerID);
-            this.customerName = this.responseCustomer[index].customerName;
-            this.SearchForm.controls.searchCustomerByCode.setValue(this.responseCustomer[index].refCode);
-            this.searchCustomer();
+            var customerObj = this.responseCustomer.find((x) => x.customerID == this.POSNewModelRequest.requestCustomerDetail.customerID);
+            this.valueChanged(customerObj);
+            // var index = this.responseCustomer.findIndex((c) => c.customerID == this.POSNewModelRequest.requestCustomerDetail.customerID);
+            // this.customerName = this.responseCustomer[index].customerName;
+            // this.SearchForm.controls.searchCustomerByCode.setValue(this.responseCustomer[index].refCode);
+            // this.searchCustomer();
           }
-          else {
-            this.customerName = "";
-            this.SearchForm.controls.searchCustomerByCode.setValue("");
-            this.searchCustomer();
-          }
+          // else {
+          //   this.customerName = "";
+          //   this.SearchForm.controls.searchCustomerByCode.setValue("");
+          //   this.searchCustomer();
+          // }
           this.tableList = "";
           this.POSNewModelRequest.requestCustomerTable.forEach((x) => {
             this.responseTable.forEach((c) => {
@@ -1243,16 +1395,18 @@ export class PosComponent implements OnInit {
           this.POSNewModelRequest.requestKotDetail = c.responseKotDetail;
           this.selectedTables = c.responseCustomerTable;
           if (this.POSNewModelRequest.requestCustomerDetail.customerID > 0) {
-            var index = this.responseCustomer.findIndex((c) => c.customerID == this.POSNewModelRequest.requestCustomerDetail.customerID);
-            this.customerName = this.responseCustomer[index].customerName;
-            this.SearchForm.controls.searchCustomerByCode.setValue(this.responseCustomer[index].refCode);
-            this.searchCustomer();
+            var customerObj = this.responseCustomer.find((x) => x.customerID == this.POSNewModelRequest.requestCustomerDetail.customerID);
+            this.valueChanged(customerObj);
+            // var index = this.responseCustomer.findIndex((c) => c.customerID == this.POSNewModelRequest.requestCustomerDetail.customerID);
+            // this.customerName = this.responseCustomer[index].customerName;
+            // this.SearchForm.controls.searchCustomerByCode.setValue(this.responseCustomer[index].refCode);
+            // this.searchCustomer();
           }
-          else {
-            this.customerName = "";
-            this.SearchForm.controls.searchCustomerByCode.setValue("");
-            this.searchCustomer();
-          }
+          // else {
+          //   this.customerName = "";
+          //   this.SearchForm.controls.searchCustomerByCode.setValue("");
+          //   this.searchCustomer();
+          // }
           this.tableList = "";
           this.POSNewModelRequest.requestCustomerTable.forEach((x) => {
             this.responseTable.forEach((c) => {
@@ -1429,16 +1583,18 @@ export class PosComponent implements OnInit {
           this.POSNewModelRequest.requestKotDetail = c.responseKotDetail;
           this.selectedTables = c.responseCustomerTable;
           if (this.POSNewModelRequest.requestCustomerDetail.customerID > 0) {
-            var index = this.responseCustomer.findIndex((c) => c.customerID == this.POSNewModelRequest.requestCustomerDetail.customerID);
-            this.customerName = this.responseCustomer[index].customerName;
-            this.SearchForm.controls.searchCustomerByCode.setValue(this.responseCustomer[index].refCode);
-            this.searchCustomer();
+            var customerObj = this.responseCustomer.find((x) => x.customerID == this.POSNewModelRequest.requestCustomerDetail.customerID);
+            this.valueChanged(customerObj);
+            // var index = this.responseCustomer.findIndex((c) => c.customerID == this.POSNewModelRequest.requestCustomerDetail.customerID);
+            // this.customerName = this.responseCustomer[index].customerName;
+            // this.SearchForm.controls.searchCustomerByCode.setValue(this.responseCustomer[index].refCode);
+            // this.searchCustomer();
           }
-          else {
-            this.customerName = "";
-            this.SearchForm.controls.searchCustomerByCode.setValue("");
-            this.searchCustomer();
-          }
+          // else {
+          //   this.customerName = "";
+          //   this.SearchForm.controls.searchCustomerByCode.setValue("");
+          //   this.searchCustomer();
+          // }
           this.tableList = "";
           this.POSNewModelRequest.requestCustomerTable.forEach((x) => {
             this.responseTable.forEach((c) => {
@@ -1449,7 +1605,7 @@ export class PosComponent implements OnInit {
           })
 
           this.POSNewModelRequest.requestKotDetail.forEach((x) => {
-            this.calculateTaxes(x, true, x.quantity);
+            this.calculateTaxes(x);
           })
           setTimeout(() => { this.calculateTotals() }, 1000);
           this.tableList = this.tableList.slice(0, -2);
@@ -1470,9 +1626,11 @@ export class PosComponent implements OnInit {
       this.orderTypeValue = "Dine In";
       if (this.OutletInfo.serviceCharges > 0) {
         this.chargesValue = this.OutletInfo.serviceCharges;
+        this.chargesValuePercentage = 0;
       }
       else {
         this.chargesValuePercentage = this.OutletInfo.serviceChargesPer;
+        this.chargesValue = 0;
       }
       this.calculateTotals();
     }
@@ -1480,9 +1638,11 @@ export class PosComponent implements OnInit {
       this.orderTypeValue = "Take Away";
       if (this.OutletInfo.takeawayCharges > 0) {
         this.chargesValue = this.OutletInfo.takeawayCharges;
+        this.chargesValuePercentage = 0;
       }
       else {
         this.chargesValuePercentage = this.OutletInfo.takeawayChargesPer;
+        this.chargesValue = 0;
       }
       this.calculateTotals();
     }
@@ -1491,9 +1651,11 @@ export class PosComponent implements OnInit {
       this.orderTypeValue = "Delivery";
       if (this.OutletInfo.deliveryCharges > 0) {
         this.chargesValue = this.OutletInfo.deliveryCharges;
+        this.chargesValuePercentage = 0;
       }
       else {
         this.chargesValuePercentage = this.OutletInfo.deliveryChargesPer;
+        this.chargesValue = 0;
       }
       this.calculateTotals();
       var customer: any = this.responseCustomer.find((x) => x.refCode == this.SearchForm.controls.searchCustomerByCode.value);

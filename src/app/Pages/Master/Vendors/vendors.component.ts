@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { ApiService } from 'src/app/Services/API/api.service';
 import { GvarService } from 'src/app/Services/Globel/gvar.service';
+import Swal from 'sweetalert2';
 import { requestCity, requestStRegions, responseCity, responseCountries, responseRegions, VendorModelRequest, VendorModelResponse } from './VendorModel';
 
 @Component({
@@ -14,6 +15,7 @@ import { requestCity, requestStRegions, responseCity, responseCountries, respons
   styleUrls: ['./vendors.component.css']
 })
 export class VendorsComponent implements OnInit {
+  intitalState: any;
   responseRegions: responseRegions[];
   responseCountries: responseCountries[];
   responseCity: responseCity[];
@@ -57,6 +59,35 @@ export class VendorsComponent implements OnInit {
     this.isShow = !this.isShow;
     this.addMode = false;
     this.VendorForm.controls.isActive.setValue(true);
+    this.intitalState = this.VendorForm.value;
+  }
+  backFunc() {
+    if (this.intitalState != this.VendorForm.value) {
+      Swal.fire({
+        text: 'Discard unsaved changes?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ok',
+
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.submitted = false;
+          this.VendorForm.reset();
+          this.isShow = !this.isShow;
+          this.addMode = false;
+          this.VendorForm.controls.isActive.setValue(true);
+        }
+      })
+    }
+    else {
+      this.submitted = false;
+      this.VendorForm.reset();
+      this.isShow = !this.isShow;
+      this.addMode = false;
+      this.VendorForm.controls.isActive.setValue(true);
+    }
   }
   InitializeForm() {
     this.VendorForm = new FormGroup({

@@ -22,7 +22,7 @@ export class responseSection {
 
 export class responsePrinter {
     printerID: number;
-    printerIP: number;
+    printerIP: string;
     printerPort: number;
     printerTitle: string;
     outletID: number;
@@ -31,7 +31,7 @@ export class responsePrinter {
 
 export class requestPrinter {
     printerID: number;
-    printerIP: number;
+    printerIP: string;
     printerPort: number;
     printerTitle: string;
     outletID: number;

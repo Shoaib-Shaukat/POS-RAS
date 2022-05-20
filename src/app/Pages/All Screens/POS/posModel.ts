@@ -294,6 +294,7 @@ export class requestKotDetail {
     kotID: number = 0;
     status: number = 0;
     sectionID: number = 0;
+    totalTax: number = 0;
 }
 
 export class requestCustomerTable {
